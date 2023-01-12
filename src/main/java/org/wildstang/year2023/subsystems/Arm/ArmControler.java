@@ -44,13 +44,13 @@ public class ArmControler implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
-        if (source == Rotate_Clockwise){
+        if (source == Rotate_Clockwise && Rotate_Clockwise.getValue()){
             TurnDirection = 1;
         }
-        else if (source == Rotate_Counter_Clockwise){
+        else if (source == Rotate_Counter_Clockwise && Rotate_Counter_Clockwise.getValue()){
             TurnDirection = -1;
         }
-        else{
+        else if (!(Rotate_Counter_Clockwise.getValue() && source == Rotate_Clockwise && Rotate_Clockwise.getValue())){
             TurnDirection = 0;
         }
         
@@ -82,7 +82,7 @@ public class ArmControler implements Subsystem{
         if (TurnDirection != 0){
             BaseMotor.setSpeed(BaseSpeed*TurnDirection);
         }else{
-            BaseMotor.setSpeed(0);
+            BaseMotor.setSpeed(0.0);
         }
 
         //update encoded value
