@@ -64,7 +64,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     private AimHelper limelight;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    public enum driveType {TELEOP, AUTO, CROSS, LL, AUTO_BALANCE};
     public driveType driveState;
 
     @Override
@@ -265,6 +265,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotSpeed = -limelight.getRotPID();
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             drive();
+        }
+        if (driveState == driveType.AUTO_BALANCE){
+            if(gyro.getPitch() != 0){
+                if(Math.abs(gyro.getPitch()) <= 5){
+                    xSpeed = gyro.getPitch() * 2;
+                }
+            }
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
