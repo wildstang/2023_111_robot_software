@@ -1,7 +1,7 @@
 package org.wildstang.year2023.subsystems.arm;
 import org.javatuples.Triplet;
 
-public class Network {
+public class Network { 
     private double a = 1.0;
     private double[] dot(double[] a, double[] b){
         int c = 0;
