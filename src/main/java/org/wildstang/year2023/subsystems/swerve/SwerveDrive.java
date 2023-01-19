@@ -272,6 +272,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
                     xSpeed = gyro.getPitch() * 2;
                 }
             }
+            if(gyro.getRoll() != 0){
+                if(Math.abs(gyro.getRoll()) >= 5){
+                    ySpeed = gyro.getRoll() * 2;
+                }
+            }
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
