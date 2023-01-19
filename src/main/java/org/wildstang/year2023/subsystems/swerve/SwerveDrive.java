@@ -268,7 +268,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.AUTO_BALANCE){
             if(gyro.getPitch() != 0){
-                if(Math.abs(gyro.getPitch()) <= 5){
+                if(Math.abs(gyro.getPitch()) >= 5){
                     xSpeed = gyro.getPitch() * 2;
                 }
             }
