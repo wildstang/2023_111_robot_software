@@ -7,6 +7,8 @@ import org.wildstang.hardware.roborio.outputs.WsPhoenix;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 import java.util.Random;
+import org.javatuples.Quartet;
+import java.io.File;
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
@@ -27,10 +29,11 @@ public class ArmHelper implements Subsystem {
     double[] B1;
     double[] B2;
 
+    String file = "NetworkData.txt"
+
     @Override
     public void init() {
-        W1 = initWeights(InSize,MidSize);
-        W2 = initWeights(MidSize,OutSize);
+
     }
 
     @Override
@@ -58,7 +61,17 @@ public class ArmHelper implements Subsystem {
     @Override
     public void selfTest() {
     }
+    private void initNetwork(){
+        W1 = initWeights(InSize,MidSize);
+        B1 = initWeights(MidSize);
+        W2 = initWeights(MidSize,OutSize);
+        B2 = initWeights(OutSize);
+    }
+    private void saveToFile(){
+        File myObj = new File(file);
+        Quad data = new Quartet<double[][],double[],double[][],double[]>(W1,B1,W2,B2);
 
+    }
     private double[][] initWeights(inSize,outSize){
         double[outSize][inSize] out;
         Random random = new Random();
