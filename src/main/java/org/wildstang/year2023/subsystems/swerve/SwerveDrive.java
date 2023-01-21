@@ -267,20 +267,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }
         if (driveState == driveType.AUTO_BALANCE){
-            if(gyro.getPitch() != 0){
-                if(Math.abs(gyro.getPitch()) >= 5){
-                    ySpeed = gyro.getPitch() * 2;
-                }else{
-                    ySpeed = 0;
-                }
+            if (Math.abs(gyro.getPitch()) >= 5){
+                ySpeed = gyro.getPitch() * 0.5;
             }
-            if(gyro.getRoll() != 0){
-                if(Math.abs(gyro.getRoll()) >= 5){
-                    xSpeed = gyro.getRoll() * 2;
-                }else{
-                    xSpeed = 0;
-                }
+            else {
+                ySpeed = 0;
             }
+            if (Math.abs(gyro.getRoll()) >= 5){
+                xSpeed = gyro.getRoll() * 0.5;
+            }
+            else {
+                xSpeed = 0;
+            }
+
+            //ignores robot's location the field, so translation can be robot centric 
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, 0, 0);
             drive();
         }
