@@ -3,7 +3,7 @@ package org.wildstang.year2023.subsystems;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-import org.wildstang.hardware.roborio.outputs.WsPhoenix;
+//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 
@@ -16,7 +16,7 @@ public class SampleSubsystem implements Subsystem {
     WsJoystickAxis joystick;
 
     // outputs
-    WsPhoenix motor;
+    //WsPhoenix motor;
 
     // states
     double speed;
@@ -26,7 +26,7 @@ public class SampleSubsystem implements Subsystem {
     public void init() {
         joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
 
-        motor = (WsPhoenix) WSOutputs.TEST_MOTOR.get();
+        //motor = (WsPhoenix) WSOutputs.TEST_MOTOR.get();
 
         speed = 0;
     }
@@ -38,7 +38,7 @@ public class SampleSubsystem implements Subsystem {
 
     @Override
     public void update() {
-        motor.setValue(speed);
+        //motor.setValue(speed);
     }
 
     @Override

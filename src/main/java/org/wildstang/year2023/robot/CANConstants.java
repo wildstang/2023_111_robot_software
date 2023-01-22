@@ -14,11 +14,8 @@ public final class CANConstants {
     public static final int[] EXAMPLE_PAIRED_CONTROLLERS    = {1,2};
     public static final int   EXAMPLE_MOTOR_CONTROLLER      = 3;
 
-    //tank drive constants
-    public static final int LEFT_DRIVE = 11;
-    public static final int RIGHT_DRIVE = 12;
-    public static final int LEFT_DRIVE_FOLLOWER = 13;
-    public static final int RIGHT_DRIVE_FOLLOWER = 14;
+    //Gyro and CAN sensor values
+    public static final int GYRO = 31;
 
     //swerve constants
     public static final int ENC1 = 41;
