@@ -251,11 +251,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
             drive();        
         }
-        if (driveState == driveType.LL) {
-            rotSpeed = -limelight.getRotPID();
-            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-            drive();
-        }
+        //if (driveState == driveType.LL) {
+        //    //rotSpeed = -limelight.getRotPID();
+        //    this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+        //    drive();
+        //}
         if (driveState == driveType.AUTO_BALANCE){
             if (Math.abs(gyro.getPitch()) >= 5){
                 ySpeed = gyro.getPitch() * 0.5;
