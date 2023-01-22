@@ -58,6 +58,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double[] lastY = {0,0,0,0};
     private double autoTempX;
     private double autoTempY;
+    private double gyroPitch;
+    private double gyroRoll;
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
@@ -257,14 +259,18 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //    drive();
         //}
         if (driveState == driveType.AUTO_BALANCE){
-            if (Math.abs(gyro.getPitch()) >= 5){
-                ySpeed = gyro.getPitch() * 0.5;
+            //storing variables
+            gyroPitch = gyro.getPitch();
+            gyroRoll = gyro.getRoll();
+
+            if (Math.abs(gyroPitch) >= 5){
+                ySpeed = gyroPitch * 0.5;
             }
             else {
                 ySpeed = 0;
             }
-            if (Math.abs(gyro.getRoll()) >= 5){
-                xSpeed = gyro.getRoll() * 0.5;
+            if (Math.abs(gyroRoll) >= 5){
+                xSpeed = gyroRoll * 0.5;
             }
             else {
                 xSpeed = 0;
