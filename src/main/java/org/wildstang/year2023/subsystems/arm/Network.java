@@ -49,7 +49,7 @@ public class Network {
             bias[c] = ugh[2][0];
             int c2 = 0;
             while(c2<stuff.length){
-                out[c] += stuff[c];
+                out[c2] += stuff[c2];
                 c2 += 1;
             }
             c += 1;
@@ -62,6 +62,8 @@ public class Network {
         int c = 0;
         while(c<weights.length){
             out[c] = neuronForward(weights[c],bias[c],inp);
+            c += 1;
         }
+        return out;
     }
 }

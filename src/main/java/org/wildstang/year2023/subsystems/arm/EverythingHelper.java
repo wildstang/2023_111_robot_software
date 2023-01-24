@@ -11,11 +11,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.io.IOException;
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
  */
-public class ArmHelper implements Subsystem {
+public class EverythingHelper implements Subsystem {
     // inputs
     //WsJoystickAxis joystick;
     // outputs
@@ -30,12 +31,13 @@ public class ArmHelper implements Subsystem {
     double[][] W2;
     double[] B1;
     double[] B2;
+    double learn = 0.1; //I know this seems to high. Testin something.
 
     String fileName = "NetworkData.txt";
 
     @Override
     public void init(){
-        
+        load();
     }
 
     @Override
@@ -44,15 +46,17 @@ public class ArmHelper implements Subsystem {
 
     @Override
     public void update() {
+
     }
 
     @Override
     public void inputUpdate(Input source) {
+
     }
 
     @Override
     public String getName() {
-        return "ArmHelper";
+        return "Everything Helper";
     }
 
     @Override
@@ -63,6 +67,21 @@ public class ArmHelper implements Subsystem {
         B1 = initBias(MidSize);
         W2 = initWeights(MidSize,OutSize);
         B2 = initBias(OutSize);
+    }
+    public double[] Forward(double[] inp){
+        double[] O1 = Network.layerForward(W1,B1,inp);
+        double[] O2 = Network.layerForward(W2,B2,O1);
+        return O2;
+    }
+    public void Backward(double[] targets,double[] inp){
+        double[] DeDo = new double[targets.length];
+        int c = 0;
+        while(c<targets.length){
+            DeDo[c] = Math.square(t)
+        }
+        double[] O1 = Network.layerForward(W1,B1,inp);
+        Network.layerBackward(W2,B2,O1,DeDo,learn);
+
     }
 
     private double[][] initWeights(int inSize,int outSize){
@@ -89,7 +108,8 @@ public class ArmHelper implements Subsystem {
         }
         return out;
     }
-    private void printIn() {
+    private void load() {
+        try{
         File file = new File(fileName);
         boolean check = file.createNewFile();
         if (check) {
@@ -98,12 +118,21 @@ public class ArmHelper implements Subsystem {
             //activates if one was already there with that name
         }
         FileReader input = new FileReader(file);
+        }
+        catch(IOException ex){
+            String shit = "yeah";
+        }
     }
-    private void printOut() {
+    private void save() {
+        try{
         File file = new File(fileName);
         FileWriter output = new FileWriter(file,false);
         double [][][] tempData = {W1,{B1},W2,{B2}};
         output.write(Arrays.toString(tempData));
+        }
+        catch(IOException ex){
+            String shit = "yeah";
+        }
     }
     private void parseData(String dataString){
         String[] data = dataString.split(""); 
@@ -133,13 +162,13 @@ public class ArmHelper implements Subsystem {
                 pos2 = c;
                 partOfPartOfPart++;
                 if (part == 1) {
-                W1[partOfPart][partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                W1[partOfPart][partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else if (part == 2) {
-                B1[partOfPartofPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                B1[partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else if (part == 3) {
-                W2[partOfPart][partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                W2[partOfPart][partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else {
-                B2[partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                B2[partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             }
                 }
             }
@@ -148,14 +177,14 @@ public class ArmHelper implements Subsystem {
                 pos2 = c;
                 partOfPartOfPart++;
                 if (part == 1) {
-                String[] um = String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2));
-                W1[partOfPart][partOfPartOfPart] = Double.parseDouble(um);
+                //String um = String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2));
+                W1[partOfPart][partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else if (part == 2) {
-                B1[partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                B1[partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else if (part == 3) {
-                W2[partOfPart][partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                W2[partOfPart][partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             } else {
-                B2[partOfPartOfPart] = Double.parseDouble(data.substring(pos1 + 2, pos2));
+                B2[partOfPartOfPart] = Double.parseDouble(String.join("",Arrays.copyOfRange(data,pos1 + 2, pos2)));
             }
             }
             c++;
