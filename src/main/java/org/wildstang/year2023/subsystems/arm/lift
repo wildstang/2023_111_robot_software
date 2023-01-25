@@ -21,7 +21,7 @@ public class lift {
     // states
     //double speed;
     //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
-    private WsSparkMax liftDriver, liftFollower;
+    private WsSparkMax liftDriver;
     //private int direction;
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
@@ -33,8 +33,7 @@ public class lift {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         Pos = 0;
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
-        liftFollower = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_FOLLOWER);
-        liftFollower.getController().follow(liftDriver.getController(),true);
+
     }
 
     public void stopMotor() {
