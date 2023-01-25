@@ -1,18 +1,19 @@
-package org.wildstang.year2023.subsystems.wrist;
+package org.wildstang.year2023.subsystems.arm;
 
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
+import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wildstang.framework.core.Core;
 
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
  */
-public class wrist {
+public class arm {
     // inputs
    // WsJoystickAxis joystick;
 
@@ -24,29 +25,23 @@ public class wrist {
     private WsSparkMax BaseMotor;
     //private int direction;
     //private double BaseSpeed = 5.5;
-   // private double EncodedPositition;
+    private double EncodedPositition;
     private double Pos;
-    private const double Tolerance = 1;
-    private const double minPosition = 0;
-    private const double maxPosition = 0;
+    private static final double Tolerance = 0;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
-        Pos = minPosition;
-        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
+        Pos = 0;
+        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
     }
 
     public void stopMotor() {
-        BaseMotor.stopMotor();
+        BaseMotor.stop();
     }
 
     public void goToPosition(double pos) {
-        if (pos > minPosition && pos < maxPosition) {
-            BaseMotor.setPosition(pos);
-            Pos = pos;
-            SmartDashboard.putNumber("Wrist target", pos);
-        } else {
-            SmartDashboard.putNumber("Wrist target", -999);
-        }
+        BaseMotor.setPosition(pos);
+        Pos = pos;
+        SmartDashboard.putNumber("Arm target", pos);
     }
     
     public double getPosition(){
@@ -54,7 +49,7 @@ public class wrist {
     }
     
     public boolean isReady(){
-        SmartDashboard.putNumber("Wrist pos", pos);
+        SmartDashboard.putNumber("Arm pos", Pos);
         if(Math.abs(BaseMotor.getPosition()-Pos)<Tolerance){
             return true;
         }
@@ -62,7 +57,7 @@ public class wrist {
     }
 
     public void resetState() {
-        Pos = minPosition;
+        Pos = 0;
     }
 
     public void update() {
@@ -71,7 +66,7 @@ public class wrist {
 
 
     public String getName() {
-        return "Wrist";
+        return "Arm";
     }
 
     public void selfTest() {

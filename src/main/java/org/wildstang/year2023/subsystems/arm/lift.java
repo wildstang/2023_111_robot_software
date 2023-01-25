@@ -7,7 +7,8 @@ import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import org.wildstang.hardware.roborio.outputs.WsSparkMax;
+import org.wildstang.framework.core.Core;
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
@@ -26,9 +27,9 @@ public class lift {
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
     private double Pos;
-    private const double Tolerance = 1;
-    private const double minPosition = 0;
-    private const double maxPosition = 0;
+    private static final double Tolerance = 1;
+    private static final double minPosition = 0;
+    private static final double maxPosition = 0;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         Pos = 0;
@@ -37,7 +38,7 @@ public class lift {
     }
 
     public void stopMotor() {
-        liftDriver.stopMotor();
+        liftDriver.stop();
     }
 
     public void goToPosition(double pos) {
@@ -55,7 +56,7 @@ public class lift {
     }
     
     public boolean isReady(){
-        SmartDashboard.putNumber("Lift pos", pos);
+        SmartDashboard.putNumber("Lift pos", Pos);
         if(Math.abs(liftDriver.getPosition()-Pos)<Tolerance){
             return true;
         }
