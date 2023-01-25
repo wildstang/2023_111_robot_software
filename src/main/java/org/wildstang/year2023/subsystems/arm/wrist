@@ -1,0 +1,79 @@
+package org.wildstang.year2023.subsystems.wrist;
+
+import org.wildstang.framework.io.inputs.Input;
+import org.wildstang.framework.subsystems.Subsystem;
+import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
+//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
+import org.wildstang.year2023.robot.WSInputs;
+import org.wildstang.year2023.robot.WSOutputs;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+/**
+ * Sample Subsystem that controls a motor with a joystick.
+ * @author Liam
+ */
+public class wrist {
+    // inputs
+   // WsJoystickAxis joystick;
+
+    // outputs
+
+    // states
+    //double speed;
+    //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
+    private WsSparkMax BaseMotor;
+    //private int direction;
+    //private double BaseSpeed = 5.5;
+   // private double EncodedPositition;
+    private double Pos;
+    private const double Tolerance = 1;
+    private const double minPosition = 0;
+    private const double maxPosition = 0;
+    public void init() {
+        //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
+        Pos = minPosition;
+        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
+    }
+
+    public void stopMotor() {
+        BaseMotor.stopMotor();
+    }
+
+    public void goToPosition(double pos) {
+        if (pos > minPosition && pos < maxPosition) {
+            BaseMotor.setPosition(pos);
+            Pos = pos;
+            SmartDashboard.putNumber("Wrist target", pos);
+        } else {
+            SmartDashboard.putNumber("Wrist target", -999);
+        }
+    }
+    
+    public double getPosition(){
+        return BaseMotor.getPosition();
+    }
+    
+    public boolean isReady(){
+        SmartDashboard.putNumber("Wrist pos", pos);
+        if(Math.abs(BaseMotor.getPosition()-Pos)<Tolerance){
+            return true;
+        }
+        return false;
+    }
+
+    public void resetState() {
+        Pos = minPosition;
+    }
+
+    public void update() {
+    
+    }
+
+
+    public String getName() {
+        return "Wrist";
+    }
+
+    public void selfTest() {
+    }
+}

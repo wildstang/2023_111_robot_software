@@ -1,0 +1,81 @@
+package org.wildstang.year2023.subsystems.lift;
+
+import org.wildstang.framework.io.inputs.Input;
+import org.wildstang.framework.subsystems.Subsystem;
+import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
+//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
+import org.wildstang.year2023.robot.WSInputs;
+import org.wildstang.year2023.robot.WSOutputs;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+/**
+ * Sample Subsystem that controls a motor with a joystick.
+ * @author Liam
+ */
+public class lift {
+    // inputs
+   // WsJoystickAxis joystick;
+
+    // outputs
+
+    // states
+    //double speed;
+    //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
+    private WsSparkMax liftDriver, liftFollower;
+    //private int direction;
+    //private double BaseSpeed = 5.5;
+   // private double EncodedPositition;
+    private double Pos;
+    private const double Tolerance = 1;
+    private const double minPosition = 0;
+    private const double maxPosition = 0;
+    public void init() {
+        //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
+        Pos = 0;
+        liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
+        liftFollower = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_FOLLOWER);
+        liftFollower.getController().follow(liftDriver.getController(),true);
+    }
+
+    public void stopMotor() {
+        liftDriver.stopMotor();
+    }
+
+    public void goToPosition(double pos) {
+        if (pos > minPosition && pos < maxPosition) {
+            liftDriver.setPosition(pos);
+            Pos = pos;
+            SmartDashboard.putNumber("Lift target", pos);
+        } else {
+            SmartDashboard.putNumber("Lift target", -999);
+        }
+    }
+    
+    public double getPosition(){
+        return liftDriver.getPosition();
+    }
+    
+    public boolean isReady(){
+        SmartDashboard.putNumber("Lift pos", pos);
+        if(Math.abs(liftDriver.getPosition()-Pos)<Tolerance){
+            return true;
+        }
+        return false;
+    }
+
+    public void resetState() {
+        Pos = 0;
+    }
+
+    public void update() {
+    
+    }
+
+
+    public String getName() {
+        return "Lift";
+    }
+
+    public void selfTest() {
+    }
+}
