@@ -36,7 +36,7 @@ public class ArmControler implements Subsystem{
     
 
     private int TurnDirection;
-    private double BaseSpeed = 5.5;
+    private double BaseSpeed = 5.5;//let's make this 0.25 to start
     private double EncodedPositition;
 
 
@@ -52,7 +52,7 @@ public class ArmControler implements Subsystem{
         }
         else if (!(Rotate_Counter_Clockwise.getValue() && source == Rotate_Clockwise && Rotate_Clockwise.getValue())){
             TurnDirection = 0;
-        }
+        }//lets make this else if just an else, since that should cover all other cases
         
     }
 
@@ -66,6 +66,7 @@ public class ArmControler implements Subsystem{
         Rotate_Counter_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
         Rotate_Counter_Clockwise.addInputListener(this);
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
+        //add on to the BaseMotor the setCurrentLimit command (with 40,40,0) as the arguments
     }
 
     @Override
@@ -83,7 +84,9 @@ public class ArmControler implements Subsystem{
             BaseMotor.setSpeed(BaseSpeed*TurnDirection);
         }else{
             BaseMotor.setSpeed(0.0);
-        }
+        }//it would be nice to have a button or two we could press to change BaseSpeed
+        //without having to push new code. Something like two buttons, one that increases
+        //BaseSpeed by 0.05 each time it's pressed, and the other minus 0.05 each time
 
         //update encoded value
         EncodedPositition = BaseMotor.getPosition();

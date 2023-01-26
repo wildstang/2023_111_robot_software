@@ -36,7 +36,7 @@ public enum WSOutputs implements Outputs {
     LEFT_DRIVE_FOLLOWER("Left Drive Follower", new WsSparkMaxFollowerConfig("Left Drive Motor", CANConstants.LEFT_DRIVE_FOLLOWER, true)),
     RIGHT_DRIVE_FOLLOWER("Right Drive Follower", new WsSparkMaxFollowerConfig("Right Drive Motor", CANConstants.RIGHT_DRIVE_FOLLOWER, true)),
     ARM_ONE("Right Drive Follower", new WsSparkMaxFollowerConfig("ARM Motor 1", CANConstants.RIGHT_DRIVE_FOLLOWER, true)),
-    
+    //rename this String, and it shouldn't be a follower, but a normal motor
     TEST_MOTOR("Test Motor", new WsPhoenixConfig(CANConstants.EXAMPLE_MOTOR_CONTROLLER, WsMotorControllers.VICTOR_SPX)),
 
     DRIVE1("Module 1 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE1, true)),
