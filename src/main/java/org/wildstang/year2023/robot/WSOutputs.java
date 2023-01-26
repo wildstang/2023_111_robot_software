@@ -48,6 +48,7 @@ public enum WSOutputs implements Outputs {
     
     LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.ANGLE1, true)),
     LIFT_Follower("Lift Driver", new WsSparkMaxConfig(CANConstants.ANGLE1, true)),
+    //lets use WsSparkMaxFollowerConfig for the lift follower. Also, all caps LIFT_FOLLOWER
     // ---------------------------------
     // Servos
     // ---------------------------------
