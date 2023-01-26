@@ -1,19 +1,11 @@
 package org.wildstang.year2023.subsystems.masterControlProgram;
 
-import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
-import org.wildstang.year2023.robot.WSInputs;
-import org.wildstang.year2023.robot.WSOutputs;
-
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
-import org.wildstang.framework.io.inputs.AnalogInput;
-import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import org.wildstang.framework.io.inputs.Input;
+import org.wildstang.framework.subsystems.Subsystem;
+//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
+import org.wildstang.year2023.robot.WSInputs;
 //custom
 import org.wildstang.year2023.subsystems.arm.arm;
 import org.wildstang.year2023.subsystems.arm.lift;
@@ -23,8 +15,7 @@ import org.wildstang.year2023.subsystems.arm.wrist;
 public class MasterControlProgram implements Subsystem {
     
     //inputs
-    private DigitalInput highGoal, midGoal, lowGoal, station, cubeMode, coneMode, front, back;
-    private WsJoystickAxis joystick; //b/c i want to 
+    private DigitalInput highGoal, midGoal, lowGoal, station, cubeMode, coneMode;
     // motors
     
 
@@ -41,23 +32,44 @@ public class MasterControlProgram implements Subsystem {
 
     // states
     private enum positions{
-        GROUND_FORWARD(0,0,0);
+        GROUND_FORWARD();
         double lpos;
         double apos;
         double wpos;
-        positions(double liftPos, double armPos, double wristPos){
-            
-        }
-        
+        void setPosition(double liftPos, double armPos, double wristPos){
+            lpos = liftPos;
+            apos = armPos;
+            wpos = wristPos;
 
+        }
+        double[] returnPositions(){
+            double[] list = {lpos,apos,wpos};
+            return list;
+        }
     }
-    private enum mode{
+
+    //position constents
+    private positions ConeLowerPosition;
+    private positions CubeLowerPosition;
+
+    private positions ConeMiddlePosition;
+    private positions CubeMiddlePosition;
+
+    private positions ConeHighPosition;
+    private positions CubeHighPosition;
+
+    private positions StationPosition;
+
+
+    private enum modes{
         CONE,
         CUBE;
     } //true = cone, false = cube
+    private modes CurrentMode = modes.CUBE;
 
     @Override
     public void init() {
+        //inputs
         highGoal = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_UP);
         highGoal.addInputListener(this);
         midGoal = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_LEFT);
@@ -70,15 +82,21 @@ public class MasterControlProgram implements Subsystem {
         coneMode.addInputListener(this);
         cubeMode = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_RIGHT);
         cubeMode.addInputListener(this);
-        front = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_UP);
-        front.addInputListener(this);
-        back = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
-        back.addInputListener(this);
 
-        /* Front and back should autoset to ground level,
-        so that if nothing else is pressed afterwards,
-        they can be used for ground intake. */
+        //position constents ***************** CHANGE WHEN VALUES ARE KNOWN *****************
+        ConeLowerPosition.setPosition(0, 0, 0); //temp
+        CubeLowerPosition.setPosition(0, 0, 0); //temp
 
+        ConeMiddlePosition.setPosition(50, 50, 50); //temp
+        CubeMiddlePosition.setPosition(50, 50, 50); //temp
+
+        ConeHighPosition.setPosition(100, 100, 100); //temp
+        CubeHighPosition.setPosition(100, 100, 100); //temp
+
+        StationPosition.setPosition(0, 0, 0); //temp
+
+        //***************** END OF CHANGED VALUES *****************
+        //Helper classes
         armHelper = new arm();
         liftHelper = new lift();
         wristHelper = new wrist();
@@ -90,39 +108,94 @@ public class MasterControlProgram implements Subsystem {
 
     @Override
     public void update() {
-        if ((armhelper.isReady()!)){
+        //joints
+        if ((!armHelper.isReady())){
             //not at position yet
-            armhelper.goToPosition(armPosition);
+            armHelper.goToPosition(armPosition);
         }else{
             armHelper.stopMotor();
         }
-        if ((lifthelper.isReady()!)){
+        if ((!liftHelper.isReady())){
             //not at position yet
-            lifthelper.goToPosition(armPosition);
+            liftHelper.goToPosition(liftPosition);
         }else{
             liftHelper.stopMotor();
         }
-        if ((wristhelper.isReady()!)){
+        if ((!wristHelper.isReady())){
             //not at position yet
-            wristhelper.goToPosition(armPosition);
+            wristHelper.goToPosition(wristPosition);
         }else{
             wristHelper.stopMotor();
         }
-
-        
     }
 
     @Override
     public void inputUpdate(Input source) {
 
-        //control configeration
-        //manipulator
-        //LDpad switch to cone mode
-        //RDpad switch to cube mode 
-        //UpDpad switch to front mode
-        //DownDpad switch to back mode
+        //*******Behavior*******
+        //cone mode
+        if (source == coneMode && coneMode.getValue()){
+            CurrentMode = modes.CONE;
+        }
 
-        
+        //cube mode
+        if (source == cubeMode && cubeMode.getValue()){
+            CurrentMode = modes.CUBE;
+        } 
+
+        //*******armPosition*******
+        //lower position
+        if (source == lowGoal && lowGoal.getValue() && CurrentMode == modes.CONE){
+            //set all positions to lower
+            double[] newPositions = ConeLowerPosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }else if (source == lowGoal && lowGoal.getValue() && CurrentMode == modes.CUBE){
+            //set all positions to lower
+            double[] newPositions = CubeLowerPosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }
+
+        //middle position
+        if (source == midGoal && midGoal.getValue() && CurrentMode == modes.CONE){
+            //set all positions to middle
+            double[] newPositions = ConeMiddlePosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        } else if (source == midGoal && midGoal.getValue() && CurrentMode == modes.CUBE){
+            //set all positions to middle
+            double[] newPositions = CubeMiddlePosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }
+
+        //high position
+        if (source == highGoal && highGoal.getValue() && CurrentMode == modes.CONE){
+            //set all positions to high
+            double[] newPositions = ConeHighPosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }else if (source == highGoal && highGoal.getValue() && CurrentMode == modes.CUBE){
+            //set all positions to high
+            double[] newPositions = CubeHighPosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }
+
+        if (source == station && station.getValue()){
+            //set all positions to station
+            double[] newPositions = StationPosition.returnPositions();
+            liftPosition = newPositions[0];
+            armPosition = newPositions[1];
+            wristPosition = newPositions[2];
+        }
     }
 
     @Override

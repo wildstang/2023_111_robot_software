@@ -1,10 +1,4 @@
-package org.wildstang.year2023.subsystems.wrist;
-
-import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-//import org.wildstang.hardware.roborio.outputs.WsPhoenix;
-import org.wildstang.year2023.robot.WSInputs;
+package org.wildstang.year2023.subsystems.arm;
 import org.wildstang.year2023.robot.WSOutputs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
