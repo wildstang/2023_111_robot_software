@@ -3,6 +3,10 @@ import org.wildstang.year2023.robot.WSOutputs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.framework.core.Core;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+
+import org.wildstang.year2023.subsystems.arm.ArmConstants;
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
@@ -17,18 +21,31 @@ public class lift {
     //double speed;
     //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
     private WsSparkMax liftDriver;
+    private AbsoluteEncoder Encoder;
     //private int direction;
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
-    private double Pos;
-    private static final double Tolerance = 1;
+    private double position;
+    private static final double tolerance = 1;
     private static final double minPosition = 0;
     private static final double maxPosition = 0;
+    private static final double holdingPosition = 0;
+    private enum mode {
+        EXTENDED,
+        HOLDING;
+    }
+    private mode currentMode;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
-        Pos = 0;
+        currentMode = mode.HOLDING;
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
-
+        Encoder = liftDriver.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
+        Encoder.setInverted(false); //or this stuff
+        Encoder.setPositionConversionFactor(360.0);
+        Encoder.setVelocityConversionFactor(360.0/60.0);
+        liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+        liftDriver.setCurrentLimit(ArmConstants.LIFT_CURRENT_LIMIT, ArmConstants.LIFT_CURRENT_LIMIT, 0);
+        resetState();
     }
 
     public void stopMotor() {
@@ -37,8 +54,17 @@ public class lift {
 
     public void goToPosition(double pos) {
         if (pos > minPosition && pos < maxPosition) {
+            if(pos<holdingPosition && currentMode == mode.EXTENDED){
+                currentMode = mode.HOLDING;
+                liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+                //BaseMotor.setCurrentLimit(ArmConstants.LIFT_CURRENT_LIMIT, ArmConstants.LIFT_CURRENT_LIMIT, 0);
+            }
+            else if(pos>holdingPosition && currentMode == mode.HOLDING){
+                currentMode = mode.EXTENDED;
+                liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.Encoder);
+            }
             liftDriver.setPosition(pos);
-            Pos = pos;
+            position = pos;
             SmartDashboard.putNumber("Lift target", pos);
         } else {
             SmartDashboard.putNumber("Lift target", -999);
@@ -50,26 +76,19 @@ public class lift {
     }
     
     public boolean isReady(){
-        SmartDashboard.putNumber("Lift pos", Pos);
-        if(Math.abs(liftDriver.getPosition()-Pos)<Tolerance){
+        SmartDashboard.putNumber("Lift pos", position);
+        if(Math.abs(liftDriver.getPosition()-position)<tolerance){
             return true;
         }
         return false;
     }
 
     public void resetState() {
-        Pos = 0;
+        position = minPosition;
+        liftDriver.setPosition(position);
     }
-
-    public void update() {
-    
-    }
-
-
     public String getName() {
         return "Lift";
     }
 
-    public void selfTest() {
-    }
 }
