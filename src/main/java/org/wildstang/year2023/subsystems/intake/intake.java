@@ -22,21 +22,22 @@ public class intake implements Subsystem {
 
     // outputs
     private WsSparkMax intakeMotor;
-    private DigitalInput ingest, expel;
+    private AnalogInput ingest, expel;
     
 
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeed = -1;
+    private static final double deadband = 0.05;
 
     private double speed;
     @Override
     public void init() {
 
         intakeMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.INTAKE_MOTOR);
-        ingest = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_SHOULDER);
+        ingest = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_TRIGGER);
         ingest.addInputListener(this);
-        expel = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
+        expel = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_TRIGGER);
         expel.addInputListener(this);
         speed = 0;
     }
@@ -53,10 +54,10 @@ public class intake implements Subsystem {
 
     @Override
     public void inputUpdate(Input source) {
-        if (ingest.getValue()) {
-            speed = ingestSpeed;
-        } else if (expel.getValue()) {
-            speed = expelSpeed;
+        if (ingest.getValue()>deadband) {
+            speed = ingestSpeed*ingest.getValue();
+        } else if (expel.getValue()>deadband) {
+            speed = expelSpeed*expel.getValue();
         } else {
             speed = 0;
         }
