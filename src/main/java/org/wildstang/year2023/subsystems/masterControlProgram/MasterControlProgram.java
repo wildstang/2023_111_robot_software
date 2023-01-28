@@ -2,6 +2,7 @@ package org.wildstang.year2023.subsystems.masterControlProgram;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
+import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 //import org.wildstang.hardware.roborio.outputs.WsPhoenix;
@@ -17,6 +18,7 @@ public class MasterControlProgram implements Subsystem {
     
     //inputs
     private DigitalInput highGoal, midGoal, lowGoal, station, cubeMode, coneMode,forward,reverse,reset,halt;
+    private AnalogInput liftManual;
     // motors
     
 
@@ -32,6 +34,12 @@ public class MasterControlProgram implements Subsystem {
 
     private boolean posChanged;
     private boolean haltSignal;
+    private boolean liftResetSignal;
+
+    private double liftSpeed;
+    private static final double liftDeadband = 0.05;
+    private static final double liftSpeedFactor = 0.5;
+    private static final double liftResetBound = -0.9;
     // states
     private enum positions{
         HOLDING(0,0,0,"HOLDING"),
@@ -61,10 +69,13 @@ public class MasterControlProgram implements Subsystem {
         CONE,
         CUBE,
         FORWARD,
-        REVERSE;
+        REVERSE,
+        LIFT_MANUAL,
+        LIFT_AUTOMATIC;
     } //true = cone, false = cube
     private modes CurrentMode;
     private modes currentDirection;
+    private modes liftState;
     private positions currentPosition;
 
     private String oldQuery;
@@ -92,6 +103,9 @@ public class MasterControlProgram implements Subsystem {
         halt = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_START); //halt button in case want to stop arm but not rest of robot.
         halt.addInputListener(this);
 
+        liftManual = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_JOYSTICK_Y); //halt button in case want to stop arm but not rest of robot.
+        liftManual.addInputListener(this);
+
         armHelper = new arm();
         liftHelper = new lift();
         wristHelper = new wrist();
@@ -106,14 +120,26 @@ public class MasterControlProgram implements Subsystem {
         posChanged = false;
         oldQuery = "";
         haltSignal = false;
+        liftResetSignal = false;
+        liftState = modes.LIFT_AUTOMATIC;
+        liftSpeed = 0;
     }
 
     @Override
     public void update() {
         if(posChanged){ //if pos has changed, update targets
             armHelper.goToPosition(currentPosition.apos);
-            liftHelper.goToPosition(currentPosition.lpos);
             wristHelper.goToPosition(currentPosition.wpos);
+            if(liftState == modes.LIFT_AUTOMATIC){
+            liftHelper.goToPosition(currentPosition.lpos);
+            }
+            else{
+                liftHelper.setSpeed(liftSpeed,false);
+            }
+        }
+        if(liftResetSignal == true){
+            liftHelper.resetEncoder();
+            liftResetSignal = false;
         }
 
         if(haltSignal){
@@ -134,7 +160,7 @@ public class MasterControlProgram implements Subsystem {
             currentDirection = modes.REVERSE;
         }
 
-        //this next part is fun.
+        //this next part is fun. 
         String positionQuery = "";
         if(CurrentMode == modes.CONE && (highGoal.getValue()||midGoal.getValue())){ //first, check whether CONE or CUBE. If no goal button pressed, mode does not matter.
             positionQuery += "CONE_";
@@ -183,11 +209,23 @@ public class MasterControlProgram implements Subsystem {
             SmartDashboard.putString("target name", positionQuery);
 
         }
+        //halt button
         if(halt.getValue()){
             haltSignal = true;
         }
         else{
             haltSignal = false;
+        }
+        //manual lift control
+        if(Math.abs(liftManual.getValue())>liftDeadband){
+            liftState = modes.LIFT_MANUAL;
+            liftSpeed = liftManual.getValue()*liftSpeedFactor;
+            if(liftManual.getValue()<liftResetBound){
+                liftResetSignal = true;
+            }
+        }
+        else{
+            liftState = modes.LIFT_AUTOMATIC;
         }
 
     }
