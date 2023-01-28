@@ -14,8 +14,8 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import org.wildstang.year2023.subsystems.arm.ArmConstants;
 
 /**
- * Sample Subsystem that controls a motor with a joystick.
- * @author Liam
+ * not Sample Subsystem that controls a motor with a joystick.
+ * @author not Liam
  */
 public class arm {
     // inputs
@@ -33,8 +33,13 @@ public class arm {
     private double position;
     private static final double defaultPosition = 0;
     private static final double tolerance = 0;
+    private static final double holdingPosition = 0;
 
-    
+    private enum mode {
+        EXTENDED,
+        HOLDING;
+    }
+    private mode currentMode;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get()
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
@@ -42,7 +47,7 @@ public class arm {
         Encoder.setInverted(false); //or this stuff
         Encoder.setPositionConversionFactor(360.0);
         Encoder.setVelocityConversionFactor(360.0/60.0);
-        BaseMotor.initClosedLoop(ArmConstants.ARM_P, ArmConstants.ARM_I, ArmConstants.ARM_D,0, this.Encoder);
+        BaseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.Encoder);
         BaseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
         resetState();
         
@@ -53,7 +58,14 @@ public class arm {
     }
 
     public void goToPosition(double pos) {
-
+        if(pos<holdingPosition && currentMode == mode.EXTENDED){
+            currentMode = mode.HOLDING;
+            BaseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.Encoder);
+        }
+        else if(pos>holdingPosition && currentMode == mode.HOLDING){
+            currentMode = mode.EXTENDED;
+            BaseMotor.initClosedLoop(ArmConstants.ARM_P_EXTENDED, ArmConstants.ARM_I_EXTENDED, ArmConstants.ARM_D_EXTENDED,0, this.Encoder);
+        }
         BaseMotor.setPosition(pos);
         position = pos;
         SmartDashboard.putNumber("Arm target", position);
@@ -73,6 +85,7 @@ public class arm {
 
     public void resetState() {
         position = defaultPosition;
+        currentMode = mode.HOLDING;
         BaseMotor.setPosition(position);
     }
 
