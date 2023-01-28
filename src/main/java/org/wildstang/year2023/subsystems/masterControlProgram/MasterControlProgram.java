@@ -165,7 +165,7 @@ public class MasterControlProgram implements Subsystem {
     @Override
     public void update() {
         if(posChanged && delays == modes.FREE){ //if pos has changed, update targets
-            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lpos > liftFlipPos || currentPosition.lpos>liftFlipPos)){
+            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lpos > liftFlipPos || currentPosition.lpos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){
                 liftHelper.goToPosition(liftFlipPos);
                 delays = modes.HOLDING_ARM;
             }
@@ -205,6 +205,9 @@ public class MasterControlProgram implements Subsystem {
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
             liftHelper.goToPosition(currentPosition.lpos);
             delays = modes.FREE;
+        }
+        if(liftState == modes.LIFT_MANUAL){
+            liftHelper.setSpeed(liftSpeed,false);
         }
         
     }
