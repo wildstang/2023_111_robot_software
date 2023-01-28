@@ -32,8 +32,49 @@ public class LimelightJsonGetter implements Subsystem {
         put("reflective", 1);
     }};
 
+    private enum AprilTag{
+        ObjectOne;
+    
+        double aprilTagID;
+        double targetSize;
+        double targetXCoord;
+        double targetYCoord;
+        
+        double[] returnValues(){
+            double[] array = {aprilTagID,targetSize, targetXCoord, targetYCoord};
+            return array;
+        }
+    
+        void setPosition(int fID, double ta, double tx, double ty){
+            aprilTagID =  fID;
+            targetSize = ta;
+            targetXCoord = tx;
+            targetYCoord = ty;
+        }
+    }
+
+    private enum retroTape{
+        ObjectOne;
+    
+        double targetSize;
+        double targetXCoord;
+        double targetYCoord;
+        
+        double[] returnValues(){
+            double[] array = {targetSize, targetXCoord, targetYCoord};
+            return array;
+        }
+    
+        void setPosition(double ta, double tx, double ty){
+            targetSize = ta;
+            targetXCoord = tx;
+            targetYCoord = ty;
+        }
+    }
+
     @Override
     public void init() {
+        JSONDUMP = (WsRemoteAnalogInput) WSInputs.JSONDUMP.get();
 
         //create parser
         this.parser = new JSONParser();
@@ -42,7 +83,8 @@ public class LimelightJsonGetter implements Subsystem {
         //just repeated here as well to decrease the amount of time we have to wait to get access to the data.
 
         //get json string
-        this.currentObjectString = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
+
+        this.currentObjectString = JSONDUMP.getString(null);
 
         //if the string is null do not save it as the one we are parsing
         //hopefully helps to avoid most ParseExceptions
@@ -54,6 +96,30 @@ public class LimelightJsonGetter implements Subsystem {
         try {
 
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
+            switch (currentPipeline){
+                    case 0:
+                    Iterator<Map.Entry> iterateResults = JSONDUMP.entrySet().iterator();
+                        while (itr1.hasNext()) {
+                            Map.Entry pair = itr1.next();
+                            System.out.println(pair.getKey() + " : " + pair.getValue());
+                        }
+
+                    Iterator iterateFiducialMarkers = JSONDUMP.iterator();
+            
+
+                    while (iterateFiducialMarkers.hasNext()) 
+                    {
+                        iterateResults = ((Map) itr2.next()).entrySet().iterator();
+                        while (itr1.hasNext()) {
+                            Map.Entry pair = iterateResults.next();
+                            System.out.println(pair.getKey() + " : " + pair.getValue());
+                        }
+                    }
+                    break;
+                case 1:
+
+                    break;
+            }
 
         } catch (ParseException e) { //if ParseException does occur then <do something>
 
@@ -92,16 +158,18 @@ public class LimelightJsonGetter implements Subsystem {
 
         }
 
+
     }
 
     private double getDoubleFromJSON(String... jsonPropertyPath) {
-        currentObject.g
+        //currentObject.g
+        return 0;
     }
 
     public void changePipeline(String pipelineString) {
-        this.currentPipeline = pipelineStringToInt.get(pipelineString);
+        currentPipeline = pipelineStringToInt.get(pipelineString);
 
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(this.currentPipeline);
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
     }
 
     @Override
