@@ -83,6 +83,20 @@ public class lift {
         return false;
     }
 
+    public void resetEncoder(){
+        liftDriver.resetEncoder();
+    }
+    public void setSpeed(double speed, boolean useHoldingPID){
+        if(useHoldingPID && currentMode == mode.EXTENDED){
+            currentMode = mode.HOLDING;
+            liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+        }
+        else if((!useHoldingPID) && currentMode == mode.HOLDING){
+            currentMode = mode.EXTENDED;
+            liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.Encoder);
+        }
+        liftDriver.setSpeed(speed);
+    }
     public void resetState() {
         position = minPosition;
         liftDriver.setPosition(position);
