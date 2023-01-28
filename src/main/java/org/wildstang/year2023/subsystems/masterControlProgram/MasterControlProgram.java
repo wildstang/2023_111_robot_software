@@ -136,6 +136,8 @@ public class MasterControlProgram implements Subsystem {
 
         reset = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_SELECT);
         reset.addInputListener(this);
+        buttonMapping.put(reset,"HOLDING");
+
         halt = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_START); //halt button in case want to stop arm but not rest of robot.
         halt.addInputListener(this);
 
