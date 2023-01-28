@@ -18,10 +18,10 @@ public final class CANConstants {
     public static final int GYRO = 31;
 
     //swerve constants
-    public static final int ENC1 = 41;
-    public static final int ENC2 = 42;
-    public static final int ENC3 = 43;
-    public static final int ENC4 = 44;
+    // public static final int ENC1 = 41;
+    // public static final int ENC2 = 42;
+    // public static final int ENC3 = 43;
+    // public static final int ENC4 = 44;
     public static final int DRIVE1 = 11;
     public static final int ANGLE1 = 12;
     public static final int DRIVE2 = 13;
@@ -30,10 +30,11 @@ public final class CANConstants {
     public static final int ANGLE3 = 16;
     public static final int DRIVE4 = 17;
     public static final int ANGLE4 = 18;
-
-    public static final int ARM_ONE = 23; //these need fixing.
-    public static final int LIFT_DRIVER = 21;
+    
+    public static final int LIFT = 21;
     public static final int LIFT_FOLLOWER = 22;
+    public static final int ARM = 23;
     public static final int WRIST = 24;
+    public static final int INTAKE = 25;
     
 }
