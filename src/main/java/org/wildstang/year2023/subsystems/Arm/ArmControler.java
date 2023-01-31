@@ -5,6 +5,7 @@ import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
 import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
+import org.checkerframework.checker.units.qual.Speed;
 import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.AnalogInput;
@@ -23,6 +24,7 @@ import org.wildstang.year2023.subsystems.swerve.SwerveModule;
 import org.wildstang.year2023.subsystems.swerve.WSSwerveHelper;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.fasterxml.jackson.databind.JsonSerializable.Base;
 
 
 
@@ -31,13 +33,14 @@ public class ArmControler implements Subsystem{
     //rotate base clockwise and counter clockwise
     //track positition
 
-    private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
+    private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise,SpeedUp,SpeedDown;
     private WsSparkMax BaseMotor;
     
 
     private int TurnDirection;
     private double BaseSpeed = 5.5;//let's make this 0.25 to start
     private double EncodedPositition;
+    private boolean toggle;
 
 
 
@@ -50,9 +53,19 @@ public class ArmControler implements Subsystem{
         else if (source == Rotate_Counter_Clockwise && Rotate_Counter_Clockwise.getValue()){
             TurnDirection = -1;
         }
-        else if (!(Rotate_Counter_Clockwise.getValue() && source == Rotate_Clockwise && Rotate_Clockwise.getValue())){
+        else{
             TurnDirection = 0;
-        }//lets make this else if just an else, since that should cover all other cases
+        }
+
+        if (source == SpeedUp && SpeedUp.getValue() && !toggle){
+            BaseSpeed += 0.05;
+            toggle = true;
+        }else if (source == SpeedDown && SpeedUp.getValue() && !toggle){
+            BaseSpeed -= 0.05;
+            toggle = true;
+        }else if (toggle){
+            toggle = false;
+        }
         
     }
 
@@ -65,8 +78,15 @@ public class ArmControler implements Subsystem{
         Rotate_Clockwise.addInputListener(this);
         Rotate_Counter_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
         Rotate_Counter_Clockwise.addInputListener(this);
+        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_UP);
+        SpeedUp.addInputListener(this);
+        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_DOWN);
+        SpeedDown.addInputListener(this);
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
-        //add on to the BaseMotor the setCurrentLimit command (with 40,40,0) as the arguments
+
+        BaseMotor.setCurrentLimit(40, 40, 40);
+
+        toggle = false;
     }
 
     @Override
@@ -84,9 +104,7 @@ public class ArmControler implements Subsystem{
             BaseMotor.setSpeed(BaseSpeed*TurnDirection);
         }else{
             BaseMotor.setSpeed(0.0);
-        }//it would be nice to have a button or two we could press to change BaseSpeed
-        //without having to push new code. Something like two buttons, one that increases
-        //BaseSpeed by 0.05 each time it's pressed, and the other minus 0.05 each time
+        }
 
         //update encoded value
         EncodedPositition = BaseMotor.getPosition();
