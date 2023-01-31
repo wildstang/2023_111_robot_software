@@ -5,7 +5,6 @@ import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
 import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
-import org.checkerframework.checker.units.qual.Speed;
 import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.AnalogInput;
@@ -83,7 +82,7 @@ public class ArmControler implements Subsystem{
         SpeedDown.addInputListener(this);
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
 
-        BaseMotor.setCurrentLimit(40, 40, 40);
+        BaseMotor.setCurrentLimit(40,40,40);
 
         toggle = false;
     }
