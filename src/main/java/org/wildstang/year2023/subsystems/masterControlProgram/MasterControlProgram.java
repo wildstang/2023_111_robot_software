@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.masterControlProgram;
+package org.wildstang.year2023.subsystems.mastercontrolprogram;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
@@ -74,16 +74,16 @@ public class MasterControlProgram implements Subsystem {
 
         STATION_FORWARD(0,0,0,"STATION_FORWARD",modes.FORWARD),
         STATION_REVERSE(0,0,0,"STATION_REVERSE",modes.REVERSE);
-        public final double lpos;
-        public final double apos;
-        public final double wpos;
+        public final double lPos;
+        public final double aPos;
+        public final double wPos;
         public final String name;
         public final modes mode;
-        private positions(double liftPos, double armPos, double wristPos,String Name,modes direction){
-            this.lpos = liftPos;
-            this.apos = armPos;
-            this.wpos = wristPos;
-            this.name = Name;
+        private positions(double liftPos, double armPos, double wristPos,String posName,modes direction){
+            this.lPos = liftPos;
+            this.aPos = armPos;
+            this.wPos = wristPos;
+            this.name = posName;
             this.mode = direction;
         }
 
@@ -91,7 +91,7 @@ public class MasterControlProgram implements Subsystem {
     private Hashtable<DigitalInput, String> buttonMapping = new Hashtable<DigitalInput, String>();
     
 
-    private modes CurrentMode;
+    private modes currentMode;
     private modes liftState;
     private modes delays;
     private positions currentPosition;
@@ -155,7 +155,7 @@ public class MasterControlProgram implements Subsystem {
 
     @Override
     public void resetState() {
-        CurrentMode = modes.CUBE;
+        currentMode = modes.CUBE;
         currentPosition = positions.HOLDING;
         lastPosition = positions.HOLDING;
         posChanged = false;
@@ -170,15 +170,15 @@ public class MasterControlProgram implements Subsystem {
     @Override
     public void update() {
         if(posChanged && delays == modes.FREE){ //if pos has changed, update targets
-            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lpos > liftFlipPos || currentPosition.lpos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){
+            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lPos > liftFlipPos || currentPosition.lPos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){
                 liftHelper.goToPosition(liftFlipPos);
                 delays = modes.HOLDING_ARM;
             }
             else{
-                armHelper.goToPosition(currentPosition.apos);
-                wristHelper.goToPosition(currentPosition.wpos);
+                armHelper.goToPosition(currentPosition.aPos);
+                wristHelper.goToPosition(currentPosition.wPos);
                 if(liftState == modes.LIFT_AUTOMATIC){
-                    liftHelper.goToPosition(currentPosition.lpos);
+                    liftHelper.goToPosition(currentPosition.lPos);
                 }
                 else{
                     liftHelper.setSpeed(liftSpeed,false);
@@ -202,13 +202,13 @@ public class MasterControlProgram implements Subsystem {
 
         if(delays == modes.HOLDING_ARM){
             if(liftHelper.isReady()){ //if lift finished moving to position, move arm
-                armHelper.goToPosition(currentPosition.apos);
-                wristHelper.goToPosition(currentPosition.wpos);
+                armHelper.goToPosition(currentPosition.aPos);
+                wristHelper.goToPosition(currentPosition.wPos);
                 delays = modes.HOLDING_LIFT;
             }
         }
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
-            liftHelper.goToPosition(currentPosition.lpos);
+            liftHelper.goToPosition(currentPosition.lPos);
             delays = modes.FREE;
         }
         if(liftState == modes.LIFT_MANUAL){
@@ -232,10 +232,10 @@ public class MasterControlProgram implements Subsystem {
         //this next part is fun. 
         String positionQuery = "";
         boolean goalButton = (source == highGoal || source == midGoal || source == lowGoal);
-        if(CurrentMode == modes.CONE && goalButton){ //first, check whether CONE or CUBE. If no goal button pressed, mode does not matter.
+        if(currentMode == modes.CONE && goalButton){ //first, check whether CONE or CUBE. If no goal button pressed, mode does not matter.
             positionQuery += "CONE_";
         }
-        else if(CurrentMode == modes.CUBE && goalButton){
+        else if(currentMode == modes.CUBE && goalButton){
             positionQuery += "CUBE_";
         }
         positionQuery += (String) buttonMapping.get(source); //hopefully no error when returns null
@@ -272,7 +272,7 @@ public class MasterControlProgram implements Subsystem {
         if(Math.abs(liftManual.getValue())>liftDeadband){
             liftState = modes.LIFT_MANUAL;
             liftSpeed = liftManual.getValue()*liftSpeedFactor;
-            if(liftManual.getValue()<liftResetBound){
+            if(liftManual.getValue() < liftResetBound){
                 liftResetSignal = true;
             }
         }

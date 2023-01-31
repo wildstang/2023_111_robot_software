@@ -20,8 +20,8 @@ public class wrist {
     // states
     //double speed;
     //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
-    private WsSparkMax BaseMotor;
-    private AbsoluteEncoder Encoder;
+    private WsSparkMax baseMotor;
+    private AbsoluteEncoder encoder;
     //private int direction;
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
@@ -32,23 +32,23 @@ public class wrist {
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         position = minPosition;
-        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
-        Encoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
-        Encoder.setInverted(false); //or this stuff
-        Encoder.setPositionConversionFactor(360.0);
-        Encoder.setVelocityConversionFactor(360.0/60.0);
-        BaseMotor.initClosedLoop(ArmConstants.WRIST_P, ArmConstants.WRIST_I, ArmConstants.WRIST_D,0, this.Encoder);
-        BaseMotor.setCurrentLimit(ArmConstants.WRIST_CURRENT_LIMIT, ArmConstants.WRIST_CURRENT_LIMIT, 0);
+        baseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
+        encoder = baseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
+        encoder.setInverted(false); //or this stuff
+        encoder.setPositionConversionFactor(360.0);
+        encoder.setVelocityConversionFactor(360.0 / 60.0);
+        baseMotor.initClosedLoop(ArmConstants.WRIST_P, ArmConstants.WRIST_I, ArmConstants.WRIST_D, 0, this.encoder);
+        baseMotor.setCurrentLimit(ArmConstants.WRIST_CURRENT_LIMIT, ArmConstants.WRIST_CURRENT_LIMIT, 0);
         resetState();
     }
 
     public void stopMotor() {
-        BaseMotor.stop();
+        baseMotor.stop();
     }
 
     public void goToPosition(double pos) {
         if (pos > minPosition && pos < maxPosition) {
-            BaseMotor.setPosition(pos);
+            baseMotor.setPosition(pos);
             position = pos;
             SmartDashboard.putNumber("Wrist target", pos);
         } else {
@@ -57,12 +57,12 @@ public class wrist {
     }
     
     public double getPosition(){
-        return BaseMotor.getPosition();
+        return baseMotor.getPosition();
     }
     
     public boolean isReady(){
         SmartDashboard.putNumber("Wrist pos", position);
-        if(Math.abs(BaseMotor.getPosition()-position)<tolerance){
+        if(Math.abs(baseMotor.getPosition() - position) < tolerance){
             return true;
         }
         return false;
@@ -70,7 +70,7 @@ public class wrist {
 
     public void resetState() {
         position = minPosition;
-        BaseMotor.setPosition(position);
+        baseMotor.setPosition(position);
     }
 
     public String getName() {

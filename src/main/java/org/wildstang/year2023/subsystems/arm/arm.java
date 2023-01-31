@@ -21,8 +21,8 @@ public class arm {
     // states
     //double speed;
     //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
-    private WsSparkMax BaseMotor;
-    private AbsoluteEncoder Encoder;
+    private WsSparkMax baseMotor;
+    private AbsoluteEncoder encoder;
     //private int direction;
     //private double BaseSpeed = 5.5;
     private double position;
@@ -37,42 +37,42 @@ public class arm {
     private mode currentMode;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get()
-        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
-        Encoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
-        Encoder.setInverted(false); //or this stuff
-        Encoder.setPositionConversionFactor(360.0);
-        Encoder.setVelocityConversionFactor(360.0/60.0);
-        BaseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.Encoder);
-        BaseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
+        baseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
+        encoder = baseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
+        encoder.setInverted(false); //or this stuff
+        encoder.setPositionConversionFactor(360.0);
+        encoder.setVelocityConversionFactor(360.0 / 60.0);
+        baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
+        baseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
         resetState();
         
     }
 
     public void stopMotor() {
-        BaseMotor.stop();
+        baseMotor.stop();
     }
 
     public void goToPosition(double pos) {
-        if(pos<holdingPosition && currentMode == mode.EXTENDED){
+        if(pos < holdingPosition && currentMode == mode.EXTENDED){
             currentMode = mode.HOLDING;
-            BaseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.Encoder);
+            baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
         }
         else if(pos>holdingPosition && currentMode == mode.HOLDING){
             currentMode = mode.EXTENDED;
-            BaseMotor.initClosedLoop(ArmConstants.ARM_P_EXTENDED, ArmConstants.ARM_I_EXTENDED, ArmConstants.ARM_D_EXTENDED,0, this.Encoder);
+            baseMotor.initClosedLoop(ArmConstants.ARM_P_EXTENDED, ArmConstants.ARM_I_EXTENDED, ArmConstants.ARM_D_EXTENDED,0, this.encoder);
         }
-        BaseMotor.setPosition(pos);
+        baseMotor.setPosition(pos);
         position = pos;
         SmartDashboard.putNumber("Arm target", position);
     }
     
     public double getPosition(){
-        return BaseMotor.getPosition();
+        return baseMotor.getPosition();
     }
     
     public boolean isReady(){
-        SmartDashboard.putNumber("Arm pos", BaseMotor.getPosition());
-        if(Math.abs(BaseMotor.getPosition()-position)<tolerance){
+        SmartDashboard.putNumber("Arm pos", baseMotor.getPosition());
+        if(Math.abs(baseMotor.getPosition() - position) < tolerance){
             return true;
         }
         return false;
@@ -81,7 +81,7 @@ public class arm {
     public void resetState() {
         position = defaultPosition;
         currentMode = mode.HOLDING;
-        BaseMotor.setPosition(position);
+        baseMotor.setPosition(position);
     }
 
     public String getName() {
