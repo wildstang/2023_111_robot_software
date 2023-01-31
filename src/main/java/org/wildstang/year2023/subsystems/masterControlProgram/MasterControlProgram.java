@@ -7,6 +7,7 @@ import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 //import org.wildstang.hardware.roborio.outputs.WsPhoenix;
 import org.wildstang.year2023.robot.WSInputs;
+import org.wildstang.year2023.robot.WSSubsystems;
 //custom
 import org.wildstang.year2023.subsystems.arm.arm;
 import org.wildstang.year2023.subsystems.arm.lift;
@@ -43,6 +44,8 @@ public class MasterControlProgram implements Subsystem {
     private static final double liftResetBound = -0.9;
 
     private static final double liftFlipPos = 0;
+
+    private AimHelper AimHelper;
 
     private enum modes{
         CONE,
@@ -145,7 +148,7 @@ public class MasterControlProgram implements Subsystem {
         liftManual = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_JOYSTICK_Y); 
         liftManual.addInputListener(this);
 
-        AimHelper = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AimHelper);
+        AimHelper = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
 
         armHelper = new arm();
         liftHelper = new lift();
@@ -221,12 +224,12 @@ public class MasterControlProgram implements Subsystem {
     public void inputUpdate(Input source) { 
         //check for mode change
         if(coneMode.getValue()){ 
-            CurrentMode = modes.CONE;
-            AprilTag.changePipeline("reflective");
+            currentMode = modes.CONE;
+            AimHelper.changePipeline("reflective");
         }
         else if(cubeMode.getValue()){
-            CurrentMode = modes.CUBE;
-            AprilTag.changePipeline("AprilTag");
+            currentMode = modes.CUBE;
+            AimHelper.changePipeline("AprilTag");
         }
 
         //this next part is fun. 

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.wildstang.year2023.subsystems.swerve.DriveConstants;
 import org.wildstang.year2023.subsystems.swerve.WSSwerveHelper;
+import java.util.*;
 
 public class AimHelper implements Subsystem {
     
@@ -26,6 +27,7 @@ public class AimHelper implements Subsystem {
     private WsRemoteAnalogInput tv;
     private WsRemoteAnalogOutput ledModeEntry;
     private WsRemoteAnalogOutput llModeEntry;
+    private WsRemoteAnalogOutput PIPELINE;
 
     //private SwerveDrive swerve;
     private WSSwerveHelper helper;
@@ -65,7 +67,7 @@ public class AimHelper implements Subsystem {
     public void changePipeline(String pipelineString) {
         currentPipeline = pipelineStringToInt.get(pipelineString);
 
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
+        PIPELINE.setValue(currentPipeline);
     }
 
     public void calcTargetCoords() { //update target coords. 
@@ -171,6 +173,7 @@ public class AimHelper implements Subsystem {
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
         ledModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_LEDS.get();
         llModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_MODE.get();
+        PIPELINE = (WsRemoteAnalogOutput) WSOutputs.PIPELINE.get();
 
         helper = new WSSwerveHelper();
 

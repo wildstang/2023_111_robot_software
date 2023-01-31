@@ -70,6 +70,7 @@ public enum WSOutputs implements Outputs {
     // ********************************
     LL_MODE("camMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
     LL_LEDS("ledMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
+    PIPELINE("pipeline", new WsRemoteAnalogOutputConfig("limelight", 0)),
 
     // ********************************
     // Others ...
