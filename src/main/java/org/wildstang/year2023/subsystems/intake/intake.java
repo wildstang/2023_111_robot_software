@@ -54,10 +54,12 @@ public class intake implements Subsystem {
 
     @Override
     public void inputUpdate(Input source) {
-        if (ingest.getValue()>deadband) {
-            speed = ingestSpeed*ingest.getValue();
-        } else if (expel.getValue()>deadband) {
-            speed = expelSpeed*expel.getValue();
+    double in = Math.abs(ingest.getValue());
+    double out = Math.abs(expel.getValue());
+    if (in > deadband && in > out) {
+            speed = ingestSpeed * in;
+        } else if (out > deadband && out > in) {
+            speed = expelSpeed * out;
         } else {
             speed = 0;
         }
