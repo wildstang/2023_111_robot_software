@@ -11,6 +11,7 @@ import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.subsystems.arm.arm;
 import org.wildstang.year2023.subsystems.arm.lift;
 import org.wildstang.year2023.subsystems.arm.wrist;
+import org.wildstang.year2023.subsystems.targeting.AimHelper;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.*;
 
@@ -144,6 +145,8 @@ public class MasterControlProgram implements Subsystem {
         liftManual = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_JOYSTICK_Y); 
         liftManual.addInputListener(this);
 
+        AimHelper = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AimHelper);
+
         armHelper = new arm();
         liftHelper = new lift();
         wristHelper = new wrist();
@@ -219,9 +222,11 @@ public class MasterControlProgram implements Subsystem {
         //check for mode change
         if(coneMode.getValue()){ 
             CurrentMode = modes.CONE;
+            AprilTag.changePipeline("reflective");
         }
         else if(cubeMode.getValue()){
             CurrentMode = modes.CUBE;
+            AprilTag.changePipeline("AprilTag");
         }
 
         //this next part is fun. 
