@@ -28,9 +28,12 @@ public class intake implements Subsystem {
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeed = -1;
+    private static final double holdingSpeed = 0.1;
     private static final double deadband = 0.05;
 
     private double speed;
+
+    private boolean isHolding;
     @Override
     public void init() {
 
@@ -39,12 +42,13 @@ public class intake implements Subsystem {
         ingest.addInputListener(this);
         expel = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_TRIGGER);
         expel.addInputListener(this);
-        speed = 0;
+        resetState();
     }
 
     @Override
     public void resetState() {
         speed = 0;
+        isHolding = false;
     }
 
     @Override
@@ -58,10 +62,12 @@ public class intake implements Subsystem {
     double out = Math.abs(expel.getValue());
     if (in > deadband && in > out) {
             speed = ingestSpeed * in;
+            isHolding = true;
         } else if (out > deadband && out > in) {
             speed = expelSpeed * out;
+            isHolding = false;
         } else {
-            speed = 0;
+            speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
         }
     }
 
