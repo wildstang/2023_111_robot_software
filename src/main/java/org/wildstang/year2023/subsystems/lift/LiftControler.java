@@ -1,4 +1,4 @@
-package org.wildstang.framework.subsystems.lift;
+package org.wildstang.year2023.subsystems.lift;
 
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
@@ -15,6 +15,13 @@ import org.wildstang.year2023.robot.WSOutputs;
 
 import org.wildstang.year2023.subsystems.swerve.DriveConstants;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.sensors.CANCoder;
 
 
@@ -25,10 +32,13 @@ public class LiftControler implements Subsystem{
     //record encoder positiion
 
 
-    private DigitalInput up_input, down_input;
+    private DigitalInput up_input, down_input, SpeedUp, SpeedDown;
     private WsSparkMax liftDriver, liftFollower;//will only need the driver if WsOutputs is set correctly
     private int direction = 0;
+    private boolean toggle;
     private double liftSpeed = 5.0; //lets start this at 0.25
+    private ShuffleboardTab armTab;
+    private GenericEntry ArmPosEntry;
 
     @Override
     public void inputUpdate(Input source) {
@@ -36,13 +46,22 @@ public class LiftControler implements Subsystem{
         if (source == up_input && up_input.getValue()){
             direction = 1;
         }
-        //up or down only not both
         else if (source == down_input && down_input.getValue()){
             direction = -1;
-        }else if (!down_input.getValue() && !up_input.getValue()){
+        }else{
             //nether is on stop the lift
             direction = 0;
-        }//make this an else instead of else if. We want it to not move for all other cases
+        }
+
+        if (source == SpeedUp && SpeedUp.getValue() && !toggle){
+            liftSpeed += 0.05;
+            toggle = true;
+        }else if (source == SpeedDown && SpeedUp.getValue() && !toggle){
+            liftSpeed -= 0.05;
+            toggle = true;
+        }else {
+            toggle = false;
+        }
     }
 
     @Override
@@ -57,6 +76,15 @@ public class LiftControler implements Subsystem{
         up_input.addInputListener(this);
         down_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_DOWN);
         down_input.addInputListener(this);
+
+        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
+        SpeedUp.addInputListener(this);
+        up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_RIGHT);
+        up_input.addInputListener(this);
+        toggle = false;
+
+        armTab = Shuffleboard.getTab("Arm");
+        ArmPosEntry = armTab.add("Arm Position",0.0).getEntry();
     }
 
     @Override
@@ -73,10 +101,9 @@ public class LiftControler implements Subsystem{
             liftDriver.setSpeed(direction*liftSpeed);
         }else{
             liftDriver.stop();
-        }//Like the prototype arm, it's be nice to be able to modify liftSpeed with some buttons 
-        //instead of needing to push code every time
-
-        //also, let's put getPosition to shuffleboard
+        }
+        ArmPosEntry.setDouble(getPosition());
+        
     }
 
     @Override
