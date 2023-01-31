@@ -21,7 +21,7 @@ public class lift {
     //double speed;
     //private DigitalInput Rotate_Clockwise, Rotate_Counter_Clockwise;
     private WsSparkMax liftDriver;
-    private AbsoluteEncoder Encoder;
+    private AbsoluteEncoder encoder;
     //private int direction;
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
@@ -39,11 +39,11 @@ public class lift {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         currentMode = mode.HOLDING;
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
-        Encoder = liftDriver.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
-        Encoder.setInverted(false); //or this stuff
-        Encoder.setPositionConversionFactor(360.0);
-        Encoder.setVelocityConversionFactor(360.0/60.0);
-        liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+        encoder = liftDriver.getController().getAbsoluteEncoder(Type.kDutyCycle); //idk if this is actually right
+        encoder.setInverted(false); //or this stuff
+        encoder.setPositionConversionFactor(360.0);
+        encoder.setVelocityConversionFactor(360.0/60.0);
+        liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.encoder);
         liftDriver.setCurrentLimit(ArmConstants.LIFT_CURRENT_LIMIT, ArmConstants.LIFT_CURRENT_LIMIT, 0);
         resetState();
     }
@@ -54,14 +54,14 @@ public class lift {
 
     public void goToPosition(double pos) {
         if (pos > minPosition && pos < maxPosition) {
-            if(pos<holdingPosition && currentMode == mode.EXTENDED){
+            if(pos < holdingPosition && currentMode == mode.EXTENDED){
                 currentMode = mode.HOLDING;
-                liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+                liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.encoder);
                 //BaseMotor.setCurrentLimit(ArmConstants.LIFT_CURRENT_LIMIT, ArmConstants.LIFT_CURRENT_LIMIT, 0);
             }
-            else if(pos>holdingPosition && currentMode == mode.HOLDING){
+            else if(pos > holdingPosition && currentMode == mode.HOLDING){
                 currentMode = mode.EXTENDED;
-                liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.Encoder);
+                liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.encoder);
             }
             liftDriver.setPosition(pos);
             position = pos;
@@ -77,7 +77,7 @@ public class lift {
     
     public boolean isReady(){
         SmartDashboard.putNumber("Lift pos", position);
-        if(Math.abs(liftDriver.getPosition()-position)<tolerance){
+        if(Math.abs(liftDriver.getPosition() - position) < tolerance){
             return true;
         }
         return false;
@@ -89,11 +89,11 @@ public class lift {
     public void setSpeed(double speed, boolean useHoldingPID){
         if(useHoldingPID && currentMode == mode.EXTENDED){
             currentMode = mode.HOLDING;
-            liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.Encoder);
+            liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.encoder);
         }
         else if((!useHoldingPID) && currentMode == mode.HOLDING){
             currentMode = mode.EXTENDED;
-            liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.Encoder);
+            liftDriver.initClosedLoop(ArmConstants.LIFT_P_EXTENDED, ArmConstants.LIFT_I_EXTENDED, ArmConstants.LIFT_D_EXTENDED,0, this.encoder);
         }
         liftDriver.setSpeed(speed);
     }
