@@ -54,7 +54,8 @@ public class LimelightJsonGetter implements Subsystem {
     }
 
     private enum retroTape{
-        ObjectOne;
+        0;
+        
     
         double targetSize;
         double targetXCoord;
@@ -97,7 +98,7 @@ public class LimelightJsonGetter implements Subsystem {
 
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
             switch (currentPipeline){
-                    case 0:
+                    case 0: //retroTape
                     Iterator<Map.Entry> iterateResults = JSONDUMP.entrySet().iterator();
                         while (itr1.hasNext()) {
                             Map.Entry pair = itr1.next();
@@ -106,14 +107,29 @@ public class LimelightJsonGetter implements Subsystem {
 
                     Iterator iterateFiducialMarkers = JSONDUMP.iterator();
             
-
+                    private int i=0;
                     while (iterateFiducialMarkers.hasNext()) 
                     {
-                        iterateResults = ((Map) itr2.next()).entrySet().iterator();
+                        //int fID, double ta, double tx, double ty
+                        iterateResults = ((Map) itr2.next()).Retro().entrySet().iterator();
+                        
+                        private double[] = {0,0,0}
                         while (itr1.hasNext()) {
                             Map.Entry pair = iterateResults.next();
+                            switch (pair.getKey()){
+                                case "ta": double[1] = pair.getValue();
+                                    break;
+                                case "tx": double[2] = pair.getValue();
+                                    break;
+                                case "ty": double[3] = pair.getValue();
+                                    break;
+                                default: //Nothing there?
+                                    break;
+                            }
                             System.out.println(pair.getKey() + " : " + pair.getValue());
                         }
+                        retroTape i
+                        i++;
                     }
                     break;
                 case 1:
