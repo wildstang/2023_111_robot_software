@@ -44,8 +44,9 @@ public enum WSOutputs implements Outputs {
     DRIVE4("Module 4 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE4, true)),
     ANGLE4("Module 4 Angle Motor", new WsSparkMaxConfig(CANConstants.ANGLE4, true)),
     
-    LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.ANGLE1, true)),
-    LIFT_Follower("Lift Follower", new WsSparkMaxConfig(CANConstants.ANGLE1, true)),
+    LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.LIFT, true)),
+    LIFT_Follower("Lift Follower", new WsSparkMaxFollowerConfig("Lift Driver", CANConstants.LIFT_FOLLOWER, true, true)),
+    WRIST("Wrist", new WsSparkMaxConfig(CANConstants.WRIST, true)),
     //lets use WsSparkMaxFollowerConfig for the lift follower. Also, all caps LIFT_FOLLOWER
     // ---------------------------------
     // Servos

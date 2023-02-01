@@ -1,28 +1,16 @@
 package org.wildstang.year2023.subsystems.lift;
 
 import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
-import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.framework.core.Core;
 
-import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.year2023.robot.CANConstants;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 
-import org.wildstang.year2023.subsystems.swerve.DriveConstants;
-
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.sensors.CANCoder;
 
 
 //Please put this in the year2023.subsystems class, not in the framework
@@ -32,64 +20,57 @@ public class LiftControler implements Subsystem{
     //record encoder positiion
 
 
-    private DigitalInput up_input, down_input, SpeedUp, SpeedDown;
-    private WsSparkMax liftDriver, liftFollower;//will only need the driver if WsOutputs is set correctly
+    private DigitalInput up_input, down_input, SpeedUp, SpeedDown, start;
+    private WsSparkMax liftDriver;
     private int direction = 0;
-    private boolean toggle;
-    private double liftSpeed = 5.0; //lets start this at 0.25
-    private ShuffleboardTab armTab;
-    private GenericEntry ArmPosEntry;
+    private double liftSpeed = 0.25;
 
     @Override
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
-        if (source == up_input && up_input.getValue()){
+        if (up_input.getValue()){
             direction = 1;
         }
-        else if (source == down_input && down_input.getValue()){
+        else if (down_input.getValue()){
             direction = -1;
         }else{
             //nether is on stop the lift
             direction = 0;
         }
 
-        if (source == SpeedUp && SpeedUp.getValue() && !toggle){
+        if (source == SpeedUp && SpeedUp.getValue()){
             liftSpeed += 0.05;
-            toggle = true;
-        }else if (source == SpeedDown && SpeedUp.getValue() && !toggle){
+        }
+        if (source == SpeedDown && SpeedUp.getValue()){
             liftSpeed -= 0.05;
-            toggle = true;
-        }else {
-            toggle = false;
+        }
+        if (source == start && start.getValue()){
+            liftDriver.resetEncoder();
         }
     }
 
     @Override
     public void init() {
-        // TODO Auto-generated method stub
+        //DPAD up gives positive, down gives negative, right speeds up, left slows down
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
-        liftFollower = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_Follower);
-        liftFollower.getController().follow(liftDriver.getController(),true);
-        //lets call setCurrentLimit on the lift Driver, and again won't need the lift follower
+        liftDriver.setCurrentLimit(40, 40, 0);
 
-        up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_UP);
+        up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_UP);
         up_input.addInputListener(this);
-        down_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_DOWN);
+        down_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
         down_input.addInputListener(this);
 
-        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
+        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_RIGHT);
         SpeedUp.addInputListener(this);
-        up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_RIGHT);
-        up_input.addInputListener(this);
-        toggle = false;
+        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_LEFT);
+        SpeedDown.addInputListener(this);
 
-        armTab = Shuffleboard.getTab("Arm");
-        ArmPosEntry = armTab.add("Arm Position",0.0).getEntry();
+        start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
+        start.addInputListener(this);
     }
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
         
     }
 
@@ -102,25 +83,20 @@ public class LiftControler implements Subsystem{
         }else{
             liftDriver.stop();
         }
-        ArmPosEntry.setDouble(getPosition());
+        SmartDashboard.putNumber("Lift encoder", liftDriver.getPosition());
+        SmartDashboard.putNumber("Lift speed", liftSpeed);
         
     }
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
-        //I'd put something here
+        direction = 0;
+        liftSpeed = 0.25;
     }
 
     @Override
     public String getName() {
         // TODO Auto-generated method stub
-        return "Lift Controler";
-    }
-
-    //custom
-    public double getPosition(){
-        return liftDriver.getPosition();
-    }
-    
+        return "Lift";
+    }    
 }

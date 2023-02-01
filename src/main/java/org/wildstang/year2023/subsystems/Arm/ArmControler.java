@@ -2,27 +2,15 @@ package org.wildstang.year2023.subsystems.Arm;
 
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
-import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.framework.core.Core;
 
-import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.year2023.robot.CANConstants;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import org.wildstang.year2023.subsystems.swerve.DriveConstants;
-import org.wildstang.year2023.subsystems.swerve.SwerveModule;
-import org.wildstang.year2023.subsystems.swerve.WSSwerveHelper;
-
-import com.ctre.phoenix.sensors.CANCoder;
 
 
 
@@ -36,33 +24,28 @@ public class ArmControler implements Subsystem{
     
 
     private int TurnDirection;
-    private double BaseSpeed = 5.5;//let's make this 0.25 to start
-    private double EncodedPositition;
-    private boolean toggle;
+    private double BaseSpeed = 0.25;
 
 
 
     @Override
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
-        if (source == Rotate_Clockwise && Rotate_Clockwise.getValue()){
+        if (Rotate_Clockwise.getValue()){
             TurnDirection = 1;
         }
-        else if (source == Rotate_Counter_Clockwise && Rotate_Counter_Clockwise.getValue()){
+        else if (Rotate_Counter_Clockwise.getValue()){
             TurnDirection = -1;
         }
         else{
             TurnDirection = 0;
         }
 
-        if (source == SpeedUp && SpeedUp.getValue() && !toggle){
+        if (source == SpeedUp && SpeedUp.getValue()){
             BaseSpeed += 0.05;
-            toggle = true;
-        }else if (source == SpeedDown && SpeedUp.getValue() && !toggle){
+        }
+        if (source == SpeedDown && SpeedUp.getValue()){
             BaseSpeed -= 0.05;
-            toggle = true;
-        }else if (toggle){
-            toggle = false;
         }
         
     }
@@ -72,55 +55,45 @@ public class ArmControler implements Subsystem{
         // TODO Auto-generated method stub
 
         //***********exact imputs are tempeary*********
-        Rotate_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_RIGHT);
+        //A gives positive, Y gives negative, B speed up, X slow down
+        Rotate_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_DOWN);
         Rotate_Clockwise.addInputListener(this);
-        Rotate_Counter_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
+        Rotate_Counter_Clockwise = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_UP);
         Rotate_Counter_Clockwise.addInputListener(this);
-        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_UP);
+        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_RIGHT);
         SpeedUp.addInputListener(this);
-        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_DOWN);
+        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_LEFT);
         SpeedDown.addInputListener(this);
+
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
 
-        BaseMotor.setCurrentLimit(40,40,40);
-
-        toggle = false;
+        BaseMotor.setCurrentLimit(25,25,0);
     }
 
     @Override
-    public void selfTest() {
-        // TODO Auto-generated method stub
-        
+    public void selfTest() {        
     }
 
     @Override
     public void update() {
-        // TODO Auto-generated method stub
-
         //check to see if movement
         if (TurnDirection != 0){
             BaseMotor.setSpeed(BaseSpeed*TurnDirection);
         }else{
-            BaseMotor.setSpeed(0.0);
+            BaseMotor.stop();
         }
-
-        //update encoded value
-        EncodedPositition = BaseMotor.getPosition();
-        
+        SmartDashboard.putNumber("Arm Position", BaseMotor.getPosition());
+        SmartDashboard.putNumber("Arm Speed", BaseSpeed);
     }
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
         TurnDirection = 0;
-        EncodedPositition = 0;
-        BaseMotor.resetEncoder();
         
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return "Arm";
     }
     
