@@ -44,7 +44,7 @@ public class MasterControlProgram implements Subsystem {
     private static final double liftResetBound = -0.9;
 
     private static final double liftFlipPos = 0;
-
+    private static final double wristCarryPos = 0;
     private AimHelper AimHelper;
 
     private enum modes{
@@ -175,6 +175,7 @@ public class MasterControlProgram implements Subsystem {
         if(posChanged && delays == modes.FREE){ //if pos has changed, update targets
             if(lastPosition.mode != currentPosition.mode &&(lastPosition.lPos > liftFlipPos || currentPosition.lPos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){
                 liftHelper.goToPosition(liftFlipPos);
+                wristHelper.goToPosition(wristCarryPos);
                 delays = modes.HOLDING_ARM;
             }
             else{
@@ -206,12 +207,12 @@ public class MasterControlProgram implements Subsystem {
         if(delays == modes.HOLDING_ARM){
             if(liftHelper.isReady()){ //if lift finished moving to position, move arm
                 armHelper.goToPosition(currentPosition.aPos);
-                wristHelper.goToPosition(currentPosition.wPos);
                 delays = modes.HOLDING_LIFT;
             }
         }
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
             liftHelper.goToPosition(currentPosition.lPos);
+            wristHelper.goToPosition(currentPosition.wPos);
             delays = modes.FREE;
         }
         if(liftState == modes.LIFT_MANUAL){
