@@ -54,8 +54,19 @@ public class AimHelper implements Subsystem {
     private double angleFactor = 15;
     public static double FenderDistance = 60;
 
+    private int currentPipeline;
+    private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
+        put("aprilTag", 0);
+        put("reflective", 1);
+    }};
+
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
+    public void changePipeline(String pipelineString) {
+        currentPipeline = pipelineStringToInt.get(pipelineString);
+
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
+    }
 
     public void calcTargetCoords() { //update target coords. 
         if(tv.getValue() == 1) {

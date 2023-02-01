@@ -1,15 +1,17 @@
 package org.wildstang.year2023.subsystems.targeting;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
+import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
+import org.wildstang.year2023.robot.WSInputs;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -25,6 +27,7 @@ public class LimelightJsonGetter implements Subsystem {
     private String currentObjectString;
     private JSONParser parser;
     private JSONObject currentObject;
+    private WsRemoteAnalogInput JSONDUMP;
 
     //pipeline
     private int currentPipeline;
@@ -35,6 +38,7 @@ public class LimelightJsonGetter implements Subsystem {
 
     @Override
     public void init() {
+        JSONDUMP = (WsRemoteAnalogInput) WSInputs.JSONDUMP.get();
 
         //create parser
         this.parser = new JSONParser();
@@ -43,6 +47,7 @@ public class LimelightJsonGetter implements Subsystem {
         //just repeated here as well to decrease the amount of time we have to wait to get access to the data.
 
         //get json string
+
         this.latestFetch = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
 
         //if the string is null do not save it as the one we are parsing
@@ -53,7 +58,77 @@ public class LimelightJsonGetter implements Subsystem {
 
         //parse the string
         try {
+
+            switch (currentPipeline) {
+
+                case 0: { //retroTape
+
+                    Iterator<Map.Entry<String, Double>> iterateResults = JSONDUMP.entrySet().iterator();
+
+                    while (itr1.hasNext()) {
+                        Map.Entry pair = itr1.next();
+                        System.out.println(pair.getKey() + " : " + pair.getValue());
+                    }
+
+                    Iterator<Map.Entry<String, Double>> iterateFiducialMarkers = JSONDUMP.iterator();
+
+                    int i = 0;
+
+                    while (iterateFiducialMarkers.hasNext()) {
+
+                        //int fID, double ta, double tx, double ty
+                        iterateResults = ((Map) itr2.next()).Retro().entrySet().iterator();
+
+                        double[] doubleArray = {0,0,0};
+
+                        while (itr1.hasNext()) {
+
+                            Map.Entry<String, Double> pair = iterateResults.next();
+
+                            switch (pair.getKey()) {
+
+                                case "ta": {
+                                    doubleArray[1] = pair.getValue();
+                                    break;
+                                }
+
+                                case "tx": {
+                                    doubleArray[2] = pair.getValue();
+                                    break;
+                                }
+
+                                case "ty": {
+                                    doubleArray[3] = pair.getValue();
+                                    break;
+                                }
+
+                                default: { //Nothing there?
+                                    break;
+                                }
+                            }
+
+                            System.out.println(pair.getKey() + " : " + pair.getValue());
+
+                        }
+
+                        i++;
+
+                    }
+
+                    break;
+
+                }
+
+                case 1: {
+
+                    break;
+
+                }
+
+            }
+
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
+
         } catch (ParseException e) { //if ParseException does occur then <do something>
             e.printStackTrace();
         }
@@ -136,9 +211,9 @@ public class LimelightJsonGetter implements Subsystem {
     }
 
     public void changePipeline(String pipelineString) {
-        this.currentPipeline = pipelineStringToInt.get(pipelineString);
+        currentPipeline = pipelineStringToInt.get(pipelineString);
 
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(this.currentPipeline);
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
     }
 
     @Override
