@@ -188,10 +188,13 @@ public class MasterControlProgram implements Subsystem {
                     liftHelper.setSpeed(liftSpeed,false);
                 }
             }
+            posChanged = false;
         }
         else if (posChanged){ //if flip manuver inturrpted, act as though flipping out of precaution. this might need fixing if it causes a problem.
             liftHelper.goToPosition(liftFlipPos);
+            wristHelper.goToPosition(wristCarryPos);
             delays = modes.HOLDING_ARM;
+            posChanged = false;
         }
         if(liftResetSignal == true){
             liftHelper.resetEncoder();
