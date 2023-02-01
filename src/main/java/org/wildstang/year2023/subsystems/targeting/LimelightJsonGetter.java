@@ -121,8 +121,8 @@ public class LimelightJsonGetter implements Subsystem {
 
     }
 
-    /** Gets the value of a key whose value is a double
-     * WILL NOT work on keys whose value is a JSONArray
+    /** Gets the value of a key whose value is a double.
+     * WILL NOT work on keys whose value is a JSONArray.
      * @param key The key of the value you would like to retrieve
      */
     public double getDoubleProperty(String key) {
