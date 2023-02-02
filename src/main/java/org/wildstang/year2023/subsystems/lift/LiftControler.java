@@ -23,7 +23,7 @@ public class LiftControler implements Subsystem{
     private DigitalInput up_input, down_input, SpeedUp, SpeedDown, start;
     private WsSparkMax liftDriver;
     private int direction = 0;
-    private double liftSpeed = 0.25;
+    private double liftSpeed = 0.5;
 
     @Override
     public void inputUpdate(Input source) {
@@ -41,7 +41,7 @@ public class LiftControler implements Subsystem{
         if (source == SpeedUp && SpeedUp.getValue()){
             liftSpeed += 0.05;
         }
-        if (source == SpeedDown && SpeedUp.getValue()){
+        if (source == SpeedDown && SpeedDown.getValue()){
             liftSpeed -= 0.05;
         }
         if (source == start && start.getValue()){
@@ -53,6 +53,7 @@ public class LiftControler implements Subsystem{
     public void init() {
         //DPAD up gives positive, down gives negative, right speeds up, left slows down
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
+        liftDriver.setBrake();
         liftDriver.setCurrentLimit(40, 40, 0);
 
         up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_UP);

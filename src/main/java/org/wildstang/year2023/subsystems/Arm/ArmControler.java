@@ -45,7 +45,7 @@ public class ArmControler implements Subsystem{
         if (source == SpeedUp && SpeedUp.getValue()){
             BaseSpeed += 0.05;
         }
-        if (source == SpeedDown && SpeedUp.getValue()){
+        if (source == SpeedDown && SpeedDown.getValue()){
             BaseSpeed -= 0.05;
         }
         
@@ -70,8 +70,9 @@ public class ArmControler implements Subsystem{
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
+        BaseMotor.setBrake();
 
-        BaseMotor.setCurrentLimit(25,25,0);
+        BaseMotor.setCurrentLimit(40,40,0);
     }
 
     @Override

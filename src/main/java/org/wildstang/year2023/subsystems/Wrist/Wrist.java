@@ -28,7 +28,7 @@ public class Wrist implements Subsystem{
     
 
     private int TurnDirection;
-    private double BaseSpeed = 0.25;
+    private double BaseSpeed = 0.5;
 
 
 
@@ -62,8 +62,9 @@ public class Wrist implements Subsystem{
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
-
-        BaseMotor.setCurrentLimit(10,10,0);
+        
+        BaseMotor.setBrake();
+        BaseMotor.setCurrentLimit(15,15,0);
     }
 
     @Override

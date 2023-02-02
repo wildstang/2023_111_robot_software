@@ -28,7 +28,7 @@ public class intake implements Subsystem {
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeed = -1;
-    private static final double holdingSpeed = 0.1;
+    private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
 
     private double speed, in, out;
