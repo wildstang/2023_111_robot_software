@@ -3,6 +3,7 @@ package org.wildstang.year2023.robot;
 import org.wildstang.framework.core.Subsystems;
 import org.wildstang.year2023.subsystems.SampleSubsystem;
 import org.wildstang.year2023.subsystems.Arm.ArmControler;
+import org.wildstang.year2023.subsystems.Wrist.Wrist;
 import org.wildstang.year2023.subsystems.lift.LiftControler;
 import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
@@ -18,6 +19,7 @@ public enum WSSubsystems implements Subsystems {
     LIFT("Lift", LiftControler.class),
     ARM("Arm", ArmControler.class),
     //AIM_HELPER("Aim Helper", AimHelper.class),
+    WRIST("Wrist", Wrist.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
 

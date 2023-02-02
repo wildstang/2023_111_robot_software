@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.Arm;
+package org.wildstang.year2023.subsystems.Wrist;
 
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
@@ -17,9 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 
-public class ArmControler implements Subsystem{
+public class Wrist implements Subsystem{
+    //Things it does rn
+    //rotate base clockwise and counter clockwise
+    //track positition
 
-    private DigitalInput Rotate_Positive, Rotate_Negative,SpeedUp,SpeedDown;
+    private DigitalInput Rotate_Positive, Rotate_Negative;
     private WsSparkMax BaseMotor;
     private AbsoluteEncoder absEncoder;
     
@@ -41,13 +44,6 @@ public class ArmControler implements Subsystem{
         else{
             TurnDirection = 0;
         }
-
-        if (source == SpeedUp && SpeedUp.getValue()){
-            BaseSpeed += 0.05;
-        }
-        if (source == SpeedDown && SpeedUp.getValue()){
-            BaseSpeed -= 0.05;
-        }
         
     }
 
@@ -56,22 +52,18 @@ public class ArmControler implements Subsystem{
         // TODO Auto-generated method stub
 
         //***********exact imputs are tempeary*********
-        //Y gives positive, A gives negative, B speed up, X slow down
-        Rotate_Positive = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_UP);
+        //A gives positive, Y gives negative, B speed up, X slow down
+        Rotate_Positive = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
         Rotate_Positive.addInputListener(this);
-        Rotate_Negative = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_DOWN);
+        Rotate_Negative = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_SHOULDER);
         Rotate_Negative.addInputListener(this);
-        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_RIGHT);
-        SpeedUp.addInputListener(this);
-        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_LEFT);
-        SpeedDown.addInputListener(this);
 
-        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
+        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
 
-        BaseMotor.setCurrentLimit(25,25,0);
+        BaseMotor.setCurrentLimit(10,10,0);
     }
 
     @Override
@@ -86,8 +78,8 @@ public class ArmControler implements Subsystem{
         }else{
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Arm Position", BaseMotor.getPosition());
-        SmartDashboard.putNumber("Arm Speed", BaseSpeed);
+        SmartDashboard.putNumber("Wrist Position", BaseMotor.getPosition());
+        SmartDashboard.putNumber("Wrist Speed", BaseSpeed);
     }
 
     @Override
@@ -98,7 +90,7 @@ public class ArmControler implements Subsystem{
 
     @Override
     public String getName() {
-        return "Arm";
+        return "Wrist";
     }
     
 }
