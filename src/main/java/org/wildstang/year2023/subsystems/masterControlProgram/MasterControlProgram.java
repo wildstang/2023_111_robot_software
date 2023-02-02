@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.masterControlProgram;
+package org.wildstang.year2023.subsystems.mastercontrolprogram;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
