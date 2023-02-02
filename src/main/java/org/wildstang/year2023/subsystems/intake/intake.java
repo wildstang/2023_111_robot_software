@@ -29,15 +29,16 @@ public class intake implements Subsystem {
     private static final double ingestSpeed = 1;
     private static final double expelSpeed = -1;
     private static final double holdingSpeed = 0.1;
-    private static final double deadband = 0.05;
+    private static final double deadband = 0.1;
 
-    private double speed;
+    private double speed, in, out;
 
     private boolean isHolding;
     @Override
     public void init() {
 
         intakeMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.INTAKE_MOTOR);
+        intakeMotor.setCurrentLimit(40, 40, 0);
         ingest = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_TRIGGER);
         ingest.addInputListener(this);
         expel = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_TRIGGER);
@@ -58,9 +59,9 @@ public class intake implements Subsystem {
 
     @Override
     public void inputUpdate(Input source) {
-    double in = Math.abs(ingest.getValue());
-    double out = Math.abs(expel.getValue());
-    if (in > deadband && in > out) {
+        in = Math.abs(ingest.getValue());
+        out = Math.abs(expel.getValue());
+        if (in > deadband && in >= out) {
             speed = ingestSpeed * in;
             isHolding = true;
         } else if (out > deadband && out > in) {
