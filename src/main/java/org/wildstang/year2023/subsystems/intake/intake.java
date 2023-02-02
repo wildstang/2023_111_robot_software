@@ -14,8 +14,10 @@ import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSOutputs;
 
 /**
- * Sample Subsystem that controls a motor with a joystick.
- * @author Liam
+ * Conrols intake motor with two triggers. Speed proportional to amount trigger is pressed.
+ * @author jwannebo3524
+ * @author dimwitt
+ * @author dimwitt71
  */
 public class intake implements Subsystem {
     // inputs
@@ -60,10 +62,10 @@ public class intake implements Subsystem {
     public void inputUpdate(Input source) {
     double in = Math.abs(ingest.getValue());
     double out = Math.abs(expel.getValue());
-    if (in > deadband && in > out) {
+    if (in > deadband && in >= out) {
             speed = ingestSpeed * in;
             isHolding = true;
-        } else if (out > deadband && out > in) {
+        } else if (out > deadband && out >= in) {
             speed = expelSpeed * out;
             isHolding = false;
         } else {
