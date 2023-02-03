@@ -4,6 +4,10 @@ package org.wildstang.year2023.subsystems.targeting;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
 import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.AnalogInput;
@@ -12,6 +16,7 @@ import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,7 +25,7 @@ import org.wildstang.year2023.subsystems.swerve.DriveConstants;
 import org.wildstang.year2023.subsystems.swerve.WSSwerveHelper;
 
 public class AimHelper implements Subsystem {
-    
+
     private WsRemoteAnalogInput ty; // y angle
     private WsRemoteAnalogInput tx; // x angle
     private WsRemoteAnalogInput tv;
@@ -29,7 +34,7 @@ public class AimHelper implements Subsystem {
 
     //private SwerveDrive swerve;
     private WSSwerveHelper helper;
-    
+
     public double x;
     public double y;
 
@@ -54,12 +59,23 @@ public class AimHelper implements Subsystem {
     private double angleFactor = 15;
     public static double FenderDistance = 60;
 
+    private int currentPipeline;
+    private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
+        put("aprilTag", 0);
+        put("reflective", 1);
+    }};
+
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
+    public void changePipeline(String pipelineString) {
+        currentPipeline = pipelineStringToInt.get(pipelineString);
 
-    public void calcTargetCoords() { //update target coords. 
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
+    }
+
+    public void calcTargetCoords() { //update target coords.
         if(tv.getValue() == 1) {
-            x = tx.getValue(); 
+            x = tx.getValue();
             y = ty.getValue();
             TargetInView = true;
         }
@@ -129,7 +145,7 @@ public class AimHelper implements Subsystem {
         else
         {
             // always on
-            ledState = true; 
+            ledState = true;
         }
         if (source == dup && dup.getValue()) {
             modifier++;
@@ -177,7 +193,7 @@ public class AimHelper implements Subsystem {
     }
 
     @Override
-    public void selfTest() {        
+    public void selfTest() {
     }
 
     @Override
@@ -186,7 +202,7 @@ public class AimHelper implements Subsystem {
         calcTargetCoords();
         //distanceFactor = distance.getEntry().getDouble(0);
         //angleFactor = angle.getEntry().getDouble(0);
-        SmartDashboard.putNumber("limelight distance", getDistance()); 
+        SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
@@ -209,5 +225,5 @@ public class AimHelper implements Subsystem {
     @Override
     public String getName() {
         return "Aim Helper";
-    }  
+    }
 }
