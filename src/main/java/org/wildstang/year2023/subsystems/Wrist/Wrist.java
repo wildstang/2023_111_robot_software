@@ -62,6 +62,7 @@ public class Wrist implements Subsystem{
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
+        BaseMotor.getController().getPIDController().setFeedbackDevice(absEncoder);
         
         BaseMotor.setBrake();
         BaseMotor.setCurrentLimit(15,15,0);
@@ -79,7 +80,7 @@ public class Wrist implements Subsystem{
         }else{
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Wrist Position", BaseMotor.getPosition());
+        SmartDashboard.putNumber("Wrist Position", (BaseMotor.getPosition()+360.0)%360);
         SmartDashboard.putNumber("Wrist Speed", BaseSpeed);
     }
 

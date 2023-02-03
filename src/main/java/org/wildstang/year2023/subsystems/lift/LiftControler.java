@@ -20,10 +20,12 @@ public class LiftControler implements Subsystem{
     //record encoder positiion
 
 
-    private DigitalInput up_input, down_input, SpeedUp, SpeedDown, start;
+    private DigitalInput up_input, down_input, SpeedUp, SpeedDown, select;
     private WsSparkMax liftDriver;
     private int direction = 0;
-    private double liftSpeed = 0.5;
+    private double liftSpeed = 1.0;
+    private double holdingSpeed = 0.1;
+    private boolean holding;
 
     @Override
     public void inputUpdate(Input source) {
@@ -39,13 +41,13 @@ public class LiftControler implements Subsystem{
         }
 
         if (source == SpeedUp && SpeedUp.getValue()){
-            liftSpeed += 0.05;
+            holdingSpeed += 0.01;
         }
         if (source == SpeedDown && SpeedDown.getValue()){
-            liftSpeed -= 0.05;
+            holdingSpeed -= 0.01;
         }
-        if (source == start && start.getValue()){
-            liftDriver.resetEncoder();
+        if (source == select && select.getValue()){
+            holding = !holding;
         }
     }
 
@@ -66,8 +68,10 @@ public class LiftControler implements Subsystem{
         SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_LEFT);
         SpeedDown.addInputListener(this);
 
-        start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
-        start.addInputListener(this);
+        select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
+        select.addInputListener(this);
+
+        holding = false;
     }
 
     @Override
@@ -81,18 +85,23 @@ public class LiftControler implements Subsystem{
         //up and down
         if (direction != 0){
             liftDriver.setSpeed(direction*liftSpeed);
-        }else{
+        } else if (holding){
+            liftDriver.setSpeed(holdingSpeed);
+        } else {
             liftDriver.stop();
         }
         SmartDashboard.putNumber("Lift encoder", liftDriver.getPosition());
         SmartDashboard.putNumber("Lift speed", liftSpeed);
-        
+        SmartDashboard.putBoolean("isHolding", holding);
+        SmartDashboard.putNumber("holding speed", holdingSpeed);
     }
 
     @Override
     public void resetState() {
         direction = 0;
-        liftSpeed = 0.25;
+        liftSpeed = 1.0;
+        holdingSpeed = 0.1;
+        holding = false;
     }
 
     @Override

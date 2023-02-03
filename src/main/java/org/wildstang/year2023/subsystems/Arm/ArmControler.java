@@ -25,7 +25,9 @@ public class ArmControler implements Subsystem{
     
 
     private int TurnDirection;
-    private double BaseSpeed = 0.25;
+    private int slowDirection;
+    private double BaseSpeed = 1.0;
+    private double slowSpeed = 0.25;
 
 
 
@@ -42,11 +44,12 @@ public class ArmControler implements Subsystem{
             TurnDirection = 0;
         }
 
-        if (source == SpeedUp && SpeedUp.getValue()){
-            BaseSpeed += 0.05;
-        }
-        if (source == SpeedDown && SpeedDown.getValue()){
-            BaseSpeed -= 0.05;
+        if (SpeedUp.getValue()){
+            slowDirection = 1;
+        } else if (SpeedDown.getValue()){
+            slowDirection = -1;
+        } else {
+            slowDirection = 0;
         }
         
     }
@@ -70,6 +73,7 @@ public class ArmControler implements Subsystem{
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
+        BaseMotor.getController().getPIDController().setFeedbackDevice(absEncoder);
         BaseMotor.setBrake();
 
         BaseMotor.setCurrentLimit(40,40,0);
@@ -84,17 +88,19 @@ public class ArmControler implements Subsystem{
         //check to see if movement
         if (TurnDirection != 0){
             BaseMotor.setSpeed(BaseSpeed*TurnDirection);
-        }else{
+        }else if (slowDirection != 0){
+            BaseMotor.setSpeed(slowSpeed*slowDirection);
+        } else {
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Arm Position", BaseMotor.getPosition());
+        SmartDashboard.putNumber("Arm Position", (BaseMotor.getPosition()+360.0)%360);
         SmartDashboard.putNumber("Arm Speed", BaseSpeed);
     }
 
     @Override
     public void resetState() {
         TurnDirection = 0;
-        
+        slowDirection = 0;
     }
 
     @Override
