@@ -233,5 +233,14 @@ public class LimelightJsonGetter implements Subsystem {
     }
 
     @Override
-    public void selfTest() {}
+    public void selfTest() {
+        System.out.println("--Test grab of Limelight data from JSON--");
+        System.out.println();
+        System.out.println("* Full JSON Dump:");
+        System.out.println(this.currentObjectString);
+        System.out.println("* Tx, Ty, & Ta:");
+        System.out.println(getDoubleProperty("tx"));
+        System.out.println(getDoubleProperty("ty"));
+        System.out.println(getDoubleProperty("ta"));
+    }
 }
