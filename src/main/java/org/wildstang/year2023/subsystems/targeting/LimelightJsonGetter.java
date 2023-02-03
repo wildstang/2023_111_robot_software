@@ -47,7 +47,6 @@ public class LimelightJsonGetter implements Subsystem {
         //just repeated here as well to decrease the amount of time we have to wait to get access to the data.
 
         //get json string
-
         this.latestFetch = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
 
         //if the string is null do not save it as the one we are parsing
@@ -56,6 +55,7 @@ public class LimelightJsonGetter implements Subsystem {
             this.currentObjectString = latestFetch;
         }
 
+        /*
         //parse the string
         try {
 
@@ -130,6 +130,14 @@ public class LimelightJsonGetter implements Subsystem {
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
 
         } catch (ParseException e) { //if ParseException does occur then <do something>
+            e.printStackTrace();
+        }
+        */
+
+        //parse the string
+        try {
+            this.currentObject = (JSONObject) parser.parse(currentObjectString);
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
