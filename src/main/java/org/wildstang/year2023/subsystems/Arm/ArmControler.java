@@ -87,14 +87,26 @@ public class ArmControler implements Subsystem{
     public void update() {
         //check to see if movement
         if (TurnDirection != 0){
-            BaseMotor.setSpeed(BaseSpeed*TurnDirection);
+            //BaseMotor.setSpeed(BaseSpeed*TurnDirection);
+            if (TurnDirection<0 && getPosition() <= 180.0){
+                BaseMotor.setSpeed(-0.2);
+            } else if (TurnDirection>0 && getPosition() >= 180.0){
+                BaseMotor.setSpeed(0.2);
+            } else if (TurnDirection<0 && getPosition() >= 180.0){
+                BaseMotor.setSpeed(-0.2 - 0.8 * (-Math.toDegrees(Math.sin(getPosition()))));
+            } else {
+                BaseMotor.setSpeed(0.2 + 0.8 * (Math.toDegrees(Math.sin(getPosition()))));
+            }
         }else if (slowDirection != 0){
             BaseMotor.setSpeed(slowSpeed*slowDirection);
         } else {
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Arm Position", (absEncoder.getPosition()+360.0)%360);
+        SmartDashboard.putNumber("Arm Position*", getPosition());
         SmartDashboard.putNumber("Arm Speed", BaseSpeed);
+    }
+    public double getPosition(){
+        return (absEncoder.getPosition()+180.0)%360;
     }
 
     @Override
