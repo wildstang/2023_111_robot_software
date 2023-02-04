@@ -6,33 +6,31 @@ import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.mastercontrolprogram.MasterControlProgram;
 import org.wildstang.year2023.subsystems.intake.Intake;
 
-public class IntakeStep extends AutoStep {
+public class MasterControlProgramStep extends AutoStep {
     private MasterControlProgram MasterControlProgram;
-    private Intake Intake;
 
-    private double intakeSpeed;
-    private double intakePosition;
+    private String MCPPosition;
 
     /** Set Intake Speed
      * 
      */
-    public IntakeStep(double speed){
-        this.intakeSpeed = speed;
+    public MasterControlProgramStep(String position){
+        this.MCPPosition = position;
     }
 
     @Override
     public void update(){
-        Intake.intakeObject(intakeSpeed);
+        MasterControlProgram.goToPosition(MCPPosition);
         this.setFinished(true);
     }
     
     @Override
     public String toString() {
-        return "Intake Step";
+        return "Master Control Program Step";
     }
     
     @Override
     public void initialize(){
-        Intake = (Intake) Core.getSubsystemManager().getSubsystem(WSSubsystems.INTAKE);
+        MasterControlProgram = (MasterControlProgram) Core.getSubsystemManager().getSubsystem(WSSubsystems.MASTER_CONTROL_PROGRAM);
     }
 }

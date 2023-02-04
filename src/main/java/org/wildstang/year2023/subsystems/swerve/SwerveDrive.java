@@ -66,7 +66,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     //private AimHelper limelight;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    public enum driveType {TELEOP, AUTO, CROSS, LL, AUTOBALANCE};
     public driveType driveState;
 
     @Override
@@ -320,6 +320,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void setToAuto() {
         driveState = driveType.AUTO;
         resetDriveEncoders();
+    }
+
+    public void setToAutoBalance() {
+        driveState = driveType.AUTOBALANCE;
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */
