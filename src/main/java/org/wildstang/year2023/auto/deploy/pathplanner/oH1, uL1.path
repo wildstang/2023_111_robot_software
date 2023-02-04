@@ -1,0 +1,91 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.922471915119269,
+        "y": 5.060046611321293
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.922471915119269,
+        "y": 5.060046611321293
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Score Cone High"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.54728642790619,
+        "y": 4.597565160042601
+      },
+      "prevControl": {
+        "x": 5.767415745357806,
+        "y": 4.597565160042601
+      },
+      "nextControl": {
+        "x": 5.767415745357806,
+        "y": 4.597565160042601
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "Grab Cube"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8680623326158936,
+        "y": 4.425268148781912
+      },
+      "prevControl": {
+        "x": 2.3758851026473984,
+        "y": 4.425268148781912
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Score Cube Low"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": null,
+  "maxAcceleration": null,
+  "isReversed": true,
+  "markers": [
+    {
+      "position": 1.3636363636363629,
+      "names": [
+        "event",
+        "Arm to Low Score"
+      ]
+    }
+  ]
+}

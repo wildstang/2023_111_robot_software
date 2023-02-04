@@ -17,7 +17,7 @@ import org.wildstang.year2023.robot.WSOutputs;
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
  */
-public class intake implements Subsystem {
+public class Intake implements Subsystem {
     // inputs
 
     // outputs
@@ -65,6 +65,20 @@ public class intake implements Subsystem {
             speed = ingestSpeed * in;
             isHolding = true;
         } else if (out > deadband && out > in) {
+            speed = expelSpeed * out;
+            isHolding = false;
+        } else {
+            speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
+        }
+    }
+
+    public void intakeObject(double intakeSpeed){
+        in = Math.abs(intakeSpeed);
+        out = Math.abs(intakeSpeed);
+        if (in > deadband && in >= out && intakeSpeed > 0) {
+            speed = ingestSpeed * in;
+            isHolding = true;
+        } else if (out > deadband && out > in&& intakeSpeed < 0) {
             speed = expelSpeed * out;
             isHolding = false;
         } else {

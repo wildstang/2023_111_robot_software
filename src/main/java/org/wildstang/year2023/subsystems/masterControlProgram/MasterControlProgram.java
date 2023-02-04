@@ -289,7 +289,7 @@ public class MasterControlProgram implements Subsystem {
 
     }
 
-    public void goToPosition(string positionQuery){
+    public void goToPosition(String positionQuery){
         if(!(positionQuery == oldQuery)){
             boolean found = false;
             for (positions position : positions.values()) {  //find the position with the queried name
