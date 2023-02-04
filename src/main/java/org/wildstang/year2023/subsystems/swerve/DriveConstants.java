@@ -7,7 +7,7 @@ public final class DriveConstants {
     /** robot width from swerve pod to swerve pod, in inches */
     public static final double ROBOT_WIDTH = 11.5;
     /**speed with which the robot rotates relative to drive speed */
-    public static final double ROTATION_SPEED = 0.65;
+    public static final double ROTATION_SPEED = 0.50;
     /**drive motor gear ratio */
     public static final double DRIVE_RATIO = (45*22)/(15*14);
     /**angle motor gear ratio */
@@ -23,7 +23,7 @@ public final class DriveConstants {
     /**offset of module 4, the rear right module, in degrees */
     public static final double REAR_RIGHT_OFFSET = 90;
     /**deadband of the controller's joysticks */
-    public static final double DEADBAND = 0.15;
+    public static final double DEADBAND = 0.05;
     /**factor of thrust for the drive trigger */
     public static final double DRIVE_THRUST = 0.4;
     /**slew rate limiter rates of limit for the drive

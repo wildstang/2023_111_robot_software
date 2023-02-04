@@ -20,8 +20,8 @@ public class Arm {
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.ARM_ENCODER_DIRECTION);
         absEncoder.setZeroOffset(29.3);//54
-        motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder);
-        motor.setCurrentLimit(40, 40, 0);
+        motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder, false);
+        motor.setCurrentLimit(30, 30, 0);
     }
     public double getPosition(){
         return (absEncoder.getPosition())%360;

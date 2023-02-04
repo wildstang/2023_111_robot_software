@@ -2,14 +2,14 @@ package org.wildstang.year2023.subsystems.superstructure;
 
 public enum SuperPos {
 
-    SCORE_HIGH(50,270,135,50,270,135,true),
-    SCORE_MID(20,270,135,20,270,135,true),
+    SCORE_HIGH(72,240,55,72,240,55,true),
+    SCORE_MID(40,225,45,40,225,45,true),
     SCORE_LOW(0,270,135,0,270,135,true),
     NEUTRAL(0,180,180,0,180,180,false),
-    INTAKE_FRONT(0,270,45,0,270,45,true),
-    INTAKE_FRONT_LOW(0,270,45,0,270,45,true),
+    INTAKE_FRONT(10,270,50,0,270,50,true),
+    INTAKE_FRONT_LOW(0,275,55,0,270,50,true),
     HP_STATION_FRONT(0,180,90,0,180,90,true),
-    HP_STATION_BACK(0,180,270,0,180,270,false),
+    HP_STATION_BACK(40,140,310,40,140,310,false),
     INTAKE_BACK(0,90,270,0,90,270,false);
 
     public final double cubeL;

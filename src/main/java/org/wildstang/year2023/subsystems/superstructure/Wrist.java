@@ -18,7 +18,7 @@ public class Wrist {
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.WRIST_ENCODER_DIRECTION);
         absEncoder.setZeroOffset(206.7);//310
-        motor.initClosedLoop(SuperConts.WRIST_P, SuperConts.WRIST_I, SuperConts.WRIST_D, 0, absEncoder);
+        motor.initClosedLoop(SuperConts.WRIST_P, SuperConts.WRIST_I, SuperConts.WRIST_D, 0, absEncoder, false);
         motor.setCurrentLimit(15, 15, 0);
         
     }
