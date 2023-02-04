@@ -34,5 +34,6 @@ public class IntakeStep extends AutoStep {
     @Override
     public void initialize(){
         Intake = (Intake) Core.getSubsystemManager().getSubsystem(WSSubsystems.INTAKE);
+        resetState();
     }
 }
