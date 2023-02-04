@@ -149,12 +149,14 @@ public class Superstructure implements Subsystem{
             }
         }
         SmartDashboard.putString("Current Mode", currentPos.toString());
-        SmartDashboard.putNumber("Arm Target", currentPos.getA(gamepiece));
+        SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
         SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
-        SmartDashboard.putNumber("Wrist Target", currentPos.getW(gamepiece));
-        SmartDashboard.putNumber("Arm Position", arm.getPosition());
-        SmartDashboard.putNumber("Lift Position", lift.getPosition());
-        SmartDashboard.putNumber("Wrist Position", wrist.getPosition());
+        SmartDashboard.putNumber("Wrist Field Target", currentPos.getW(gamepiece));
+        SmartDashboard.putNumber("Arm Field Position", arm.getPosition());
+        SmartDashboard.putNumber("Arm raw pos", arm.getRawPosition());
+        SmartDashboard.putNumber("Lift Encoder", lift.getPosition());
+        SmartDashboard.putNumber("Wrist Field Position", wrist.getPosition());
+        SmartDashboard.putNumber("Wrist raw pos", wrist.getRawPosition());
         SmartDashboard.putBoolean("Cone or Cube", gamepiece);
     }
 

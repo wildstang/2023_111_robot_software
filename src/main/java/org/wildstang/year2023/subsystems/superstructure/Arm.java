@@ -23,14 +23,17 @@ public class Arm {
         motor.setCurrentLimit(40, 40, 0);
     }
     public double getPosition(){
+        return (absEncoder.getPosition()+54)%360;
+    }
+    public double getRawPosition(){
         return absEncoder.getPosition();
     }
     public void setPosition(double position){
-        if (atPosition(position)){
-            motor.setPosition(position);
-        } else {
-            motor.setSpeed(getSpeed(position));
-        }
+        //if (atPosition(position)){
+            motor.setPosition((position+306.0)%360);
+        //} else {
+          //  motor.setSpeed(getSpeed(position));
+        //}
     }
     private double getSpeed(double target){
         if (getPosition() > target && getPosition() <= 180.0){

@@ -21,11 +21,14 @@ public class Wrist {
         motor.setCurrentLimit(40, 40, 0);
         
     }
-    public double getPosition(){
+    public double getRawPosition(){
         return absEncoder.getPosition();
     }
+    public double getPosition(){
+        return (absEncoder.getPosition()+310.0)%360;
+    }
     public void setPosition(double position){
-        motor.setPosition(position);
+        motor.setPosition((position+50)%360);
     }
     
 }

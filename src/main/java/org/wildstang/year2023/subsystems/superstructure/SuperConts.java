@@ -14,14 +14,14 @@ public final class SuperConts {
     
     public static final boolean WRIST_ENCODER_DIRECTION = false;
 
-    public static final double LIFT_P = 0.5;
-    public static final double LIFT_I = 0.05;
-    public static final double LIFT_D = 0.1;
-    public static final double ARM_P = 0.5;
-    public static final double ARM_I = 0.05;
-    public static final double ARM_D = 0.1;
-    public static final double WRIST_P = 0.5;
-    public static final double WRIST_I = 0.05;
+    public static final double LIFT_P = 0.1;
+    public static final double LIFT_I = 0.0;
+    public static final double LIFT_D = 0.0;
+    public static final double ARM_P = 0.015;
+    public static final double ARM_I = 0.0;
+    public static final double ARM_D = 0.0;
+    public static final double WRIST_P = 0.1;
+    public static final double WRIST_I = 0.0;
     public static final double WRIST_D = 0.1;
 
     
