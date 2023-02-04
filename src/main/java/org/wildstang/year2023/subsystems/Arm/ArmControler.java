@@ -86,22 +86,22 @@ public class ArmControler implements Subsystem{
     @Override
     public void update() {
         //check to see if movement
-        if (TurnDirection != 0){
-            //BaseMotor.setSpeed(BaseSpeed*TurnDirection);
-            if (TurnDirection<0 && getPosition() <= 180.0){
-                BaseMotor.setSpeed(-0.1);
-            } else if (TurnDirection>0 && getPosition() >= 180.0){
-                BaseMotor.setSpeed(0.1);
-            } else if (TurnDirection<0 && getPosition() >= 180.0){
-                BaseMotor.setSpeed(-0.1 - 0.2 * (-Math.toDegrees(Math.sin(getPosition()))));
-            } else {
-                BaseMotor.setSpeed(0.1 + 0.2 * (Math.toDegrees(Math.sin(getPosition()))));
-            }
-        }else if (slowDirection != 0){
-            BaseMotor.setSpeed(slowSpeed*slowDirection);
-        } else {
-            BaseMotor.stop();
-        }
+        // if (TurnDirection != 0){
+        //     //BaseMotor.setSpeed(BaseSpeed*TurnDirection);
+        //     if (TurnDirection<0 && getPosition() <= 180.0){
+        //         BaseMotor.setSpeed(-0.1);
+        //     } else if (TurnDirection>0 && getPosition() >= 180.0){
+        //         BaseMotor.setSpeed(0.1);
+        //     } else if (TurnDirection<0 && getPosition() >= 180.0){
+        //         BaseMotor.setSpeed(-0.1 - 0.2 * (-Math.toDegrees(Math.sin(getPosition()))));
+        //     } else {
+        //         BaseMotor.setSpeed(0.1 + 0.2 * (Math.toDegrees(Math.sin(getPosition()))));
+        //     }
+        // }else if (slowDirection != 0){
+        //     BaseMotor.setSpeed(slowSpeed*slowDirection);
+        // } else {
+        //     BaseMotor.stop();
+        // }
         SmartDashboard.putNumber("Arm Position*", getPosition());
         SmartDashboard.putNumber("Arm Speed", BaseSpeed);
     }

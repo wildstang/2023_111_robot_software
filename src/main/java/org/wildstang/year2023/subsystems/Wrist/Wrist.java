@@ -22,9 +22,9 @@ public class Wrist implements Subsystem{
     //rotate base clockwise and counter clockwise
     //track positition
 
-    private DigitalInput Rotate_Positive, Rotate_Negative, start;
-    private WsSparkMax BaseMotor;
-    private AbsoluteEncoder absEncoder;
+    private DigitalInput Rotate_Positive, Rotate_Negative, start, armUp, armDown;
+    private WsSparkMax WristMotor, BaseMotor;
+    private AbsoluteEncoder WristAbsEncoder, absEncoder;
     
     private double target;
     private boolean isPID;
@@ -34,11 +34,11 @@ public class Wrist implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
-        if (Rotate_Positive.getValue()){
-            target +=50;
+        if (armUp.getValue()){
+            target +=25;
         }
-        else if (Rotate_Negative.getValue()){
-            target -=50;
+        else if (armDown.getValue()){
+            target -=25;
         }
         if (source == start && start.getValue()){
             isPID = !isPID;
@@ -58,16 +58,29 @@ public class Wrist implements Subsystem{
         Rotate_Negative.addInputListener(this);
         start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
         start.addInputListener(this);
+        armUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_UP);
+        armUp.addInputListener(this);
+        armDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_FACE_DOWN);
+        armDown.addInputListener(this);
 
-        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
+        WristMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
+        this.WristAbsEncoder = WristMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        this.WristAbsEncoder.setPositionConversionFactor(360.0);
+        this.WristAbsEncoder.setVelocityConversionFactor(360.0/60.0);
+        WristMotor.getController().getPIDController().setFeedbackDevice(WristAbsEncoder);
+        WristMotor.initClosedLoop(0.10, 0.0, 0.1, 0);
+        WristMotor.setBrake();
+        WristMotor.setCurrentLimit(10,10,0);
+
+        BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ARM_ONE);
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
         BaseMotor.getController().getPIDController().setFeedbackDevice(absEncoder);
-        BaseMotor.initClosedLoop(0.1, 0, 0, 0);
-        
+        BaseMotor.initClosedLoop(0.015, 0, 0.0, 0);
         BaseMotor.setBrake();
-        BaseMotor.setCurrentLimit(10,10,0);
+
+        BaseMotor.setCurrentLimit(40,40,0);
     }
 
     @Override
@@ -78,33 +91,54 @@ public class Wrist implements Subsystem{
     public void update() {
         //check to see if movement
         // if (TurnDirection != 0){
-        //     BaseMotor.setSpeed(BaseSpeed*TurnDirection);
+        //     WristMotor.setSpeed(BaseSpeed*TurnDirection);
         // }else{
-        //     BaseMotor.stop();
+        //     WristMotor.stop();
+        // }
+        // if (isPID){
+        //     WristMotor.setPosition(setPosition(target));
+        //     WristMotor.setBrake();
+        // } else {
+        //     WristMotor.stop();
+        //     target = getPosition();
+        //     WristMotor.setCoast();
         // }
         if (isPID){
-            BaseMotor.setPosition((target+50.0)%360);
-            BaseMotor.setBrake();
+            BaseMotor.setPosition(setArmPosition(target));
         } else {
             BaseMotor.stop();
-            target = getPosition();
-            BaseMotor.setCoast();
+            target = getArmPosition();
         }
-        SmartDashboard.putNumber("Wrist Field Position", getPosition());
-        SmartDashboard.putNumber("Wrist raw encoder", absEncoder.getPosition());
-        SmartDashboard.putNumber("Wrist Field target", target);
-        SmartDashboard.putNumber("Wrist raw target", (target + 50)%360);
+        WristMotor.setPosition(setPosition((360.0-getArmPosition())%360));
+        // SmartDashboard.putNumber("Wrist Field Position", getPosition());
+        // SmartDashboard.putNumber("Wrist raw encoder", WristAbsEncoder.getPosition());
+        // SmartDashboard.putNumber("Wrist Field target", target);
+        // SmartDashboard.putNumber("Wrist raw target", setPosition(target));
         SmartDashboard.putBoolean("Wrist holding", isPID);
+        SmartDashboard.putNumber("Wrist new position", (360.0-getArmPosition())%360);
+        SmartDashboard.putNumber("Arm field position", getArmPosition());
+        SmartDashboard.putNumber("Arm raw encoder", absEncoder.getPosition());
+        SmartDashboard.putNumber("Arm field target", target);
+        SmartDashboard.putNumber("Arm raw target", setArmPosition(target));
     }
 
     @Override
     public void resetState() {
         isPID = false;
-        target = getPosition();
+        target = getArmPosition();
         
     }
     public double getPosition(){
-        return (absEncoder.getPosition()+310.0)%360;
+        return (WristAbsEncoder.getPosition()+310.0)%360;
+    }
+    private double setPosition(double target){
+        return (target+50.0)%360;
+    }
+    public double getArmPosition(){
+        return (absEncoder.getPosition()+54.0)%360;
+    }
+    private double setArmPosition(double target){
+        return (target + 306)%360;
     }
 
     @Override
