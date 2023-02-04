@@ -17,6 +17,7 @@ public class Wrist {
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.WRIST_ENCODER_DIRECTION);
+        absEncoder.setZeroOffset(206.7);//310
         motor.initClosedLoop(SuperConts.WRIST_P, SuperConts.WRIST_I, SuperConts.WRIST_D, 0, absEncoder);
         motor.setCurrentLimit(15, 15, 0);
         
@@ -25,10 +26,10 @@ public class Wrist {
         return absEncoder.getPosition();
     }
     public double getPosition(){
-        return (absEncoder.getPosition()+310.0)%360;
+        return (absEncoder.getPosition())%360;
     }
     public void setPosition(double position){
-        motor.setPosition((position+50)%360);
+        motor.setPosition((position)%360);
     }
     
 }
