@@ -22,13 +22,12 @@ public class Wrist implements Subsystem{
     //rotate base clockwise and counter clockwise
     //track positition
 
-    private DigitalInput Rotate_Positive, Rotate_Negative;
+    private DigitalInput Rotate_Positive, Rotate_Negative, start;
     private WsSparkMax BaseMotor;
     private AbsoluteEncoder absEncoder;
     
-
-    private int TurnDirection;
-    private double BaseSpeed = 0.5;
+    private double target;
+    private boolean isPID;
 
 
 
@@ -36,13 +35,13 @@ public class Wrist implements Subsystem{
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
         if (Rotate_Positive.getValue()){
-            TurnDirection = 1;
+            target +=50;
         }
         else if (Rotate_Negative.getValue()){
-            TurnDirection = -1;
+            target -=50;
         }
-        else{
-            TurnDirection = 0;
+        if (source == start && start.getValue()){
+            isPID = !isPID;
         }
         
     }
@@ -57,15 +56,18 @@ public class Wrist implements Subsystem{
         Rotate_Positive.addInputListener(this);
         Rotate_Negative = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_SHOULDER);
         Rotate_Negative.addInputListener(this);
+        start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
+        start.addInputListener(this);
 
         BaseMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.WRIST);
         this.absEncoder = BaseMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
         BaseMotor.getController().getPIDController().setFeedbackDevice(absEncoder);
+        BaseMotor.initClosedLoop(0.1, 0, 0, 0);
         
         BaseMotor.setBrake();
-        BaseMotor.setCurrentLimit(15,15,0);
+        BaseMotor.setCurrentLimit(10,10,0);
     }
 
     @Override
@@ -75,19 +77,34 @@ public class Wrist implements Subsystem{
     @Override
     public void update() {
         //check to see if movement
-        if (TurnDirection != 0){
-            BaseMotor.setSpeed(BaseSpeed*TurnDirection);
-        }else{
+        // if (TurnDirection != 0){
+        //     BaseMotor.setSpeed(BaseSpeed*TurnDirection);
+        // }else{
+        //     BaseMotor.stop();
+        // }
+        if (isPID){
+            BaseMotor.setPosition((target+50.0)%360);
+            BaseMotor.setBrake();
+        } else {
             BaseMotor.stop();
+            target = getPosition();
+            BaseMotor.setCoast();
         }
-        SmartDashboard.putNumber("Wrist Position", (absEncoder.getPosition()+360.0)%360);
-        SmartDashboard.putNumber("Wrist Speed", BaseSpeed);
+        SmartDashboard.putNumber("Wrist Field Position", getPosition());
+        SmartDashboard.putNumber("Wrist raw encoder", absEncoder.getPosition());
+        SmartDashboard.putNumber("Wrist Field target", target);
+        SmartDashboard.putNumber("Wrist raw target", (target + 50)%360);
+        SmartDashboard.putBoolean("Wrist holding", isPID);
     }
 
     @Override
     public void resetState() {
-        TurnDirection = 0;
+        isPID = false;
+        target = getPosition();
         
+    }
+    public double getPosition(){
+        return (absEncoder.getPosition()+310.0)%360;
     }
 
     @Override

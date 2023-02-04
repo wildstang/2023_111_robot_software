@@ -33,7 +33,7 @@ public enum WSOutputs implements Outputs {
     // ---------------------------------
     ARM_ONE("Arm", new WsSparkMaxConfig(CANConstants.ARM, true)),
     //rename this String, and it shouldn't be a follower, but a normal motor
-    TEST_MOTOR("Test Motor", new WsPhoenixConfig(CANConstants.EXAMPLE_MOTOR_CONTROLLER, WsMotorControllers.VICTOR_SPX)),
+    //TEST_MOTOR("Test Motor", new WsPhoenixConfig(CANConstants.EXAMPLE_MOTOR_CONTROLLER, WsMotorControllers.VICTOR_SPX)),
 
     DRIVE1("Module 1 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE1, true)),
     ANGLE1("Module 1 Angle Motor", new WsSparkMaxConfig(CANConstants.ANGLE1, true)),

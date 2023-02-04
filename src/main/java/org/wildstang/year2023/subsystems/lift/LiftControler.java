@@ -20,32 +20,22 @@ public class LiftControler implements Subsystem{
     //record encoder positiion
 
 
-    private DigitalInput up_input, down_input, SpeedUp, SpeedDown, select;
+    private DigitalInput up_input, down_input, select;
     private WsSparkMax liftDriver;
-    private int direction = 0;
-    private double liftSpeed = 1.0;
-    private double holdingSpeed = 0.1;
+    private double direction = 0;
     private boolean holding;
 
     @Override
     public void inputUpdate(Input source) {
         // TODO Auto-generated method stub
-        if (up_input.getValue()){
-            direction = 1;
+        if (source == up_input && up_input.getValue()){
+            direction += 10;
         }
-        else if (down_input.getValue()){
-            direction = -1;
-        }else{
-            //nether is on stop the lift
-            direction = 0;
+        else if (source == down_input && down_input.getValue()){
+            direction -= 10;
         }
 
-        if (source == SpeedUp && SpeedUp.getValue()){
-            holdingSpeed += 0.01;
-        }
-        if (source == SpeedDown && SpeedDown.getValue()){
-            holdingSpeed -= 0.01;
-        }
+        
         if (source == select && select.getValue()){
             holding = !holding;
         }
@@ -56,17 +46,13 @@ public class LiftControler implements Subsystem{
         //DPAD up gives positive, down gives negative, right speeds up, left slows down
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
         liftDriver.setBrake();
+        liftDriver.initClosedLoop(0.1, 0.0, 0.0, 0);
         liftDriver.setCurrentLimit(40, 40, 0);
 
         up_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_UP);
         up_input.addInputListener(this);
         down_input = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
         down_input.addInputListener(this);
-
-        SpeedUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_RIGHT);
-        SpeedUp.addInputListener(this);
-        SpeedDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_LEFT);
-        SpeedDown.addInputListener(this);
 
         select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
         select.addInputListener(this);
@@ -81,26 +67,22 @@ public class LiftControler implements Subsystem{
 
     @Override
     public void update() {
-        //get the position
-        //up and down
-        if (direction != 0){
-            liftDriver.setSpeed(direction*liftSpeed);
-        } else if (holding){
-            liftDriver.setSpeed(holdingSpeed);
+        
+        if (direction > 76) direction = 76;
+        if (direction < 0) direction = 0;
+        if (holding) {
+            liftDriver.setPosition(direction);
         } else {
-            liftDriver.stop();
+            liftDriver.setSpeed(0.0);
         }
         SmartDashboard.putNumber("Lift encoder", liftDriver.getPosition());
-        SmartDashboard.putNumber("Lift speed", liftSpeed);
         SmartDashboard.putBoolean("isHolding", holding);
-        SmartDashboard.putNumber("holding speed", holdingSpeed);
+        SmartDashboard.putNumber("Lift target", direction);
     }
 
     @Override
     public void resetState() {
         direction = 0;
-        liftSpeed = 1.0;
-        holdingSpeed = 0.1;
         holding = false;
     }
 
