@@ -7,11 +7,9 @@ import org.wildstang.year2023.subsystems.mastercontrolprogram.MasterControlProgr
 import org.wildstang.year2023.subsystems.intake.Intake;
 
 public class IntakeStep extends AutoStep {
-    private MasterControlProgram MasterControlProgram;
     private Intake Intake;
 
     private double intakeSpeed;
-    private double intakePosition;
 
     /** Set Intake Speed
      * 
@@ -34,6 +32,5 @@ public class IntakeStep extends AutoStep {
     @Override
     public void initialize(){
         Intake = (Intake) Core.getSubsystemManager().getSubsystem(WSSubsystems.INTAKE);
-        resetState();
     }
 }

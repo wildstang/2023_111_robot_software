@@ -32,6 +32,5 @@ public class MasterControlProgramStep extends AutoStep {
     @Override
     public void initialize(){
         MasterControlProgram = (MasterControlProgram) Core.getSubsystemManager().getSubsystem(WSSubsystems.MASTER_CONTROL_PROGRAM);
-        resetState();
     }
 }
