@@ -97,6 +97,14 @@ public class Superstructure implements Subsystem{
         arm = new Arm((WsSparkMax) WSOutputs.ARM_ONE.get());
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
         wrist = new Wrist((WsSparkMax) WSOutputs.WRIST.get());
+
+        gamepiece = SuperConts.CONE;
+        wristWait = false;
+        armWait = false;
+        liftWait = false;
+        motion = modes.WAITING;
+        currentPos = SuperPos.NEUTRAL;
+        lastPos = SuperPos.NEUTRAL;
     }
 
     @Override
@@ -148,7 +156,6 @@ public class Superstructure implements Subsystem{
                 wrist.setPosition((360.0-arm.getPosition())%360);
             }
         }
-        SmartDashboard.putString("Current Mode", currentPos.toString());
         SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
         SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
         SmartDashboard.putNumber("Wrist Field Target", currentPos.getW(gamepiece));

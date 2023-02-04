@@ -10,7 +10,7 @@ public enum SuperPos {
     INTAKE_FRONT_LOW(0,270,45,0,270,45,true),
     HP_STATION_FRONT(0,180,90,0,180,90,true),
     HP_STATION_BACK(0,180,270,0,180,270,false),
-    INTAKE_BACK(0,90,315,0,90,315,false);
+    INTAKE_BACK(0,90,270,0,90,270,false);
 
     public final double cubeL;
     public final double cubeA;
