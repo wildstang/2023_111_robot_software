@@ -93,7 +93,7 @@ public class ArmControler implements Subsystem{
         } else {
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Arm Position", (BaseMotor.getPosition()+360.0)%360);
+        SmartDashboard.putNumber("Arm Position", (absEncoder.getPosition()+360.0)%360);
         SmartDashboard.putNumber("Arm Speed", BaseSpeed);
     }
 

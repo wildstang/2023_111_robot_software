@@ -80,7 +80,7 @@ public class Wrist implements Subsystem{
         }else{
             BaseMotor.stop();
         }
-        SmartDashboard.putNumber("Wrist Position", (BaseMotor.getPosition()+360.0)%360);
+        SmartDashboard.putNumber("Wrist Position", (absEncoder.getPosition()+360.0)%360);
         SmartDashboard.putNumber("Wrist Speed", BaseSpeed);
     }
 
