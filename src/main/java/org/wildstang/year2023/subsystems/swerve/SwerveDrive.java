@@ -94,12 +94,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             gyro.setYaw(0.0);
         }
 
-        //assign thrust
-        thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
-        xSpeed *= thrustValue;
-        ySpeed *= thrustValue;
-        rotSpeed *= thrustValue;
-
         //determine snake or pid locks
         if (start.getValue() && (Math.abs(xSpeed) > 0.1 || Math.abs(ySpeed) > 0.1)) {
             rotLocked = true;
@@ -134,6 +128,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if (rotSpeed != 0) {
             rotLocked = false;
         }
+        
+        //assign thrust
+        thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
+        xSpeed *= thrustValue;
+        ySpeed *= thrustValue;
+        rotSpeed *= thrustValue;
+        
 
         //use the limelight for tracking
         // if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
