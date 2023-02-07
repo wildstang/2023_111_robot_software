@@ -63,17 +63,17 @@ public class MasterControlProgram implements Subsystem {
     private Hashtable<String, position> stringToPosition = new Hashtable<String,position>();
 
     private enum position{
-        HOLDING(0,0,0,modes.FORWARD,"HOLDING","HOLDING"),
-        GROUND_FORWARD(0,0,0,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD"),
+        HOLDING(0,180,180,modes.FORWARD,"HOLDING","HOLDING"),
+        GROUND_FORWARD(10,0,0,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD"),
         GROUND_REVERSE(0,0,0,modes.REVERSE,"GROUND_REVERSE","GROUND_REVERSE"),
 
         CONE_LOW(0,0,0,modes.FORWARD,"CONE_LOW","CUBE_LOW"),
         CONE_MID(0,0,0,modes.FORWARD, "CONE_MID","CUBE_MID"),
-        CONE_HIGH(0,0,0,modes.FORWARD,"CONE_HIGH","CUBE_HIGH"),
+        CONE_HIGH(72,240,55,modes.FORWARD,"CONE_HIGH","CUBE_HIGH"),
 
         CUBE_LOW(0,0,0,modes.FORWARD,"CUBE_LOW","CUBE_LOW"),
-        CUBE_MID(0,0,0,modes.FORWARD,"CUBE_MID","CUBE_LOW"),
-        CUBE_HIGH(0,0,0,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH"),
+        CUBE_MID(0,0,0,modes.FORWARD,"CUBE_MID","CUBE_MID"),
+        CUBE_HIGH(72,240,55,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH"),
 
         STATION_FORWARD(0,0,0,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD"),
         STATION_REVERSE(0,0,0,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE");
