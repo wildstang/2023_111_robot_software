@@ -266,7 +266,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             } else if (limelight.currentPipeline == 1) {
                 ySpeed = LLpidY.calculate(limelight.getNormalDistance(), desiredReflectiveDistance + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
             }
-            
+            //flip if rotated other direction. 
+            if (rotTarget > 90) {
+                ySpeed = -ySpeed;
+                xSpeed = -xSpeed;
+            }
 
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             drive();
