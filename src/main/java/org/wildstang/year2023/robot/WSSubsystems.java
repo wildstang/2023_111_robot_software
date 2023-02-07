@@ -13,7 +13,7 @@ public enum WSSubsystems implements Subsystems {
 
     // enumerate subsystems
     SWERVE_DRIVE("Swerve Drive", SwerveDrive.class),
-    //AIM_HELPER("Aim Helper", AimHelper.class),
+    AIM_HELPER("Aim Helper", AimHelper.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
 

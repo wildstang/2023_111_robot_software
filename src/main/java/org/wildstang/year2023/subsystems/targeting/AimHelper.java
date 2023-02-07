@@ -43,15 +43,16 @@ public class AimHelper implements Subsystem {
     public boolean TargetInView;
     private boolean ledState;
 
-    private double TargetDistance;
+    private double TargetAbsoluteDistance;
+    private double TargetNormalDistance;
+    private double TargetParallelDistance;
     private double xSpeed, ySpeed;
 
-    private double perpFactor, parFactor;
 
     private DigitalInput rightBumper, dup, ddown;
     private AnalogInput leftStickX, leftStickY;
 
-    private LimeConsts LC;
+    public LimeConsts LC;
 
     private double gyroValue;
 
@@ -59,7 +60,7 @@ public class AimHelper implements Subsystem {
     private double angleFactor = 15;
     public static double FenderDistance = 60;
 
-    private int currentPipeline;
+    public int currentPipeline;
     private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
         put("aprilTag", 0);
         put("reflective", 1);
@@ -84,25 +85,8 @@ public class AimHelper implements Subsystem {
             y = 0;
             TargetInView = false;
         }
-        getMovingCoords();
     }
 
-    public void getMovingCoords() {
-        double robotAngle = (getGyroAngle() + 180 + tx.getValue()) % 360;
-        double movementAngle = helper.getDirection(xSpeed, ySpeed);
-        double movementMagnitude = helper.getMagnitude(xSpeed, ySpeed);
-        if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1) {
-            parFactor = 0;
-            perpFactor = 0;
-        }
-        else {
-            perpFactor = distanceFactor * movementMagnitude * Math.cos(Math.toRadians(-robotAngle + movementAngle));
-            parFactor = angleFactor * movementMagnitude * Math.sin(Math.toRadians(-robotAngle + movementAngle));
-        }
-        if (!TargetInView){
-            parFactor *= -0.2;
-        }
-    }
 
     private double getGyroAngle() {
         return gyroValue;
@@ -112,17 +96,29 @@ public class AimHelper implements Subsystem {
         gyroValue = toSet;
     }
 
-    public double getDistance() {
+    public double getTangentDistance() {
         calcTargetCoords();
-        TargetDistance = (modifier *  12) + 36 + LC.TARGET_HEIGHT / Math.tan(Math.toRadians(ty.getValue() + LC.CAMERA_ANGLE_OFFSET));
+        TargetAbsoluteDistance = (modifier *  12) + 36 + LC.TARGET_HEIGHT / Math.tan(Math.toRadians(ty.getValue() + LC.CAMERA_ANGLE_OFFSET));
         //return TargetDistance;
-        return TargetDistance - perpFactor + 0.5 * Math.abs(parFactor);
+        return TargetAbsoluteDistance;
+    }
+
+    public double getNormalDistance() {
+        TargetNormalDistance = getTangentDistance()*Math.cos(Math.toRadians(tx.getValue()));
+
+        return TargetNormalDistance;
+    }
+
+    public double getParallelDistance() {
+        TargetParallelDistance = getTangentDistance()*Math.sin(Math.toRadians(tx.getValue()));
+
+        return TargetParallelDistance;
     }
 
     public double getRotPID() {
         calcTargetCoords();
         //return tx.getDouble(0) * -0.015;
-        return (tx.getValue() - parFactor) * -0.015;
+        return (tx.getValue()) * -0.015;
     }
 
     public void turnOnLED(boolean onState) {
@@ -169,7 +165,9 @@ public class AimHelper implements Subsystem {
         x = 0;  //x and y angular offsets from limelight. Only updated when calcTargetCoords is called.
         y = 0;
         TargetInView = false; //is the target in view? only updated when calcTargetCoords is called.
-        TargetDistance = 0; //distance to target in feet. Only updated when calcTargetCoords is called.
+        TargetAbsoluteDistance = 0; //distance to target in feet. Only updated when calcTargetCoords is called.
+        TargetNormalDistance = 0; 
+        TargetParallelDistance = 0; 
 
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
@@ -202,13 +200,11 @@ public class AimHelper implements Subsystem {
         calcTargetCoords();
         //distanceFactor = distance.getEntry().getDouble(0);
         //angleFactor = angle.getEntry().getDouble(0);
-        SmartDashboard.putNumber("limelight distance", getDistance());
+        SmartDashboard.putNumber("limelight distance", getTangentDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
         SmartDashboard.putNumber("Distance Modifier", modifier);
-        SmartDashboard.putNumber("SWM parFactor", parFactor);
-        SmartDashboard.putNumber("SWM perpFactor", perpFactor);
     }
 
     @Override
@@ -217,8 +213,6 @@ public class AimHelper implements Subsystem {
         modifier = 0;
         xSpeed = 0;
         ySpeed = 0;
-        perpFactor = 0;
-        parFactor = 0;
         gyroValue = 0;
     }
 
