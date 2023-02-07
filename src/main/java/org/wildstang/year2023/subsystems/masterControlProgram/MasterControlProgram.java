@@ -102,7 +102,6 @@ public class MasterControlProgram implements Subsystem {
     private position currentPosition;
     private position lastPosition;
 
-    private String oldQuery;
     @Override
     public void init() {
         //inputs
@@ -165,7 +164,6 @@ public class MasterControlProgram implements Subsystem {
         currentPosition = position.HOLDING;
         lastPosition = position.HOLDING;
         posChanged = false;
-        oldQuery = "";
         haltSignal = false;
         liftResetSignal = false;
         liftState = modes.LIFT_AUTOMATIC;

@@ -26,9 +26,9 @@ public class arm {
     //private int direction;
     //private double BaseSpeed = 5.5;
     private double position;
-    private static final double defaultPosition = 0;
-    private static final double tolerance = 0;
-    private static final double holdingPosition = 0;
+    private static final double defaultPosition = 180;
+    private static final double tolerance = 5;
+    private static final double holdingPosition = 180;
 
     private enum mode {
         EXTENDED,
@@ -43,6 +43,7 @@ public class arm {
         encoder.setPositionConversionFactor(360.0);
         encoder.setVelocityConversionFactor(360.0 / 60.0);
         baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
+        baseMotor.addClosedLoop(1,ArmConstants.ARM_P_EXTENDED,ArmConstants.ARM_I_EXTENDED,ArmConstants.ARM_D_EXTENDED,0);
         encoder.setZeroOffset(29.3);
         baseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
         resetState();
@@ -54,15 +55,14 @@ public class arm {
     }
 
     public void goToPosition(double pos) {
-        if(pos < holdingPosition && currentMode == mode.EXTENDED){
+        if(pos < holdingPosition){
             currentMode = mode.HOLDING;
-            baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
+            baseMotor.setPosition(pos,0);
         }
-        else if(pos>holdingPosition && currentMode == mode.HOLDING){
+        else if(pos>holdingPosition){
             currentMode = mode.EXTENDED;
-            baseMotor.initClosedLoop(ArmConstants.ARM_P_EXTENDED, ArmConstants.ARM_I_EXTENDED, ArmConstants.ARM_D_EXTENDED,0, this.encoder);
+            baseMotor.setPosition(pos,1);
         }
-        baseMotor.setPosition(pos);
         position = pos;
         SmartDashboard.putNumber("Arm target", position);
     }

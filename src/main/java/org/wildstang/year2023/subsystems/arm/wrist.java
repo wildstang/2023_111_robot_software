@@ -26,9 +26,9 @@ public class wrist {
     //private double BaseSpeed = 5.5;
    // private double EncodedPositition;
     private double position;
-    private static final double tolerance = 1;
+    private static final double tolerance = 4;
     private static final double minPosition = 0;
-    private static final double maxPosition = 0;
+    private static final double maxPosition = 180;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         position = minPosition;
@@ -37,6 +37,7 @@ public class wrist {
         encoder.setInverted(false); //or this stuff
         encoder.setPositionConversionFactor(360.0);
         encoder.setVelocityConversionFactor(360.0 / 60.0);
+        encoder.setZeroOffset(206.7);
         baseMotor.initClosedLoop(ArmConstants.WRIST_P, ArmConstants.WRIST_I, ArmConstants.WRIST_D, 0, this.encoder);
         baseMotor.setCurrentLimit(ArmConstants.WRIST_CURRENT_LIMIT, ArmConstants.WRIST_CURRENT_LIMIT, 0);
         resetState();
