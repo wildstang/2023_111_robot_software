@@ -13,6 +13,7 @@ import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.auto.steps.IntakeStep;
 import org.wildstang.year2023.auto.steps.MasterControlProgramStep;
 import org.wildstang.year2023.auto.steps.AutoBalancingStep;
+import org.wildstang.year2023.auto.steps.LimeLightAimingStep;
 
 import com.pathplanner.lib.*;
 
@@ -32,6 +33,7 @@ public class oH1GrabBalance extends AutoProgram{
         scoreLowCone.addStep(new IntakeStep(-1));
         scoreLowCone.addStep(new MasterControlProgramStep("CONE_LOW_FORWARD"));
         scoreLowCone.addStep(new SetGyroStep(-180, swerve));
+        scoreLowCone.addStep(new LimeLightAimingStep("AprilTag"));
         addStep(scoreLowCone);
 
         addStep(new AutoStepDelay(500));
