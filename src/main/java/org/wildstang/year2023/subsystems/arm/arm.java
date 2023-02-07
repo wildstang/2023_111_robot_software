@@ -43,6 +43,7 @@ public class arm {
         encoder.setPositionConversionFactor(360.0);
         encoder.setVelocityConversionFactor(360.0 / 60.0);
         baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
+        encoder.setZeroOffset(29.3);
         baseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
         resetState();
         
