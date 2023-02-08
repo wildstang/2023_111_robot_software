@@ -17,6 +17,8 @@ import org.wildstang.year2023.subsystems.targeting.AimHelper;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.math.*;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**Class: SwerveDrive
@@ -58,15 +60,21 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double[] lastY = {0,0,0,0};
     private double autoTempX;
     private double autoTempY;
+    
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
-    //private AimHelper limelight;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    private AimHelper limelight;
+    private PIDController LLpidX = new PIDController(1, 1, 1);//Needs to be tuned, kP, kI, kD
+    private PIDController LLpidY = new PIDController(1, 1, 1);
+    private double desiredReflectiveDistance = 22;
+    private double desiredAprilTagDistance = 14.06;
+
+    public enum driveType {TELEOP, AUTO, CROSS, LL, AUTOBALANCE};
     public driveType driveState;
 
     @Override
@@ -136,17 +144,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
 
         //use the limelight for tracking
-        // if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
-        //     driveState = driveType.LL;
-        //     xSpeed*=0.5;
-        //     ySpeed*=0.5;
-        // }
-        // else {
-        //     if (driveState == driveType.LL) {
-        //         driveState = driveType.TELEOP;
-        //         rotLocked = false;
-        //     }
-        // }
+        if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
+            driveState = driveType.LL;
+        }
+        else {
+            if (driveState == driveType.LL) {
+                driveState = driveType.TELEOP;
+                rotLocked = false;
+            }
+        }
+
 
         //field centric while using the camera
         isFieldCentric = !(rightBumper.getValue() && Math.abs(leftTrigger.getValue()) < 0.15);
@@ -209,7 +216,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         };
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
-        //limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
+        limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
     }
     
     @Override
@@ -251,11 +258,19 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
             drive();        
         }
-        // if (driveState == driveType.LL) {
-        //     //rotSpeed = -limelight.getRotPID();
-        //     this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-        //     drive();
-        // }
+        if (driveState == driveType.LL) {
+
+            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), 0);
+            if (limelight.currentPipeline == 0) {
+                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), desiredAprilTagDistance + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            } else if (limelight.currentPipeline == 1) {
+                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), desiredReflectiveDistance + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            }
+            
+
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+            drive();
+        }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
@@ -320,6 +335,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void setToAuto() {
         driveState = driveType.AUTO;
         resetDriveEncoders();
+    }
+
+    public void setToAutoBalance() {
+        driveState = driveType.AUTOBALANCE;
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */

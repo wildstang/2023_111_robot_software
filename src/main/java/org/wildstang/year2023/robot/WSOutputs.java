@@ -61,6 +61,8 @@ public enum WSOutputs implements Outputs {
     // ********************************
     TEST_SOLENOID("Test Solenoid", new WsSolenoidConfig(PneumaticsModuleType.REVPH, 0, false)),
     
+    //lets use WsSparkMaxFollowerConfig for the lift follower. Also, all caps LIFT_FOLLOWER
+    INTAKE_MOTOR("Intake Motor", new WsSparkMaxConfig(CANConstants.INTAKE, true)),
     // ********************************
     // Relays
     // ********************************

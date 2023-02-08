@@ -282,6 +282,25 @@ public class MasterControlProgram implements Subsystem {
 
     }
 
+    public void goToPosition(String positionQuery){
+        if(!(positionQuery == oldQuery)){
+            boolean found = false;
+            for (positions position : positions.values()) {  //find the position with the queried name
+                if(position.name == positionQuery){
+                    found = true;
+                    lastPosition = currentPosition;
+                    currentPosition = position; //update current position
+                }
+            }
+            if(found){
+                oldQuery = positionQuery;
+                posChanged = true;
+            }
+            SmartDashboard.putBoolean("target pos found?", found);
+            SmartDashboard.putString("target name", positionQuery);
+        }
+    }
+
     @Override
     public String getName() {
         return "Master Control Program";
