@@ -6,7 +6,7 @@ import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.mastercontrolprogram.MasterControlProgram;
 import org.wildstang.year2023.subsystems.intake.Intake;
 
-public class IntakeStep extends AutoStep {
+public class RunIntakeStep extends AutoStep {
     private Intake Intake;
 
     private double intakeSpeed;
@@ -14,7 +14,7 @@ public class IntakeStep extends AutoStep {
     /** Set Intake Speed
      * 
      */
-    public IntakeStep(double speed){
+    public RunIntakeStep(double speed){
         this.intakeSpeed = speed;
     }
 
@@ -26,7 +26,7 @@ public class IntakeStep extends AutoStep {
     
     @Override
     public String toString() {
-        return "Intake Step";
+        return "Run Intake Step";
     }
     
     @Override
