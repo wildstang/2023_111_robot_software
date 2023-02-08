@@ -135,12 +135,10 @@ public class Superstructure implements Subsystem{
         }
 
         if (liftWait){
-            if (arm.atPosition(currentPos.getA(gamepiece))){
+            if (arm.pastLift()){
                 lift.setPosition(currentPos.getL(gamepiece));
                 liftWait = false;
-            } else {
-                lift.setPosition(SuperConts.LIFTSTAGE);
-            }
+            } 
         }
         if (armWait){
             if (lift.getPosition() < SuperConts.LIFTSTAGE){
@@ -149,11 +147,11 @@ public class Superstructure implements Subsystem{
             }
         }
         if (wristWait){
-            if (arm.atPosition(currentPos.getA(gamepiece)) && !armWait){
+            if (arm.pastLift() && !armWait){
                 wrist.setPosition(currentPos.getW(gamepiece));
                 wristWait = false;
             } else {
-                wrist.setPosition((360.0-arm.getPosition())%360);
+                wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
             }
         }
         SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));

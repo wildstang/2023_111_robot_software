@@ -30,13 +30,13 @@ public class Arm {
         return absEncoder.getPosition();
     }
     public void setPosition(double position){
-        //if (atPosition(position)){
+        if (atPosition(position)){
             motor.setPosition((position)%360);
-        //} else {
-          //  motor.setSpeed(getSpeed(position));
-        //}
+        } else {
+           motor.setSpeed(getSpeed(position));
+        }
     }
-    private double getSpeed(double target){
+    public double getSpeed(double target){
         if (getPosition() > target && getPosition() <= 180.0){
             return -SuperConts.ARM_SLOW;
         } else if (getPosition() < target && getPosition() >= 180.0){
@@ -50,4 +50,7 @@ public class Arm {
     public boolean atPosition(double position){
         return Math.abs(getPosition() - position) < SuperConts.ARM_THRESHOLD;
     }    
+    public boolean pastLift(){
+        return getPosition() > 200;
+    }
 }
