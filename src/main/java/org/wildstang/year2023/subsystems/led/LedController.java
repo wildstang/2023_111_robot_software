@@ -18,8 +18,8 @@ public class LedController implements Subsystem {
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
 
-    /*private int port = 1;
-    private int length = 60;
+    private int port = 1;//placeholder port
+    private int length = 60;//placeholder length
 
     @Override
     public void update(){
@@ -28,10 +28,23 @@ public class LedController implements Subsystem {
 
     @Override
     public void inputUpdate(Input source) {
-        if(rightShoulder.getValue()){
-            cubeDisplay();
-        }else if(leftShoulder.getValue()){
-            coneDisplay();
+        if(rightShoulder.getValue() || leftShoulder.getValue()){
+            if(rightShoulder.getValue()){
+                if(leftShoulder.getValue() == false){
+                    cubeDisplay();
+                }else{
+                    resetState();
+                }
+            }
+        
+            if(leftShoulder.getValue()){
+                if(rightShoulder.getValue() == false){
+                    coneDisplay();
+                }else{
+                    resetState();
+                }
+            }
+            resetState();
         }
     }
 
@@ -58,6 +71,7 @@ public class LedController implements Subsystem {
         }
          
         led.setData(ledBuffer);
+        led.setSyncTime(2000000);
         led.start();
     }
 
@@ -67,13 +81,12 @@ public class LedController implements Subsystem {
         }
          
         led.setData(ledBuffer);
+        led.setSyncTime(2000000);
         led.start();
     }
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -83,13 +96,13 @@ public class LedController implements Subsystem {
             ledBuffer.setRGB(i, 0, 0, 0);
         }
         led.setData(ledBuffer);
+        led.setSyncTime(0);
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Led Controller";
     }
-    */
+    
     
 }
