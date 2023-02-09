@@ -10,7 +10,8 @@ public enum SuperPos {
     INTAKE_FRONT_LOW(0,283,52,0,283,52,true),
     HP_STATION_FRONT(25,203,58,25,203,58,true),
     HP_STATION_BACK(40,140,310,40,140,310,false),
-    INTAKE_BACK(34.5,56.4,302,26.7,56.4,302,false);
+    INTAKE_BACK(34.5,56.4,302,26.7,56.4,302,false),
+    INTAKE_BACK_LOW(26.7, 56.4, 302.0, 26.7, 56.4, 302.0, false);
     //upright cone back 26.7 56.4 302
 
     public final double cubeL;

@@ -1,5 +1,6 @@
 package org.wildstang.year2023.subsystems.superstructure;
 
+import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
@@ -7,18 +8,30 @@ import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure implements Subsystem{
     
     private enum modes {SIMPLE, ARMDELAY, LIFTDELAY, WRIST, WAITING}
+    private enum score {HIGH, MID, LOW}
+    private String[] scoreString = new String[]{"High", "Mid", "Low"};
+    private enum intake {UPRIGHT, TIPPED}
+    private String[] intakeString = new String[]{"Upright", "Tipped"};
+    private enum station {DOUBLE, SINGLE}
+    private String[] stationString = new String[]{"Double", "Single"};
 
-    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select;
+    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, driverLB, driverRB;
+    private AnalogInput driverLT;
     private modes motion;
+    private score scoring;
+    private intake intaking;
+    private station stationing;
     private SuperPos currentPos, lastPos;
     public Arm arm;
     public Lift lift;
     public Wrist wrist;
+    private Timer timer = new Timer();
 
     private boolean gamepiece, wristWait, armWait, liftWait;
 
@@ -27,33 +40,55 @@ public class Superstructure implements Subsystem{
     public void inputUpdate(Input source) {
         if (source == leftBumper && leftBumper.getValue()){
             gamepiece = SuperConts.CONE;
-            if (!wristWait) wrist.setPosition(currentPos.getW(gamepiece));
-            if (!armWait) arm.setPosition(currentPos.getA(gamepiece));
-            if (!liftWait) lift.setPosition(currentPos.getL(gamepiece));
         }
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
-            if (!wristWait) wrist.setPosition(currentPos.getW(gamepiece));
-            if (!armWait) arm.setPosition(currentPos.getA(gamepiece));
-            if (!liftWait) lift.setPosition(currentPos.getL(gamepiece));
         }
-        if (source == A && A.getValue()){
-            currentPos = SuperPos.SCORE_LOW;
-        }if (source == B && B.getValue()){
-            currentPos = SuperPos.SCORE_MID;
-        }if (source == X && X.getValue()){
-            currentPos = SuperPos.NEUTRAL;
-        }if (source == Y && Y.getValue()){
-            currentPos = SuperPos.SCORE_HIGH;
-        }if (source == dUp && dUp.getValue()){
-            currentPos = SuperPos.HP_STATION_FRONT;
-        }if (source == dRight && dRight.getValue()){
-            currentPos = SuperPos.INTAKE_BACK;
-        }if (source == dLeft && dLeft.getValue()){
-            currentPos = SuperPos.INTAKE_FRONT;
-        }if (source ==  dDown&& dDown.getValue()){
-            currentPos = SuperPos.INTAKE_FRONT_LOW;
+        if (source == A && A.getValue()) scoring = score.LOW;
+        if (source == B && B.getValue()) scoring = score.MID;
+        if (source == Y && Y.getValue()) scoring = score.HIGH;
+        if (source == dRight && dRight.getValue()) intaking = intake.UPRIGHT;
+        if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
+        if (source == dUp && dUp.getValue()) stationing = station.DOUBLE;
+        if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
+
+        if (timer.hasElapsed(0.5)){
+            if (Math.abs(driverLT.getValue()) > 0.25){
+                if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
+                if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
+                if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
+                if (lastPos != currentPos) timer.reset();
+            } else if (driverLB.getValue()){
+                if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_FRONT;
+                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_BACK;
+                if (lastPos != currentPos) timer.reset();
+            } else if (driverRB.getValue()){
+                if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
+                if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
+                if (lastPos != currentPos) timer.reset();
+            } else {
+                currentPos = SuperPos.NEUTRAL;
+                if (lastPos != currentPos) timer.reset();
+            }
         }
+
+        // if (source == A && A.getValue()){
+        //     currentPos = SuperPos.SCORE_LOW;
+        // }if (source == B && B.getValue()){
+        //     currentPos = SuperPos.SCORE_MID;
+        // }if (source == X && X.getValue()){
+        //     currentPos = SuperPos.NEUTRAL;
+        // }if (source == Y && Y.getValue()){
+        //     currentPos = SuperPos.SCORE_HIGH;
+        // }if (source == dUp && dUp.getValue()){
+        //     currentPos = SuperPos.HP_STATION_FRONT;
+        // }if (source == dRight && dRight.getValue()){
+        //     currentPos = SuperPos.INTAKE_BACK;
+        // }if (source == dLeft && dLeft.getValue()){
+        //     currentPos = SuperPos.INTAKE_FRONT;
+        // }if (source ==  dDown&& dDown.getValue()){
+        //     currentPos = SuperPos.INTAKE_BACK_LOW;
+        // }
         
         if (currentPos != lastPos){
             if (lastPos.getDirection() == currentPos.getDirection()){
@@ -93,6 +128,12 @@ public class Superstructure implements Subsystem{
         dUp.addInputListener(this);
         select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
         select.addInputListener(this);
+        driverLT = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
+        driverLT.addInputListener(this);
+        driverLB = (DigitalInput) WSInputs.DRIVER_LEFT_SHOULDER.get();
+        driverLB.addInputListener(this);
+        driverRB = (DigitalInput) WSInputs.DRIVER_RIGHT_SHOULDER.get();
+        driverRB.addInputListener(this);
 
         arm = new Arm((WsSparkMax) WSOutputs.ARM_ONE.get());
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
@@ -109,52 +150,51 @@ public class Superstructure implements Subsystem{
 
     @Override
     public void update() {
-        if (motion == modes.SIMPLE){
-            lift.setPosition(currentPos.getL(gamepiece));
-            arm.setPosition(currentPos.getA(gamepiece));
-            wrist.setPosition(currentPos.getW(gamepiece));
-            motion = modes.WAITING;
-        }
         if (motion == modes.ARMDELAY){
-            lift.setPosition(currentPos.getL(gamepiece));
             //armWait = true;
-            arm.setPosition(currentPos.getA(gamepiece));
             wristWait = true;
-            motion = modes.WAITING;
+            motion = modes.SIMPLE;
         }
         if (motion == modes.LIFTDELAY){
-            arm.setPosition(currentPos.getA(gamepiece));
             wristWait = true;
             //liftWait = true;
-            lift.setPosition(currentPos.getL(gamepiece));
-            motion = modes.WAITING;
+            motion = modes.SIMPLE;
         }
         if (motion == modes.WRIST){
-            lift.setPosition(currentPos.getL(gamepiece));
-            arm.setPosition(currentPos.getA(gamepiece));
             wristWait = true;
-            motion = modes.WAITING;
+            motion = modes.SIMPLE;
         }
-
-        if (liftWait){
-            if (arm.pastLift()){
-                lift.setPosition(currentPos.getL(gamepiece));
-                liftWait = false;
-            } 
-        }
-        if (armWait){
-            if (lift.getPosition() < SuperConts.LIFTSTAGE){
-                arm.setPosition(currentPos.getA(gamepiece));
-                armWait = false;
-            }
-        }
-        if (wristWait){
-            if (arm.pastLift() && !armWait){
-                wrist.setPosition(currentPos.getW(gamepiece));
-                wristWait = false;
+        if (motion == modes.SIMPLE){
+            if (liftWait){
+                if (arm.pastLift()){
+                    lift.setPosition(currentPos.getL(gamepiece));
+                    liftWait = false;
+                } else {
+                    lift.setPosition(lift.getPosition());
+                }
             } else {
-                //wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
-                wrist.setPosition((360-arm.getPosition())%360);
+                lift.setPosition(currentPos.getL(gamepiece));
+            }  
+            if (armWait){
+                if (lift.getPosition() < SuperConts.LIFTSTAGE){
+                    arm.setPosition(currentPos.getA(gamepiece));
+                    armWait = false;
+                } else {
+                    arm.setPosition(arm.getPosition());
+                }
+            } else {
+                arm.setPosition(currentPos.getA(gamepiece));
+            }
+            if (wristWait){
+                if (arm.pastLift() && !armWait){
+                    wrist.setPosition(currentPos.getW(gamepiece));
+                    wristWait = false;
+                } else {
+                    //wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
+                    wrist.setPosition((360-arm.getPosition())%360);
+                }
+            } else {
+                wrist.setPosition(currentPos.getW(gamepiece));
             }
         }
         SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
@@ -166,6 +206,9 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putNumber("Wrist Field Position", wrist.getPosition());
         SmartDashboard.putNumber("Wrist raw pos", wrist.getRawPosition());
         SmartDashboard.putBoolean("Cone or Cube", gamepiece);
+        SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
+        SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
+        SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
     }
 
     @Override
@@ -177,6 +220,10 @@ public class Superstructure implements Subsystem{
         motion = modes.WAITING;
         currentPos = SuperPos.NEUTRAL;
         lastPos = SuperPos.NEUTRAL;
+        scoring = score.HIGH;
+        intaking = intake.UPRIGHT;
+        stationing = station.DOUBLE;
+        timer.reset(); timer.start();
     }
 
     @Override

@@ -22,7 +22,8 @@ public class intake implements Subsystem {
 
     // outputs
     private WsSparkMax intakeMotor;
-    private AnalogInput ingest, expel;
+    private AnalogInput ingest, expel, driverLT, driverRT;
+    private DigitalInput driverLB, driverRB;
     
 
     // states
@@ -43,6 +44,14 @@ public class intake implements Subsystem {
         ingest.addInputListener(this);
         expel = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_TRIGGER);
         expel.addInputListener(this);
+        driverLT = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
+        driverLT.addInputListener(this);
+        driverRT = (AnalogInput) WSInputs.DRIVER_RIGHT_TRIGGER.get();
+        driverRT.addInputListener(this);
+        driverLB = (DigitalInput) WSInputs.DRIVER_LEFT_SHOULDER.get();
+        driverLB.addInputListener(this);
+        driverRB = (DigitalInput) WSInputs.DRIVER_RIGHT_SHOULDER.get();
+        driverRB.addInputListener(this);
         resetState();
     }
 
@@ -61,10 +70,10 @@ public class intake implements Subsystem {
     public void inputUpdate(Input source) {
         in = Math.abs(ingest.getValue());
         out = Math.abs(expel.getValue());
-        if (in > deadband && in >= out) {
+        if ((in > deadband && in >= out) || (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband)) {
             speed = ingestSpeed * in;
             isHolding = true;
-        } else if (out > deadband && out > in) {
+        } else if ((out > deadband && out > in) || (driverLB.getValue() || driverRB.getValue())) {
             speed = expelSpeed * out;
             isHolding = false;
         } else {
