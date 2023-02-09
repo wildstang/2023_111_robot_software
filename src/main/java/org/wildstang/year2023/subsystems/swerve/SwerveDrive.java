@@ -14,6 +14,7 @@ import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
+import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
 import edu.wpi.first.wpilibj.SerialPort;
@@ -69,10 +70,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
 
     private AimHelper limelight;
-    private PIDController LLpidX = new PIDController(DriveConstants.AUTO_ALIGN_PID_X[1],DriveConstants.AUTO_ALIGN_PID_X[2],DriveConstants.AUTO_ALIGN_PID_X[3]);
-    private PIDController LLpidY = new PIDController(DriveConstants.AUTO_ALIGN_PID_Y[1],DriveConstants.AUTO_ALIGN_PID_Y[2],DriveConstants.AUTO_ALIGN_PID_Y[3]);
-    private double desiredReflectiveDistance = 22;
-    private double desiredAprilTagDistance = 14.06;
+    private LimeConsts LC;
+    private PIDController LLpidX = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
+    private PIDController LLpidY = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
 
     public enum driveType {TELEOP, AUTO, CROSS, LL};
     public driveType driveState;
@@ -172,6 +172,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public void initInputs() {
+        LC = new LimeConsts();
+
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
         leftStickY = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_Y);
@@ -262,9 +264,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
             xSpeed = LLpidX.calculate(limelight.getParallelDistance(), 0);
             if (limelight.currentPipeline == 0) {
-                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), desiredAprilTagDistance + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
             } else if (limelight.currentPipeline == 1) {
-                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), desiredReflectiveDistance + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_REFLECTIVE_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
             }
             //flip if rotated other direction. 
             if (rotTarget > 90) {

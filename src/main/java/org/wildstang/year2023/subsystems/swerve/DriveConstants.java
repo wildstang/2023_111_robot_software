@@ -57,8 +57,4 @@ public final class DriveConstants {
     public static final int ANGLE_CURRENT_LIMIT = 10;
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
-
-    public static final double[] AUTO_ALIGN_PID_X = {1,1,1}; //TODO: Needs to be tuned, kP, kI, kD
-
-    public static final double[] AUTO_ALIGN_PID_Y = {1,1,1};
 }
