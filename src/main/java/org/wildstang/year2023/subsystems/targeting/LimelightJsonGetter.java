@@ -1,7 +1,6 @@
 package org.wildstang.year2023.subsystems.targeting;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -47,7 +46,7 @@ public class LimelightJsonGetter implements Subsystem {
         //just repeated here as well to decrease the amount of time we have to wait to get access to the data.
 
         //get json string
-        this.latestFetch = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
+        this.latestFetch = JSONDUMP.toString();
 
         //if the string is null do not save it as the one we are parsing
         //hopefully helps to avoid most ParseExceptions
@@ -74,12 +73,12 @@ public class LimelightJsonGetter implements Subsystem {
     public void update() {
 
         //get json string
-        this.currentObjectString = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
+        this.latestFetch = JSONDUMP.toString();
 
         //if the string is null do not save it as the one we are parsing
         //hopefully helps to avoid most ParseExceptions
         if (currentObjectString != null) {
-            this.currentObjectString = latestFetch;
+            latestFetch = this.currentObjectString;
         }
 
         //parse the string
@@ -132,10 +131,10 @@ public class LimelightJsonGetter implements Subsystem {
     public double getData(String key) {
 
         //continues getObjectWithTheData() from layer 3
-        JSONObject objectWithTheData = getDataContainer();
+        JSONObject dataContainer = getDataContainer();
 
         //4 layers in: key
-        return (Double) objectWithTheData.get("\"" + key + "\"");
+        return (Double) dataContainer.get("\"" + key + "\"");
 
     }
 
