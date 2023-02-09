@@ -56,13 +56,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathHeading;
     private double pathTarget;
     private double autoTravelled;
-    private double prevTime = 0;
-    private double[] lastControl  = {0,0};
     private double[] lastX = {0,0,0,0};
     private double[] lastY = {0,0,0,0};
     private double autoTempX;
     private double autoTempY;
-    private SlewRateLimiter magLimit = new SlewRateLimiter(1.8);
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -140,11 +137,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed *= thrustValue;
         ySpeed *= thrustValue;
         rotSpeed *= thrustValue;
-
-        lastControl = slewLimit(xSpeed, ySpeed);
-        xSpeed = lastControl[0];
-        ySpeed = lastControl[1];
-        prevTime = WPIUtilJNI.now() * 1e-6;
         
 
         //use the limelight for tracking
@@ -382,81 +374,4 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //limelight.setGyroValue((gyro.getYaw() + 360)%360);
         return (359.99 - gyro.getYaw()+360)%360;
     }  
-
-    public double[] slewLimit(double xSpeed,double ySpeed){
-        double dir = Math.atan2(ySpeed, xSpeed);
-        double mag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
-
-        double elapsedTime = (WPIUtilJNI.now()*1e-6 - prevTime);
-
-        if (AngleDifference(dir, Math.atan2(lastControl[0], lastControl[1])) < 0.45*Math.PI){
-            dir = StepTowardsCircular(dir, Math.atan2(lastControl[0], lastControl[1]), (1.2/Math.abs(mag))*elapsedTime);
-            mag = magLimit.calculate(mag);
-        } else if (AngleDifference(dir, Math.atan2(lastControl[0], lastControl[1])) < 0.85*Math.PI){
-            dir = WrapAngle(dir + Math.PI);
-            mag = magLimit.calculate(mag);
-        } else {
-            dir = StepTowardsCircular(dir,Math.atan2(lastControl[0], lastControl[1]),(1.2/Math.abs(mag))* elapsedTime);
-            mag = magLimit.calculate(0.0);
-        }
-
-
-        return new double[]{mag * Math.cos(dir),dir * Math.sin(dir)};
-    }
-
-    public double StepTowards(double _current, double _target, double _stepsize) {
-        if (Math.abs(_current - _target) <= _stepsize) {
-            return _target;
-        }
-        else if (_target < _current) {
-            return _current - _stepsize;
-        }
-        else {
-            return _current + _stepsize;
-        }
-    }
-    public double StepTowardsCircular(double _current, double _target, double _stepsize) {
-        _current = WrapAngle(_current);
-        _target = WrapAngle(_target);
-
-        double stepDirection = Math.signum(_target - _current);
-        double difference = Math.abs(_current - _target);
-
-        if (difference <= _stepsize) {
-            return _target;
-        }
-        else if (difference > Math.PI) { //does the system need to wrap over eventually?
-            //handle the special case where you can reach the target in one step while also wrapping
-            if (_current + 2*Math.PI - _target < _stepsize || _target + 2*Math.PI - _current < _stepsize) {
-                return _target;
-            }
-            else {
-                return WrapAngle(_current - stepDirection * _stepsize); //this will handle wrapping gracefully
-            }
-
-        }
-        else {
-            return _current + stepDirection * _stepsize;
-        }
-    }
-    public double WrapAngle(double _angle) {
-        double twoPi = 2*Math.PI;
-
-        if (_angle == twoPi) { // Handle this case separately to avoid floating point errors with the floor after the division in the case below
-            return 0.0;
-        }
-        else if (_angle > twoPi) {
-            return _angle - twoPi*Math.floor(_angle / twoPi);
-        }
-        else if (_angle < 0.0) {
-            return _angle + twoPi*(Math.floor((-_angle) / twoPi)+1);
-        }
-        else {
-            return _angle;
-        }
-    }
-    public double AngleDifference(double _angleA, double _angleB) {
-        double difference = Math.abs(_angleA - _angleB);
-        return difference > Math.PI? (2 * Math.PI) - difference : difference;
-    }
 }

@@ -46,7 +46,7 @@ public class Superstructure implements Subsystem{
         }if (source == Y && Y.getValue()){
             currentPos = SuperPos.SCORE_HIGH;
         }if (source == dUp && dUp.getValue()){
-            currentPos = SuperPos.HP_STATION_BACK;
+            currentPos = SuperPos.HP_STATION_FRONT;
         }if (source == dRight && dRight.getValue()){
             currentPos = SuperPos.INTAKE_BACK;
         }if (source == dLeft && dLeft.getValue()){
@@ -117,14 +117,16 @@ public class Superstructure implements Subsystem{
         }
         if (motion == modes.ARMDELAY){
             lift.setPosition(currentPos.getL(gamepiece));
-            armWait = true;
+            //armWait = true;
+            arm.setPosition(currentPos.getA(gamepiece));
             wristWait = true;
             motion = modes.WAITING;
         }
         if (motion == modes.LIFTDELAY){
             arm.setPosition(currentPos.getA(gamepiece));
             wristWait = true;
-            liftWait = true;
+            //liftWait = true;
+            lift.setPosition(currentPos.getL(gamepiece));
             motion = modes.WAITING;
         }
         if (motion == modes.WRIST){
@@ -151,7 +153,8 @@ public class Superstructure implements Subsystem{
                 wrist.setPosition(currentPos.getW(gamepiece));
                 wristWait = false;
             } else {
-                wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
+                //wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
+                wrist.setPosition((360-arm.getPosition())%360);
             }
         }
         SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
