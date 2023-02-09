@@ -69,8 +69,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
 
     private AimHelper limelight;
-    private PIDController LLpidX = new PIDController(1, 1, 1);//Needs to be tuned, kP, kI, kD
-    private PIDController LLpidY = new PIDController(1, 1, 1);
+    private PIDController LLpidX = new PIDController(DriveConstants.AUTO_ALIGN_PID_X[1],DriveConstants.AUTO_ALIGN_PID_X[2],DriveConstants.AUTO_ALIGN_PID_X[3]);
+    private PIDController LLpidY = new PIDController(DriveConstants.AUTO_ALIGN_PID_Y[1],DriveConstants.AUTO_ALIGN_PID_Y[2],DriveConstants.AUTO_ALIGN_PID_Y[3]);
     private double desiredReflectiveDistance = 22;
     private double desiredAprilTagDistance = 14.06;
 

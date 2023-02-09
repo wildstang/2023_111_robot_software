@@ -54,86 +54,7 @@ public class LimelightJsonGetter implements Subsystem {
         if (currentObjectString != null) {
             this.currentObjectString = latestFetch;
         }
-
-        /*
-        //parse the string
-        try {
-
-            switch (currentPipeline) {
-
-                case 0: { //retroTape
-
-                    Iterator<Map.Entry<String, Double>> iterateResults = JSONDUMP.entrySet().iterator();
-
-                    while (itr1.hasNext()) {
-                        Map.Entry pair = itr1.next();
-                        System.out.println(pair.getKey() + " : " + pair.getValue());
-                    }
-
-                    Iterator<Map.Entry<String, Double>> iterateFiducialMarkers = JSONDUMP.iterator();
-
-                    int i = 0;
-
-                    while (iterateFiducialMarkers.hasNext()) {
-
-                        //int fID, double ta, double tx, double ty
-                        iterateResults = ((Map) itr2.next()).Retro().entrySet().iterator();
-
-                        double[] doubleArray = {0,0,0};
-
-                        while (itr1.hasNext()) {
-
-                            Map.Entry<String, Double> pair = iterateResults.next();
-
-                            switch (pair.getKey()) {
-
-                                case "ta": {
-                                    doubleArray[1] = pair.getValue();
-                                    break;
-                                }
-
-                                case "tx": {
-                                    doubleArray[2] = pair.getValue();
-                                    break;
-                                }
-
-                                case "ty": {
-                                    doubleArray[3] = pair.getValue();
-                                    break;
-                                }
-
-                                default: { //Nothing there?
-                                    break;
-                                }
-                            }
-
-                            System.out.println(pair.getKey() + " : " + pair.getValue());
-
-                        }
-
-                        i++;
-
-                    }
-
-                    break;
-
-                }
-
-                case 1: {
-
-                    break;
-
-                }
-
-            }
-
-            this.currentObject = (JSONObject) parser.parse(currentObjectString);
-
-        } catch (ParseException e) { //if ParseException does occur then <do something>
-            e.printStackTrace();
-        }
-        */
-
+        
         //parse the string
         try {
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
@@ -176,7 +97,7 @@ public class LimelightJsonGetter implements Subsystem {
      * and eliminate duplicate code.
      * @return A JSON object containing the numbers (without all the clout).
      */
-    private JSONObject getObjectWithTheData() {
+    private JSONObject getDataContainer() {
 
         //What array of "Results {}" to look in.
         String arrayToLookIn;
@@ -208,10 +129,10 @@ public class LimelightJsonGetter implements Subsystem {
      * WILL NOT work on keys whose value is a JSONArray.
      * @param key The key of the value you would like to retrieve
      */
-    public double getDoubleProperty(String key) {
+    public double getData(String key) {
 
         //continues getObjectWithTheData() from layer 3
-        JSONObject objectWithTheData = getObjectWithTheData();
+        JSONObject objectWithTheData = getDataContainer();
 
         //4 layers in: key
         return (Double) objectWithTheData.get("\"" + key + "\"");
@@ -239,8 +160,8 @@ public class LimelightJsonGetter implements Subsystem {
         System.out.println("* Full JSON Dump:");
         System.out.println(this.currentObjectString);
         System.out.println("* Tx, Ty, & Ta:");
-        System.out.println(getDoubleProperty("tx"));
-        System.out.println(getDoubleProperty("ty"));
-        System.out.println(getDoubleProperty("ta"));
+        System.out.println(getData("tx"));
+        System.out.println(getData("ty"));
+        System.out.println(getData("ta"));
     }
 }

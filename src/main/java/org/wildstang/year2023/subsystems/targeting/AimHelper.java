@@ -60,6 +60,9 @@ public class AimHelper implements Subsystem {
     private double angleFactor = 15;
     public static double FenderDistance = 60;
 
+    private int dataLifeSpan = 5;
+    private int dataLife = 0; 
+
     public int currentPipeline;
     private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
         put("aprilTag", 0);
@@ -76,14 +79,23 @@ public class AimHelper implements Subsystem {
 
     public void calcTargetCoords() { //update target coords.
         if(tv.getValue() == 1) {
+            TargetInView = false;
             x = tx.getValue();
             y = ty.getValue();
-            TargetInView = true;
+            dataLife = 0;
         }
         else {
-            x = 0; //no target case
-            y = 0;
             TargetInView = false;
+            // accounting for unreliable readings
+            dataLife ++;
+            if (dataLife <= dataLifeSpan){
+                return;
+            } else{
+                x = 0; //no target case
+                y = 0;
+                
+            }
+            
         }
     }
 
@@ -95,22 +107,30 @@ public class AimHelper implements Subsystem {
     public void setGyroValue(double toSet) {
         gyroValue = toSet;
     }
-
-    public double getTangentDistance() {
-        calcTargetCoords();
-        TargetAbsoluteDistance = (modifier *  12) + 36 + LC.TARGET_HEIGHT / Math.tan(Math.toRadians(ty.getValue() + LC.CAMERA_ANGLE_OFFSET));
+    
+    /** 
+     * @return Get the shortest distance from robot to the target
+     */
+    public double getDistance() {
+        TargetAbsoluteDistance = (modifier *  12) + 36 + LC.TARGET_HEIGHT / Math.tan(Math.toRadians(this.y + LC.CAMERA_ANGLE_OFFSET));
         //return TargetDistance;
         return TargetAbsoluteDistance;
     }
 
+    /** 
+     * @return Get the x distance from robot to target (2023 game)
+     */
     public double getNormalDistance() {
-        TargetNormalDistance = getTangentDistance()*Math.cos(Math.toRadians(tx.getValue()));
+        TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
 
         return TargetNormalDistance;
     }
 
+    /** 
+     * @return Get the y distance from robot to target (2023 game)
+     */
     public double getParallelDistance() {
-        TargetParallelDistance = getTangentDistance()*Math.sin(Math.toRadians(tx.getValue()));
+        TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
 
         return TargetParallelDistance;
     }
@@ -200,7 +220,7 @@ public class AimHelper implements Subsystem {
         calcTargetCoords();
         //distanceFactor = distance.getEntry().getDouble(0);
         //angleFactor = angle.getEntry().getDouble(0);
-        SmartDashboard.putNumber("limelight distance", getTangentDistance());
+        SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
