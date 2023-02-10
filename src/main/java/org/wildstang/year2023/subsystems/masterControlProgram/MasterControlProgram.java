@@ -46,8 +46,8 @@ public class MasterControlProgram implements Subsystem {
     private static final double liftSpeedFactor = 0.2;
     private static final double liftResetBound = -0.9;
 
-    private static final double liftFlipPos = 0;
-    private static final double wristCarryPos = 0;
+    private static final double liftFlipPos = 30;
+    private static final double wristCarryPos = 180;
 
     private static final double armAjustFactor = 5;
     private static final double wristAjustFactor = 5;
@@ -72,19 +72,19 @@ public class MasterControlProgram implements Subsystem {
 
     private enum position{
         HOLDING(0,180,180,modes.FORWARD,"HOLDING","HOLDING"),
-        GROUND_FORWARD(10,0,0,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD"),
-        GROUND_REVERSE(0,0,0,modes.REVERSE,"GROUND_REVERSE","GROUND_REVERSE"),
+        GROUND_FORWARD(13.5,283,52,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD"),
+        GROUND_REVERSE(26.7,56.4,302.0,modes.REVERSE,"GROUND_REVERSE","GROUND_REVERSE"),
 
-        CONE_LOW(0,0,0,modes.FORWARD,"CONE_LOW","CUBE_LOW"),
-        CONE_MID(0,0,0,modes.FORWARD, "CONE_MID","CUBE_MID"),
-        CONE_HIGH(72,240,55,modes.FORWARD,"CONE_HIGH","CUBE_HIGH"),
+        CONE_LOW(0,270,135,modes.FORWARD,"CONE_LOW","CUBE_LOW"),
+        CONE_MID(31.2,233.4,44.5,modes.FORWARD, "CONE_MID","CUBE_MID"),
+        CONE_HIGH(68,245.4,51.8,modes.FORWARD,"CONE_HIGH","CUBE_HIGH"),
 
-        CUBE_LOW(0,0,0,modes.FORWARD,"CUBE_LOW","CUBE_LOW"),
-        CUBE_MID(0,0,0,modes.FORWARD,"CUBE_MID","CUBE_MID"),
-        CUBE_HIGH(72,240,55,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH"),
+        CUBE_LOW(0,270,135,modes.FORWARD,"CUBE_LOW","CUBE_LOW"),
+        CUBE_MID(31.2,233.4,44.5,modes.FORWARD,"CUBE_MID","CUBE_MID"),
+        CUBE_HIGH(68,245.4,51.8,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH"),
 
-        STATION_FORWARD(0,0,0,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD"),
-        STATION_REVERSE(0,0,0,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE");
+        STATION_FORWARD(25,203,58,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD"),
+        STATION_REVERSE(40,140,310,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE");
         public final double lPos;
         public final double aPos;
         public final double wPos;
