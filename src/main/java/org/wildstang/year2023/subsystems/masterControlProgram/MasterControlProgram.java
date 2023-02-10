@@ -181,22 +181,24 @@ public class MasterControlProgram implements Subsystem {
         liftState = modes.LIFT_AUTOMATIC;
         liftSpeed = 0;
         delays = modes.FREE;
+        armAjust = 0;
+        wristAjust = 0;
     }
 
     @Override
     public void update() {
         if(posChanged && delays == modes.FREE){ //if pos has changed, update targets
             //hight limit stuff
-            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lPos > liftFlipPos || currentPosition.lPos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){
+            if(lastPosition.mode != currentPosition.mode &&(lastPosition.lPos > liftFlipPos || currentPosition.lPos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){ //if in danger of violating height limit. This happens if flipping with either start or finish pos above safe lift flip position
                 liftHelper.goToPosition(liftFlipPos);
                 wristHelper.goToPosition(wristCarryPos);
                 delays = modes.HOLDING_ARM;
             }
             //everything else
             else{
-                armHelper.goToPosition(currentPosition.aPos+armAjust);
+                armHelper.goToPosition(currentPosition.aPos+armAjust); 
                 if(lastPosition.mode != currentPosition.mode){
-                    wristHelper.goToPosition(wristCarryPos);
+                    wristHelper.goToPosition(wristCarryPos); //if flipping in way not meeting HOLDING_ARM requirements, wrist still must be frozen
                     delays = modes.HOLDING_WRIST;
                 }
                 else{
@@ -219,12 +221,13 @@ public class MasterControlProgram implements Subsystem {
             delays = modes.HOLDING_ARM;
             posChanged = false;
         }
-        if(liftResetSignal == true){
+
+        if(liftResetSignal == true){ //if left joystick all the way down, reset lift encoder.
             liftHelper.resetEncoder();
             liftResetSignal = false;
         }
 
-        if(haltSignal){
+        if(haltSignal){ //if halt button pressed, stop everything as well as automatic movements.
             armHelper.stopMotor();
             liftHelper.stopMotor();
             wristHelper.stopMotor();
@@ -237,18 +240,22 @@ public class MasterControlProgram implements Subsystem {
                 delays = modes.HOLDING_LIFT;
             }
         }
+        //if frozen and arm has finished, move lift and wrist to correct pos
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
             liftHelper.goToPosition(currentPosition.lPos);
             wristHelper.goToPosition(currentPosition.wPos+wristAjust);
             delays = modes.FREE;
         }
+        //if wrist was in carry pos and arm has finished moving, move wrist to correct pos
         if(delays == modes.HOLDING_WRIST && armHelper.isReady()){
             wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
+        //manual mode directly controls speed
         if(liftState == modes.LIFT_MANUAL){
             liftHelper.setSpeed(liftSpeed,false);
         }
-        
+
+        //smartdashboard
         SmartDashboard.putNumber("arm pos",armHelper.getPosition());
         SmartDashboard.putNumber("wrist pos",wristHelper.getPosition());
         SmartDashboard.putNumber("lift pos",liftHelper.getPosition());
@@ -265,7 +272,7 @@ public class MasterControlProgram implements Subsystem {
             currentMode = modes.CUBE;
             AimHelper.changePipeline("AprilTag");
         }
-
+        //get position corresponding to button
         if(buttonToPosition.containsKey(source)){
             lastPosition = currentPosition;
             currentPosition = buttonToPosition.get(source);
@@ -295,7 +302,7 @@ public class MasterControlProgram implements Subsystem {
         else{
             liftState = modes.LIFT_AUTOMATIC;
         }
-
+        //right joystick ajust
         if(Math.abs(armAjuster.getValue())>ajustDeadband){
             armAjust = armAjuster.getValue()*armAjustFactor;
         }
@@ -320,13 +327,13 @@ public class MasterControlProgram implements Subsystem {
     public void selfTest() {
     }
     public void initStringToPosition() {
-        for (position pos : position.values()){
+        for (position pos : position.values()){ //construct string to position dictionary on init.
             stringToPosition.put(pos.name,pos);
         }
 
     }
 
-    public void autoSetPosition(String pos){
+    public void autoSetPosition(String pos){ //auto override code. get position corresponding to string.
         if(stringToPosition.containsKey(pos)){
             lastPosition = currentPosition;
             currentPosition = stringToPosition.get(pos);
