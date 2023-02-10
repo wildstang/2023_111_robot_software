@@ -43,7 +43,7 @@ public class MasterControlProgram implements Subsystem {
 
     private double liftSpeed;
     private static final double liftDeadband = 0.05;
-    private static final double liftSpeedFactor = 0.5;
+    private static final double liftSpeedFactor = 0.2;
     private static final double liftResetBound = -0.9;
 
     private static final double liftFlipPos = 0;
@@ -234,11 +234,11 @@ public class MasterControlProgram implements Subsystem {
             delays = modes.FREE;
         }
 
-        if(delays == modes.HOLDING_ARM){
-            if(liftHelper.isReady()){ //if lift finished moving to position, move arm
-                armHelper.goToPosition(currentPosition.aPos+armAjust);
-                delays = modes.HOLDING_LIFT;
-            }
+        if(delays == modes.HOLDING_ARM && liftHelper.isReady()){
+             //if lift finished moving to position, move arm
+            armHelper.goToPosition(currentPosition.aPos+armAjust);
+            delays = modes.HOLDING_LIFT;
+            
         }
         //if frozen and arm has finished, move lift and wrist to correct pos
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
@@ -247,7 +247,7 @@ public class MasterControlProgram implements Subsystem {
             delays = modes.FREE;
         }
         //if wrist was in carry pos and arm has finished moving, move wrist to correct pos
-        if(delays == modes.HOLDING_WRIST && armHelper.isReady()){
+        if(delays == modes.HOLDING_WRIST  &&armHelper.isReady()){
             wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
         //manual mode directly controls speed
@@ -310,10 +310,10 @@ public class MasterControlProgram implements Subsystem {
             armAjust = 0;
         }
         if(Math.abs(wristAjuster.getValue())>ajustDeadband){
-            armAjust = wristAjuster.getValue()*wristAjustFactor;
+            wristAjust = wristAjuster.getValue()*wristAjustFactor;
         }
         else{
-            armAjust = 0;
+            wristAjust = 0;
         }
 
     }
