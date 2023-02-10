@@ -39,7 +39,7 @@ public class intake implements Subsystem {
     public void init() {
 
         intakeMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.INTAKE_MOTOR);
-        intakeMotor.setCurrentLimit(40, 40, 0);
+        intakeMotor.setCurrentLimit(30, 30, 0);
         ingest = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_TRIGGER);
         ingest.addInputListener(this);
         expel = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_TRIGGER);
@@ -70,11 +70,11 @@ public class intake implements Subsystem {
     public void inputUpdate(Input source) {
         in = Math.abs(ingest.getValue());
         out = Math.abs(expel.getValue());
-        if ((in > deadband && in >= out) || (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband)) {
-            speed = ingestSpeed * in;
+        if ((in > deadband && in >= out) || (driverLB.getValue() || driverRB.getValue())) {
+            speed = ingestSpeed * 1;
             isHolding = true;
-        } else if ((out > deadband && out > in) || (driverLB.getValue() || driverRB.getValue())) {
-            speed = expelSpeed * out;
+        } else if ((out > deadband && out > in) || (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband)) {
+            speed = expelSpeed * 1;
             isHolding = false;
         } else {
             speed = (isHolding? 1.0 : 0.0) * holdingSpeed;

@@ -47,12 +47,12 @@ public class Superstructure implements Subsystem{
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
         if (source == Y && Y.getValue()) scoring = score.HIGH;
-        if (source == dRight && dRight.getValue()) intaking = intake.UPRIGHT;
+        if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
         if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
-        if (source == dUp && dUp.getValue()) stationing = station.DOUBLE;
+        if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
         if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
 
-        if (timer.hasElapsed(0.5)){
+        if (timer.hasElapsed(0.25)){
             if (Math.abs(driverLT.getValue()) > 0.25){
                 if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
                 if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
@@ -139,13 +139,7 @@ public class Superstructure implements Subsystem{
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
         wrist = new Wrist((WsSparkMax) WSOutputs.WRIST.get());
 
-        gamepiece = SuperConts.CONE;
-        wristWait = false;
-        armWait = false;
-        liftWait = false;
-        motion = modes.WAITING;
-        currentPos = SuperPos.NEUTRAL;
-        lastPos = SuperPos.NEUTRAL;
+        resetState();
     }
 
     @Override

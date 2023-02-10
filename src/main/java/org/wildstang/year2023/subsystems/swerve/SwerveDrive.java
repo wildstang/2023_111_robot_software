@@ -139,6 +139,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rotSpeed *= thrustValue;
         
 
+        if (Math.abs(leftTrigger.getValue()) > 0.15){
+            xSpeed /=2.0;
+            ySpeed /=2.0;
+            //rotTarget = 180.0;
+            //rotLocked = true;
+        }
         //use the limelight for tracking
         // if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
         //     driveState = driveType.LL;
@@ -152,12 +158,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //     }
         // }
 
-        //field centric while using the camera
-        isFieldCentric = !(rightBumper.getValue() && Math.abs(leftTrigger.getValue()) < 0.15);
-        if (!isFieldCentric) {
-            rotTarget = 0;
-            rotSpeed *= 0.25;
-        }
     }
  
     @Override

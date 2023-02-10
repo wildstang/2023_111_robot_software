@@ -99,7 +99,7 @@ public class WSSwerveHelper {
         else {
             rotPID = (rotDelta + 360) / 180;
         } 
-        return rotPID;
+        return Math.signum(rotPID) * Math.min(Math.abs(rotPID*2.5), 1.0);
     }
 
     /**determines the translational magnitude of the robot in autonomous
