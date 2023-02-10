@@ -254,7 +254,11 @@ public class MasterControlProgram implements Subsystem {
         if(liftState == modes.LIFT_MANUAL){
             liftHelper.setSpeed(liftSpeed,false);
         }
-
+        //update arm/wrist ajustment even if preset not changed
+        if(delays == modes.FREE){
+            armHelper.goToPosition(currentPosition.aPos+armAjust);
+            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
+        }
         //smartdashboard
         SmartDashboard.putNumber("arm pos",armHelper.getPosition());
         SmartDashboard.putNumber("wrist pos",wristHelper.getPosition());
