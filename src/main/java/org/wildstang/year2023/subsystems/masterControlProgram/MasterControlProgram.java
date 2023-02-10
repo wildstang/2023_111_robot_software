@@ -325,4 +325,15 @@ public class MasterControlProgram implements Subsystem {
         }
 
     }
+
+    public void autoSetPosition(String pos){
+        if(stringToPosition.containsKey(pos)){
+            lastPosition = currentPosition;
+            currentPosition = stringToPosition.get(pos);
+            SmartDashboard.putString("currentPosition",currentPosition.name);
+        }
+        else{
+            SmartDashboard.putString("Error: autoSetPosition recived invalid String. Recived: "+pos,currentPosition.name);
+        }
+    }
 }
