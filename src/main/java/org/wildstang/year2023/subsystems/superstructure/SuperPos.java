@@ -8,8 +8,8 @@ public enum SuperPos {
     NEUTRAL(0,180,180,0,180,180,false),
     INTAKE_FRONT(13.5,283,52,13.5,283,52,true),
     INTAKE_FRONT_LOW(0,283,52,0,283,52,true),
-    HP_STATION_FRONT(25,203,58,25,203,58,true),
-    HP_STATION_BACK(40,140,310,40,140,310,false),
+    HP_STATION_DOUBLE(25,203,58,25,203,58,true),
+    HP_STATION_SINGLE(40,70,180,40,70,180,false),
     INTAKE_BACK(34.5,56.4,302,26.7,56.4,302,false),
     INTAKE_BACK_LOW(26.7, 56.4, 302.0, 26.7, 56.4, 302.0, false);
     //upright cone back 26.7 56.4 302

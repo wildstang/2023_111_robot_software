@@ -59,8 +59,8 @@ public class Superstructure implements Subsystem{
                 if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
                 if (lastPos != currentPos) timer.reset();
             } else if (driverLB.getValue()){
-                if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_FRONT;
-                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_BACK;
+                if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
+                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
             } else if (driverRB.getValue()){
                 if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
@@ -216,7 +216,7 @@ public class Superstructure implements Subsystem{
         lastPos = SuperPos.NEUTRAL;
         scoring = score.HIGH;
         intaking = intake.UPRIGHT;
-        stationing = station.DOUBLE;
+        stationing = station.SINGLE;
         timer.reset(); timer.start();
     }
 
