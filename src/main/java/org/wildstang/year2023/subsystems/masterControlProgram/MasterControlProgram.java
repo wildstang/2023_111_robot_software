@@ -20,7 +20,7 @@ public class MasterControlProgram implements Subsystem {
     
     //inputs
     private DigitalInput highGoal, midGoal, lowGoal, stationForward, stationReverse, cubeMode, coneMode,groundForward,groundReverse,reset,halt;
-    private AnalogInput liftManual;
+    private AnalogInput liftManual,armAjuster,wristAjuster;
     // motors
     
 
@@ -34,6 +34,9 @@ public class MasterControlProgram implements Subsystem {
     private double wristPosition;
     private double liftPosition;
 
+    private double armAjust;
+    private double wristAjust;
+
     private boolean posChanged;
     private boolean haltSignal;
     private boolean liftResetSignal;
@@ -45,6 +48,11 @@ public class MasterControlProgram implements Subsystem {
 
     private static final double liftFlipPos = 0;
     private static final double wristCarryPos = 0;
+
+    private static final double armAjustFactor = 5;
+    private static final double wristAjustFactor = 5;
+    private static final double ajustDeadband = 0.1;
+
     private AimHelper AimHelper;
 
     private enum modes{
@@ -148,6 +156,10 @@ public class MasterControlProgram implements Subsystem {
 
         liftManual = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_JOYSTICK_Y); 
         liftManual.addInputListener(this);
+        wristAjuster = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_JOYSTICK_X); 
+        wristAjuster.addInputListener(this);
+        armAjuster = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_JOYSTICK_Y); 
+        armAjuster.addInputListener(this);
 
         AimHelper = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
 
@@ -182,13 +194,13 @@ public class MasterControlProgram implements Subsystem {
             }
             //everything else
             else{
-                armHelper.goToPosition(currentPosition.aPos);
+                armHelper.goToPosition(currentPosition.aPos+armAjust);
                 if(lastPosition.mode != currentPosition.mode){
                     wristHelper.goToPosition(wristCarryPos);
                     delays = modes.HOLDING_WRIST;
                 }
                 else{
-                    wristHelper.goToPosition(currentPosition.wPos);
+                    wristHelper.goToPosition(currentPosition.wPos+wristAjust);
                 }
                 if(liftState == modes.LIFT_AUTOMATIC){
                     liftHelper.goToPosition(currentPosition.lPos);
@@ -216,26 +228,30 @@ public class MasterControlProgram implements Subsystem {
             armHelper.stopMotor();
             liftHelper.stopMotor();
             wristHelper.stopMotor();
+            delays = modes.FREE;
         }
 
         if(delays == modes.HOLDING_ARM){
             if(liftHelper.isReady()){ //if lift finished moving to position, move arm
-                armHelper.goToPosition(currentPosition.aPos);
+                armHelper.goToPosition(currentPosition.aPos+armAjust);
                 delays = modes.HOLDING_LIFT;
             }
         }
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
             liftHelper.goToPosition(currentPosition.lPos);
-            wristHelper.goToPosition(currentPosition.wPos);
+            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
             delays = modes.FREE;
         }
         if(delays == modes.HOLDING_WRIST && armHelper.isReady()){
-            wristHelper.goToPosition(currentPosition.wPos);
+            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
         if(liftState == modes.LIFT_MANUAL){
             liftHelper.setSpeed(liftSpeed,false);
         }
         
+        SmartDashboard.putNumber("arm pos",armHelper.getPosition());
+        SmartDashboard.putNumber("wrist pos",wristHelper.getPosition());
+        SmartDashboard.putNumber("lift pos",liftHelper.getPosition());
     }
 
     @Override
@@ -278,6 +294,19 @@ public class MasterControlProgram implements Subsystem {
         }
         else{
             liftState = modes.LIFT_AUTOMATIC;
+        }
+
+        if(Math.abs(armAjuster.getValue())>ajustDeadband){
+            armAjust = armAjuster.getValue()*armAjustFactor;
+        }
+        else{
+            armAjust = 0;
+        }
+        if(Math.abs(wristAjuster.getValue())>ajustDeadband){
+            armAjust = wristAjuster.getValue()*wristAjustFactor;
+        }
+        else{
+            armAjust = 0;
         }
 
     }
