@@ -70,7 +70,7 @@ public class AimHelper implements Subsystem {
             TargetInView = true;
             x = tx.getValue();
             y = ty.getValue();
-            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
+            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
             dataLife = 0;
         }
         else {
@@ -82,6 +82,7 @@ public class AimHelper implements Subsystem {
             } else{
                 x = 0; //no target case
                 y = 0;
+                target3D = null;
             }
         }
     }
@@ -127,13 +128,10 @@ public class AimHelper implements Subsystem {
     public void inputUpdate(Input source) {
         if (rightBumper.getValue())
         {
-            //ledState = false;
-            //changePipeline("aprilTag");
+            gamepiece = LC.CUBE;
         }
         if (leftBumper.getValue()){
-            // always on
-            //ledState = true;
-            //changePipeline("reflective");
+            gamepiece = LC.CONE;
         }
         // if (source == dup && dup.getValue()) {
         //     modifier++;
@@ -166,6 +164,7 @@ public class AimHelper implements Subsystem {
         // dup.addInputListener(this);
         // ddown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
         // ddown.addInputListener(this);
+
         resetState();
     }
 
