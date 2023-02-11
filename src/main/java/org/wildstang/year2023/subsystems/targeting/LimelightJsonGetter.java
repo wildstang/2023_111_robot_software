@@ -1,7 +1,6 @@
 package org.wildstang.year2023.subsystems.targeting;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -47,89 +46,18 @@ public class LimelightJsonGetter implements Subsystem {
         //just repeated here as well to decrease the amount of time we have to wait to get access to the data.
 
         //get json string
-
-        this.latestFetch = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
+        this.latestFetch = JSONDUMP.toString();
 
         //if the string is null do not save it as the one we are parsing
         //hopefully helps to avoid most ParseExceptions
         if (currentObjectString != null) {
             this.currentObjectString = latestFetch;
         }
-
+        
         //parse the string
         try {
-
-            switch (currentPipeline) {
-
-                case 0: { //retroTape
-
-                    Iterator<Map.Entry<String, Double>> iterateResults = JSONDUMP.entrySet().iterator();
-
-                    while (itr1.hasNext()) {
-                        Map.Entry pair = itr1.next();
-                        System.out.println(pair.getKey() + " : " + pair.getValue());
-                    }
-
-                    Iterator<Map.Entry<String, Double>> iterateFiducialMarkers = JSONDUMP.iterator();
-
-                    int i = 0;
-
-                    while (iterateFiducialMarkers.hasNext()) {
-
-                        //int fID, double ta, double tx, double ty
-                        iterateResults = ((Map) itr2.next()).Retro().entrySet().iterator();
-
-                        double[] doubleArray = {0,0,0};
-
-                        while (itr1.hasNext()) {
-
-                            Map.Entry<String, Double> pair = iterateResults.next();
-
-                            switch (pair.getKey()) {
-
-                                case "ta": {
-                                    doubleArray[1] = pair.getValue();
-                                    break;
-                                }
-
-                                case "tx": {
-                                    doubleArray[2] = pair.getValue();
-                                    break;
-                                }
-
-                                case "ty": {
-                                    doubleArray[3] = pair.getValue();
-                                    break;
-                                }
-
-                                default: { //Nothing there?
-                                    break;
-                                }
-                            }
-
-                            System.out.println(pair.getKey() + " : " + pair.getValue());
-
-                        }
-
-                        i++;
-
-                    }
-
-                    break;
-
-                }
-
-                case 1: {
-
-                    break;
-
-                }
-
-            }
-
             this.currentObject = (JSONObject) parser.parse(currentObjectString);
-
-        } catch (ParseException e) { //if ParseException does occur then <do something>
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
@@ -145,12 +73,12 @@ public class LimelightJsonGetter implements Subsystem {
     public void update() {
 
         //get json string
-        this.currentObjectString = NetworkTableInstance.getDefault().getTable("limelight").getEntry("json").getString(null);
+        this.latestFetch = JSONDUMP.toString();
 
         //if the string is null do not save it as the one we are parsing
         //hopefully helps to avoid most ParseExceptions
         if (currentObjectString != null) {
-            this.currentObjectString = latestFetch;
+            latestFetch = this.currentObjectString;
         }
 
         //parse the string
@@ -168,7 +96,7 @@ public class LimelightJsonGetter implements Subsystem {
      * and eliminate duplicate code.
      * @return A JSON object containing the numbers (without all the clout).
      */
-    private JSONObject getObjectWithTheData() {
+    private JSONObject getDataContainer() {
 
         //What array of "Results {}" to look in.
         String arrayToLookIn;
@@ -200,13 +128,13 @@ public class LimelightJsonGetter implements Subsystem {
      * WILL NOT work on keys whose value is a JSONArray.
      * @param key The key of the value you would like to retrieve
      */
-    public double getDoubleProperty(String key) {
+    public double getData(String key) {
 
         //continues getObjectWithTheData() from layer 3
-        JSONObject objectWithTheData = getObjectWithTheData();
+        JSONObject dataContainer = getDataContainer();
 
         //4 layers in: key
-        return (Double) objectWithTheData.get("\"" + key + "\"");
+        return (Double) dataContainer.get("\"" + key + "\"");
 
     }
 
@@ -225,5 +153,14 @@ public class LimelightJsonGetter implements Subsystem {
     }
 
     @Override
-    public void selfTest() {}
+    public void selfTest() {
+        System.out.println("--Test grab of Limelight data from JSON--");
+        System.out.println();
+        System.out.println("* Full JSON Dump:");
+        System.out.println(this.currentObjectString);
+        System.out.println("* Tx, Ty, & Ta:");
+        System.out.println(getData("tx"));
+        System.out.println(getData("ty"));
+        System.out.println(getData("ta"));
+    }
 }
