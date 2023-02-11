@@ -59,6 +59,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double autoTempX;
     private double autoTempY;
 
+    private double xPosition;
+    private double yPosition;
+    private double distanceTraveled;
+    private double totalDist;
+    private double lastYaw;
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
@@ -162,6 +167,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         initOutputs();
         resetState();
         gyro.setYaw(0.0);
+
     }
 
     public void initInputs() {
@@ -253,6 +259,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
 
         if (driveState == driveType.FENCE) {
+            UpdatePosition();
+
             if (rotLocked){
                 //if rotation tracking, replace rotational joystick value with controller generated one
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
@@ -306,6 +314,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         isSnake = false;
 
         autoTravelled = 0;
+        totalDist = 0;
+        distanceTraveled = 0;
+        xPosition = 0;
+        yPosition = 0;
     }
 
     @Override
@@ -357,6 +369,24 @@ public class SwerveDrive extends SwerveDriveTemplate {
             }
         }
     }
+    
+    private void UpdatePosition(){
+
+        distanceTraveled = 0;
+        for (int i = 0; i < modules.length; i++) { //average of modules
+            distanceTravelled += 0.25*modules[i].getPosition();
+        } 
+        distanceTraveled -= totalDist;
+        //account for rotation by change in gyro
+        distanceTraveled -= (Math.hypot(DriveConstants.ROBOT_WIDTH,DriveConstants.ROBOT_LENGTH)/2)*Math.toRadians(gyro.getYaw()-lastYaw);
+        xPosition += (Math.cos(Math.toRadians(getGyroAngle()))*distanceTraveled);
+        yPosition += (Math.sin(Math.toRadians(getGyroAngle()))*distanceTraveled);
+        //update last values
+        lastYaw = gyro.getYaw();
+        for (int i = 0; i < modules.length; i++) {
+            totalDist += 0.25*modules[i].getPosition();
+        } 
+    }
 
     /**sets autonomous values from the path data file */
     public void setAutoValues(double position, double velocity, double heading) {
@@ -390,4 +420,5 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //limelight.setGyroValue((gyro.getYaw() + 360)%360);
         return (359.99 - gyro.getYaw()+360)%360;
     }    
+
 }
