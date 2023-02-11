@@ -82,7 +82,6 @@ public class AimHelper implements Subsystem {
             } else{
                 x = 0; //no target case
                 y = 0;
-                target3D = null;
             }
         }
     }
