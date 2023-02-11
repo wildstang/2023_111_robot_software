@@ -21,9 +21,9 @@ public enum WSSubsystems implements Subsystems {
     //LIFT("Lift", LiftControler.class),
     //ARM("Arm", ArmControler.class),
     INTAKE("Intake", intake.class),
-    //AIM_HELPER("Aim Helper", AimHelper.class),
     //WRIST("Wrist", Wrist.class),
     SUPERSTRUCTURE("Superstructure", Superstructure.class),
+    AIM_HELPER("Aim Helper", AimHelper.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
 
