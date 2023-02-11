@@ -14,7 +14,7 @@ public enum WSSubsystems implements Subsystems {
 
     // enumerate subsystems
     SWERVE_DRIVE("Swerve Drive", SwerveDrive.class),
-    MASTER_CONTROL_PROGRAM("Swerve Drive", SwerveDrive.class),
+    MASTER_CONTROL_PROGRAM("Master Control Program", MasterControlProgram.class),
     AIM_HELPER("Aim Helper", AimHelper.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
