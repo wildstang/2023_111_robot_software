@@ -269,7 +269,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if (driveState == driveType.LL) {
 
             xSpeed = LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint());
-            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
             
             // if (limelight.currentPipeline == 0) {
             //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
