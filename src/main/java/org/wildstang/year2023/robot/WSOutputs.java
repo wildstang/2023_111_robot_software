@@ -71,8 +71,8 @@ public enum WSOutputs implements Outputs {
     // ********************************
     // NetworkTables
     // ********************************
-    LL_MODE("camMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
-    LL_LEDS("ledMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
+    // LL_MODE("camMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
+    // LL_LEDS("ledMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
 
     // ********************************
     // Others ...

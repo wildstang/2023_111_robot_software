@@ -29,8 +29,6 @@ public class AimHelper implements Subsystem {
     private WsRemoteAnalogInput ty; // y angle
     private WsRemoteAnalogInput tx; // x angle
     private WsRemoteAnalogInput tv;
-    private WsRemoteAnalogOutput ledModeEntry;
-    private WsRemoteAnalogOutput llModeEntry;
 
     public double x;
     public double y;
@@ -53,18 +51,18 @@ public class AimHelper implements Subsystem {
     private int dataLifeSpan = 5;
     private int dataLife = 0; 
 
-    public int currentPipeline;
-    private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
-        put("aprilTag", 0);
-        put("reflective", 1);
-    }};
+    //public int currentPipeline;
+    // private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
+    //     put("aprilTag", 0);
+    //     put("reflective", 1);
+    // }};
 
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
     public void changePipeline(String pipelineString) {
-        currentPipeline = pipelineStringToInt.get(pipelineString);
+        //currentPipeline = pipelineStringToInt.get(pipelineString);
 
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
+        //NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
     }
 
     public void calcTargetCoords() { //update target coords.
@@ -124,28 +122,18 @@ public class AimHelper implements Subsystem {
         return (this.x) * -0.015;
     }
 
-    public void turnOnLED(boolean onState) {
-        if (onState) {
-            ledModeEntry.setValue(3);
-            llModeEntry.setValue(0);
-        }
-        else {
-            ledModeEntry.setValue(1);
-            llModeEntry.setValue(1);
-        }
-    }
 
     @Override
     public void inputUpdate(Input source) {
         if (rightBumper.getValue())
         {
-            ledState = false;
-            changePipeline("aprilTag");
+            //ledState = false;
+            //changePipeline("aprilTag");
         }
         if (leftBumper.getValue()){
             // always on
-            ledState = true;
-            changePipeline("reflective");
+            //ledState = true;
+            //changePipeline("reflective");
         }
         // if (source == dup && dup.getValue()) {
         //     modifier++;
@@ -169,8 +157,6 @@ public class AimHelper implements Subsystem {
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
         target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
-        ledModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_LEDS.get();
-        llModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_MODE.get();
 
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
@@ -189,7 +175,6 @@ public class AimHelper implements Subsystem {
 
     @Override
     public void update() {
-        turnOnLED(false);
         calcTargetCoords();
         SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
@@ -205,7 +190,7 @@ public class AimHelper implements Subsystem {
     public void resetState() {
         //ledState = true;
         //modifier = 0;
-        changePipeline("aprilTag");
+        //changePipeline("aprilTag");
         gamepiece = LC.CONE;
     }
 
