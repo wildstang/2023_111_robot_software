@@ -36,8 +36,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AnalogInput rightStickX;//rot joystick
     private AnalogInput rightTrigger;//thrust
     private AnalogInput leftTrigger;//aiming
-    private DigitalInput rightBumper;//robot centric control
-    private DigitalInput leftBumper;//intake
+    // private DigitalInput rightBumper;//robot centric control
+    // private DigitalInput leftBumper;//intake
     private DigitalInput select;//gyro reset
     private DigitalInput start;//snake mode
     private DigitalInput faceUp;//rotation lock 0 degrees
@@ -187,10 +187,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rightTrigger.addInputListener(this);
         leftTrigger = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
-        rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
-        rightBumper.addInputListener(this);
-        leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
-        leftBumper.addInputListener(this);
+        // rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
+        // rightBumper.addInputListener(this);
+        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
+        // leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_SELECT);
         select.addInputListener(this);
         start = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_START);
@@ -265,12 +265,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.LL) {
 
-            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), 0);
-            if (limelight.currentPipeline == 0) {
-                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
-            } else if (limelight.currentPipeline == 1) {
-                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_REFLECTIVE_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
-            }
+            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint());
+            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            
+            // if (limelight.currentPipeline == 0) {
+            //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            // } else if (limelight.currentPipeline == 1) {
+            //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_REFLECTIVE_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
+            // }
             //flip if rotated other direction. 
             // if (rotTarget > 90) {
             //     ySpeed = -ySpeed;

@@ -34,16 +34,17 @@ public class AimHelper implements Subsystem {
 
     public double x;
     public double y;
+    private double[] target3D;
 
     //private double modifier;
 
     public boolean TargetInView;
     private boolean ledState;
+    private boolean gamepiece;
 
     private double TargetAbsoluteDistance;
     private double TargetNormalDistance;
     private double TargetParallelDistance;
-
 
     private DigitalInput rightBumper, leftBumper;//, dup, ddown;
 
@@ -71,6 +72,7 @@ public class AimHelper implements Subsystem {
             TargetInView = true;
             x = tx.getValue();
             y = ty.getValue();
+            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
             dataLife = 0;
         }
         else {
@@ -99,18 +101,22 @@ public class AimHelper implements Subsystem {
      * @return Get the x distance from robot to target (2023 game)
      */
     public double getNormalDistance() {
-        TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-
-        return TargetNormalDistance;
+        //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
+        return this.target3D[2];
+        //return TargetNormalDistance;
     }
 
     /** 
      * @return Get the y distance from robot to target (2023 game)
      */
     public double getParallelDistance() {
-        TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
-
-        return TargetParallelDistance;
+        //TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
+        return this.target3D[0];
+        //return TargetParallelDistance;
+    }
+    public double getParallelSetpoint(){
+        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(this.target3D[0]);
+        else return 0.0;
     }
 
     public double getRotPID() {
@@ -162,6 +168,7 @@ public class AimHelper implements Subsystem {
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
+        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
         ledModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_LEDS.get();
         llModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_MODE.get();
 
@@ -182,19 +189,24 @@ public class AimHelper implements Subsystem {
 
     @Override
     public void update() {
-        turnOnLED(ledState);
+        turnOnLED(false);
         calcTargetCoords();
         SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
+        SmartDashboard.putNumber("limelight 3DX", target3D[0]);
+        SmartDashboard.putNumber("limelight 3DY", target3D[1]);
+        SmartDashboard.putNumber("limelight 3DZ", target3D[2]);
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
         //SmartDashboard.putNumber("Distance Modifier", modifier);
     }
 
     @Override
     public void resetState() {
-        ledState = true;
+        //ledState = true;
         //modifier = 0;
+        changePipeline("aprilTag");
+        gamepiece = LC.CONE;
     }
 
     @Override
