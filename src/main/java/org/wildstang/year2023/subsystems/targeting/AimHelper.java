@@ -103,7 +103,7 @@ public class AimHelper implements Subsystem {
      */
     public double getNormalDistance() {
         //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return this.target3D[3];
+        return this.target3D[2];
         //return TargetNormalDistance;
     }
 
