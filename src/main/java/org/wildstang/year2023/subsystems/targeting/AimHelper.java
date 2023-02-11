@@ -72,7 +72,7 @@ public class AimHelper implements Subsystem {
             TargetInView = true;
             x = tx.getValue();
             y = ty.getValue();
-            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
+            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
             dataLife = 0;
         }
         else {
@@ -84,6 +84,7 @@ public class AimHelper implements Subsystem {
             } else{
                 x = 0; //no target case
                 y = 0;
+                target3D = null;
             }
         }
     }
@@ -102,7 +103,7 @@ public class AimHelper implements Subsystem {
      */
     public double getNormalDistance() {
         //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return this.target3D[2];
+        return this.target3D[3];
         //return TargetNormalDistance;
     }
 
@@ -139,13 +140,10 @@ public class AimHelper implements Subsystem {
     public void inputUpdate(Input source) {
         if (rightBumper.getValue())
         {
-            ledState = false;
-            changePipeline("aprilTag");
+            gamepiece = LC.CUBE;
         }
         if (leftBumper.getValue()){
-            // always on
-            ledState = true;
-            changePipeline("reflective");
+            gamepiece = LC.CONE;
         }
         // if (source == dup && dup.getValue()) {
         //     modifier++;
@@ -168,7 +166,7 @@ public class AimHelper implements Subsystem {
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
-        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
+        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
         ledModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_LEDS.get();
         llModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_MODE.get();
 
@@ -180,6 +178,7 @@ public class AimHelper implements Subsystem {
         // dup.addInputListener(this);
         // ddown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
         // ddown.addInputListener(this);
+
         resetState();
     }
 
@@ -203,8 +202,7 @@ public class AimHelper implements Subsystem {
 
     @Override
     public void resetState() {
-        //ledState = true;
-        //modifier = 0;
+        ledState = false;
         changePipeline("aprilTag");
         gamepiece = LC.CONE;
     }
