@@ -38,6 +38,8 @@ public class AimHelper implements Subsystem {
     public double x;
     public double y;
 
+    public int id;
+
     private double modifier;
 
     public boolean TargetInView;

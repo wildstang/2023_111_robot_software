@@ -16,6 +16,7 @@ import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
 import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
+import java.util.*;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.math.*;
@@ -67,6 +68,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double distanceTraveled;
     private double totalDist;
     private double lastYaw;
+    private Hashtable<Integer,Integer[]> aprilPos;       
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
@@ -391,10 +393,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     
     private void UpdatePosition(){
-
         distanceTraveled = 0;
         for (int i = 0; i < modules.length; i++) { //average of modules
-            distanceTravelled += 0.25*modules[i].getPosition();
+            distanceTraveled += 0.25*modules[i].getPosition();
         } 
         distanceTraveled -= totalDist;
         //account for rotation by change in gyro
@@ -406,6 +407,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             totalDist += 0.25*modules[i].getPosition();
         } 
+        if(limelight.TargetInView && (limelight.currentPipeline == 0) && (limelight.getDistance()<DriveConstants.MAX_LL_UPDATE_DIST)){
+            xPosition = (xPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.id)[0]+(limelight.getNormalDistance()*Math.sin(getGyroAngle()))+(limelight.getParallelDistance()*Math.cos(getGyroAngle())));
+            yPosition = (yPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.id)[1]+(limelight.getNormalDistance()*Math.cos(getGyroAngle()))+(limelight.getParallelDistance()*Math.sin(getGyroAngle())));
+        }
+
     }
 
     /**sets autonomous values from the path data file */
@@ -440,5 +446,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //limelight.setGyroValue((gyro.getYaw() + 360)%360);
         return (359.99 - gyro.getYaw()+360)%360;
     }    
+
+    private void initAprilTags(){
+        aprilPos = new Hashtable<Integer,Integer[]>(); 
+        aprilPos.put(1,new Integer[] {0,0});
+        aprilPos.put(2,new Integer[] {0,0});
+        aprilPos.put(3,new Integer[] {0,0});
+    }
 
 }

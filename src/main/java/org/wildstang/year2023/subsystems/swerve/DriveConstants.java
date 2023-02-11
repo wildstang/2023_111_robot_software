@@ -57,4 +57,8 @@ public final class DriveConstants {
     public static final int ANGLE_CURRENT_LIMIT = 10;
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
+    /* Max distance at which position updates based on apriltags. To reduce inaccuracies and prevent oppisite side apriltags from screwing with position.*/ 
+    public static final double MAX_LL_UPDATE_DIST = 10;
+    /* retention factor for position smoothing. 0.5 means that it averages new position estimate and old positon each frame it sees an apriltag. Higher puts more weight on old*/
+    public static final double RET_FACTOR = 0.5;
 }
