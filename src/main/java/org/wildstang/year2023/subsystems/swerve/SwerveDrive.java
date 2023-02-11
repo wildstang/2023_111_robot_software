@@ -68,7 +68,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double distanceTraveled;
     private double totalDist;
     private double lastYaw;
-    private Hashtable<Integer,Integer[]> aprilPos;       
+    private Hashtable<Integer,Integer[]> aprilPos; 
+    private double distToFence;      
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
@@ -167,6 +168,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotTarget = 0;
             rotSpeed *= 0.25;
         }
+        initAprilTags();
     }
  
     @Override
@@ -285,6 +287,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                     
                 } 
             }
+            applyBounds();
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
@@ -446,7 +449,47 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //limelight.setGyroValue((gyro.getYaw() + 360)%360);
         return (359.99 - gyro.getYaw()+360)%360;
     }    
-
+    private void applyBounds(){
+        for (double[] bound:DriveConstants.FENCES){
+            applyBound(bound);
+        }
+    }
+    private void applyBound(double[] boundary){
+        if(boundary[3] == 0 && (xPosition>boundary[0])&&(xPosition<boundary[0]+boundary[2])){ //if horizontal
+            distToFence = Math.abs(yPosition-boundary[1]);
+            if(yPosition<boundary[1]){
+                ySpeed -= DriveConstants.EXPONENTIAL_REPULSION*Math.exp(-distToFence) - (DriveConstants.INVERSE_REPULSION/distToFence);
+            }
+            else{
+                ySpeed += DriveConstants.EXPONENTIAL_REPULSION*Math.exp(-distToFence) - (DriveConstants.INVERSE_REPULSION/distToFence);
+            }
+            if(ySpeed>0){
+                if(DriveConstants.INVERSE_DECAY/distToFence<1){
+                    ySpeed *= DriveConstants.INVERSE_DECAY/distToFence;
+                }
+                if(DriveConstants.EXPONENTIAL_DECAY*Math.exp(-distToFence)<1){
+                    ySpeed *= DriveConstants.EXPONENTIAL_DECAY/distToFence;
+                }
+            }
+        }
+        if(boundary[3] == 1 && (yPosition>boundary[1])&&(yPosition<boundary[1]+boundary[2])){ //if horizontal
+            distToFence = Math.abs(xPosition-boundary[0]);
+            if(xPosition<boundary[0]){
+                xSpeed -= DriveConstants.EXPONENTIAL_REPULSION*Math.exp(-distToFence) - (DriveConstants.INVERSE_REPULSION/distToFence);
+            }
+            else{
+                xSpeed += DriveConstants.EXPONENTIAL_REPULSION*Math.exp(-distToFence) - (DriveConstants.INVERSE_REPULSION/distToFence);
+            }
+            if(xSpeed>0){
+                if(DriveConstants.INVERSE_DECAY/distToFence<1){
+                    xSpeed *= DriveConstants.INVERSE_DECAY/distToFence;
+                }
+                if(DriveConstants.EXPONENTIAL_DECAY*Math.exp(-distToFence)<1){
+                    xSpeed *= DriveConstants.EXPONENTIAL_DECAY/distToFence;
+                }
+            }
+        }
+    }//77777777777777777777777777777777777777777777777777777777777777777777777777
     private void initAprilTags(){
         aprilPos = new Hashtable<Integer,Integer[]>(); 
         aprilPos.put(1,new Integer[] {0,0});

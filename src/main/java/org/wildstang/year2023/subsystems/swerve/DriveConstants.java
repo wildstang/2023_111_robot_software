@@ -61,4 +61,10 @@ public final class DriveConstants {
     public static final double MAX_LL_UPDATE_DIST = 10;
     /* retention factor for position smoothing. 0.5 means that it averages new position estimate and old positon each frame it sees an apriltag. Higher puts more weight on old*/
     public static final double RET_FACTOR = 0.5;
+    /* array of fence cordinates. sytax is {x0,y0,length, 0 for x or 1 for y}. Doesn't accept diagnols because i'm lazy.*/
+    public static final double[][] FENCES = new double[][]{{1,10,1000,0}};
+    public static final double INVERSE_DECAY = 0.2;
+    public static final double EXPONENTIAL_DECAY = 0.3;
+    public static final double INVERSE_REPULSION = 0.1;
+    public static final double EXPONENTIAL_REPULSION = 0;
 }
