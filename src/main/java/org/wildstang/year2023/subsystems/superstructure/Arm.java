@@ -53,4 +53,7 @@ public class Arm {
     public boolean pastLift(){
         return getPosition() > 200;
     }
+    public boolean notScooping(){
+        return getPosition() > 90.0;
+    }
 }

@@ -17,13 +17,13 @@ import org.wildstang.year2023.subsystems.intake.intake;
 public enum WSSubsystems implements Subsystems {
 
     // enumerate subsystems
+    AIM_HELPER("Aim Helper", AimHelper.class),
     SWERVE_DRIVE("Swerve Drive", SwerveDrive.class),
     //LIFT("Lift", LiftControler.class),
     //ARM("Arm", ArmControler.class),
     INTAKE("Intake", intake.class),
     //WRIST("Wrist", Wrist.class),
     SUPERSTRUCTURE("Superstructure", Superstructure.class),
-    AIM_HELPER("Aim Helper", AimHelper.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
 

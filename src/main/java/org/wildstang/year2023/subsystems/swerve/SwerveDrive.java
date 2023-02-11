@@ -73,8 +73,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     private AimHelper limelight;
     private LimeConsts LC;
-    private PIDController LLpidX = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
-    private PIDController LLpidY = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
+    private PIDController LLpidX;// = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
+    private PIDController LLpidY;// = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
 
     public enum driveType {TELEOP, AUTO, CROSS, LL};
     public driveType driveState;
@@ -176,6 +176,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public void initInputs() {
         LC = new LimeConsts();
+        LLpidX = new PIDController(LC.AUTO_ALIGN_PID_X[0], LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2]);
+        LLpidY = new PIDController(LC.AUTO_ALIGN_PID_Y[0], LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2]);
+
 
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
@@ -281,6 +284,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (rotLocked){
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             }
+            if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
+            if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;
 
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             drive();

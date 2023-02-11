@@ -91,14 +91,12 @@ public class Superstructure implements Subsystem{
         // }
         
         if (currentPos != lastPos){
-            if (lastPos.getDirection() == currentPos.getDirection()){
-                motion = modes.SIMPLE;
-            } else if (currentPos.getL(gamepiece) > SuperConts.LIFTSTAGE){
-                motion = modes.LIFTDELAY;
-            } else if (lastPos.getL(gamepiece) > SuperConts.LIFTSTAGE){
-                motion = modes.ARMDELAY;
-            } else {
+            if (lastPos.getDirection() != currentPos.getDirection()){
                 motion = modes.WRIST;
+            } else if (currentPos.getA(gamepiece) < SuperConts.ANTISCOOP){
+                motion = modes.LIFTDELAY;
+            } else {
+                motion = modes.SIMPLE;
             }
         }
         lastPos = currentPos;
@@ -151,7 +149,7 @@ public class Superstructure implements Subsystem{
         }
         if (motion == modes.LIFTDELAY){
             wristWait = true;
-            //liftWait = true;
+            liftWait = true;
             motion = modes.SIMPLE;
         }
         if (motion == modes.WRIST){
@@ -160,7 +158,7 @@ public class Superstructure implements Subsystem{
         }
         if (motion == modes.SIMPLE){
             if (liftWait){
-                if (arm.pastLift()){
+                if (arm.notScooping()){
                     lift.setPosition(currentPos.getL(gamepiece));
                     liftWait = false;
                 } else {
@@ -169,6 +167,7 @@ public class Superstructure implements Subsystem{
             } else {
                 lift.setPosition(currentPos.getL(gamepiece));
             }  
+
             if (armWait){
                 if (lift.getPosition() < SuperConts.LIFTSTAGE){
                     arm.setPosition(currentPos.getA(gamepiece));
@@ -179,6 +178,7 @@ public class Superstructure implements Subsystem{
             } else {
                 arm.setPosition(currentPos.getA(gamepiece));
             }
+
             if (wristWait){
                 if (arm.pastLift() && !armWait){
                     wrist.setPosition(currentPos.getW(gamepiece));
@@ -191,18 +191,7 @@ public class Superstructure implements Subsystem{
                 wrist.setPosition(currentPos.getW(gamepiece));
             }
         }
-        SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
-        SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
-        SmartDashboard.putNumber("Wrist Field Target", currentPos.getW(gamepiece));
-        SmartDashboard.putNumber("Arm Field Position", arm.getPosition());
-        SmartDashboard.putNumber("Arm raw pos", arm.getRawPosition());
-        SmartDashboard.putNumber("Lift Encoder", lift.getPosition());
-        SmartDashboard.putNumber("Wrist Field Position", wrist.getPosition());
-        SmartDashboard.putNumber("Wrist raw pos", wrist.getRawPosition());
-        SmartDashboard.putBoolean("Cone or Cube", gamepiece);
-        SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
-        SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
-        SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
+        displayNumbers();
     }
 
     @Override
@@ -228,4 +217,18 @@ public class Superstructure implements Subsystem{
     public String getName() {
         return "Superstructure";
     }   
+    private void displayNumbers(){
+        SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
+        SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
+        SmartDashboard.putNumber("Wrist Field Target", currentPos.getW(gamepiece));
+        SmartDashboard.putNumber("Arm Field Position", arm.getPosition());
+        SmartDashboard.putNumber("Arm raw pos", arm.getRawPosition());
+        SmartDashboard.putNumber("Lift Encoder", lift.getPosition());
+        SmartDashboard.putNumber("Wrist Field Position", wrist.getPosition());
+        SmartDashboard.putNumber("Wrist raw pos", wrist.getRawPosition());
+        SmartDashboard.putBoolean("Cone or Cube", gamepiece);
+        SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
+        SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
+        SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
+    }
 }
