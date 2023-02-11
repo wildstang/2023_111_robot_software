@@ -66,7 +66,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     //private AimHelper limelight;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    public enum driveType {TELEOP, AUTO, CROSS, LL,FENCE};
     public driveType driveState;
 
     @Override
@@ -250,6 +250,26 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //update where the robot is, to determine error in path
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
             drive();        
+        }
+
+        if (driveState == driveType.FENCE) {
+            if (rotLocked){
+                //if rotation tracking, replace rotational joystick value with controller generated one
+                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                if (isSnake) {
+                    if (Math.abs(rotSpeed) < 0.05) {
+                        rotSpeed = 0;
+                    }
+                    else {
+                        rotSpeed *= 4;
+                        if (Math.abs(rotSpeed) > 1) rotSpeed = 1.0 * Math.signum(rotSpeed);
+                    }
+                    
+                } 
+            }
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+            SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
+            drive();
         }
         // if (driveState == driveType.LL) {
         //     //rotSpeed = -limelight.getRotPID();
