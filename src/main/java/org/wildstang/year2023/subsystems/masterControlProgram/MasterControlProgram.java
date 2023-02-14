@@ -71,33 +71,35 @@ public class MasterControlProgram implements Subsystem {
     private Hashtable<String, position> stringToPosition = new Hashtable<String,position>();
 
     private enum position{
-        HOLDING(0,180,180,modes.FORWARD,"HOLDING","HOLDING"),
-        GROUND_FORWARD(13.5,283,52,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD"),
-        GROUND_REVERSE(26.7,56.4,302.0,modes.REVERSE,"GROUND_REVERSE","GROUND_REVERSE"),
+        HOLDING(0,180,180,modes.FORWARD,"HOLDING","HOLDING",false),
+        GROUND_FORWARD(13.5,283,52,modes.FORWARD,"GROUND_FORWARD","GROUND_FORWARD",false),
+        GROUND_REVERSE(26.7,56.4,302.0,modes.REVERSE,"GROUND_REVERSE","GROUND_REVERSE",false),
 
-        CONE_LOW(0,270,135,modes.FORWARD,"CONE_LOW","CUBE_LOW"),
-        CONE_MID(31.2,233.4,44.5,modes.FORWARD, "CONE_MID","CUBE_MID"),
-        CONE_HIGH(68,245.4,51.8,modes.FORWARD,"CONE_HIGH","CUBE_HIGH"),
+        CONE_LOW(0,270,135,modes.FORWARD,"CONE_LOW","CUBE_LOW",true),
+        CONE_MID(31.2,233.4,44.5,modes.FORWARD, "CONE_MID","CUBE_MID",true),
+        CONE_HIGH(68,245.4,51.8,modes.FORWARD,"CONE_HIGH","CUBE_HIGH",true),
 
-        CUBE_LOW(0,270,135,modes.FORWARD,"CUBE_LOW","CUBE_LOW"),
-        CUBE_MID(31.2,233.4,44.5,modes.FORWARD,"CUBE_MID","CUBE_MID"),
-        CUBE_HIGH(68,245.4,51.8,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH"),
+        CUBE_LOW(0,270,135,modes.FORWARD,"CUBE_LOW","CUBE_LOW",true),
+        CUBE_MID(31.2,233.4,44.5,modes.FORWARD,"CUBE_MID","CUBE_MID",true),
+        CUBE_HIGH(68,245.4,51.8,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH",true),
 
-        STATION_FORWARD(25,203,58,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD"),
-        STATION_REVERSE(40,140,310,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE");
+        STATION_FORWARD(25,203,58,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD",true),
+        STATION_REVERSE(40,140,310,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE",true);
         public final double lPos;
         public final double aPos;
         public final double wPos;
         public final String name;
         public final modes mode;
         public final String cube;
-        private position(double liftPos, double armPos, double wristPos,modes direction,String posName,String cubName){
+        public final boolean isScoring;
+        private position(double liftPos, double armPos, double wristPos,modes direction,String posName,String cubName,boolean score){
             this.lPos = liftPos;
             this.aPos = armPos;
             this.wPos = wristPos;
             this.name = posName;
             this.mode = direction;
             this.cube = cubName;
+            this.isScoring = score;
         }
 
     }
@@ -196,7 +198,7 @@ public class MasterControlProgram implements Subsystem {
             }
             //everything else
             else{
-                armHelper.goToPosition(currentPosition.aPos+armAjust); 
+                armHelper.goToPosition(currentPosition.aPos+armAjust,currentPosition.isScoring); 
                 if(lastPosition.mode != currentPosition.mode){
                     wristHelper.goToPosition(wristCarryPos); //if flipping in way not meeting HOLDING_ARM requirements, wrist still must be frozen
                     delays = modes.HOLDING_WRIST;
@@ -236,7 +238,7 @@ public class MasterControlProgram implements Subsystem {
 
         if(delays == modes.HOLDING_ARM && liftHelper.isReady()){
              //if lift finished moving to position, move arm
-            armHelper.goToPosition(currentPosition.aPos+armAjust);
+            armHelper.goToPosition(currentPosition.aPos+armAjust,currentPosition.isScoring);
             delays = modes.HOLDING_LIFT;
             
         }
@@ -256,7 +258,7 @@ public class MasterControlProgram implements Subsystem {
         }
         //update arm/wrist ajustment even if preset not changed
         if(delays == modes.FREE){
-            armHelper.goToPosition(currentPosition.aPos+armAjust);
+            armHelper.goToPosition(currentPosition.aPos+armAjust,currentPosition.isScoring);
             wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
         //smartdashboard
@@ -277,7 +279,7 @@ public class MasterControlProgram implements Subsystem {
             AimHelper.changePipeline("AprilTag");
         }
         //get position corresponding to button
-        if(buttonToPosition.containsKey(source)){
+        if(buttonToPosition.containsKey(source) && ((DigitalInput) source).getValue()){
             lastPosition = currentPosition;
             currentPosition = buttonToPosition.get(source);
             if(currentMode == modes.CUBE){

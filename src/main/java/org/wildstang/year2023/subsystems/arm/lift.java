@@ -39,7 +39,7 @@ public class lift {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         currentMode = mode.HOLDING;
         liftDriver = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.LIFT_DRIVER);
-        liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0, this.encoder);
+        liftDriver.initClosedLoop(ArmConstants.LIFT_P_HOLDING, ArmConstants.LIFT_I_HOLDING, ArmConstants.LIFT_D_HOLDING,0);
         liftDriver.setCurrentLimit(ArmConstants.LIFT_CURRENT_LIMIT, ArmConstants.LIFT_CURRENT_LIMIT, 0);
         resetState();
     }
@@ -88,7 +88,6 @@ public class lift {
     }
     public void resetState() {
         position = minPosition;
-        liftDriver.setPosition(position);
     }
     public String getName() {
         return "Lift";

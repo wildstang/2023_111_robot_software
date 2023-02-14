@@ -1,12 +1,12 @@
 package org.wildstang.year2023.subsystems.arm;
 
 public class ArmConstants{
-    public static final double ARM_P_HOLDING = 0.1111;
-    public static final double ARM_I_HOLDING = 0;
-    public static final double ARM_D_HOLDING = 0;
-    public static final double ARM_P_EXTENDED = 0.1111;
-    public static final double ARM_I_EXTENDED = 0;
-    public static final double ARM_D_EXTENDED = 0;
+    public static final double ARM_P_SCORING = 0.1111;
+    public static final double ARM_I_SCORING = 0;
+    public static final double ARM_D_SCORING = 0;
+    public static final double ARM_P_NOTSCORING = 0.1111;
+    public static final double ARM_I_NOTSCORING = 0;
+    public static final double ARM_D_NOTSCORING = 0;
     public static final int ARM_CURRENT_LIMIT = 30;
 
     public static final double LIFT_P_HOLDING = 0.1;

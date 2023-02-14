@@ -31,8 +31,8 @@ public class arm {
     private static final double holdingPosition = 180;
 
     private enum mode {
-        EXTENDED,
-        HOLDING;
+        SCORING,
+        NOTSCORING;
     }
     private mode currentMode;
     public void init() {
@@ -42,8 +42,8 @@ public class arm {
         encoder.setInverted(false); //or this stuff
         encoder.setPositionConversionFactor(360.0);
         encoder.setVelocityConversionFactor(360.0 / 60.0);
-        baseMotor.initClosedLoop(ArmConstants.ARM_P_HOLDING, ArmConstants.ARM_I_HOLDING, ArmConstants.ARM_D_HOLDING,0, this.encoder);
-        baseMotor.addClosedLoop(1,ArmConstants.ARM_P_EXTENDED,ArmConstants.ARM_I_EXTENDED,ArmConstants.ARM_D_EXTENDED,0);
+        baseMotor.initClosedLoop(ArmConstants.ARM_P_SCORING, ArmConstants.ARM_I_SCORING, ArmConstants.ARM_D_SCORING,0, this.encoder);
+        baseMotor.addClosedLoop(1,ArmConstants.ARM_P_NOTSCORING,ArmConstants.ARM_I_NOTSCORING,ArmConstants.ARM_D_NOTSCORING,0);
         encoder.setZeroOffset(29.3);
         baseMotor.setCurrentLimit(ArmConstants.ARM_CURRENT_LIMIT, ArmConstants.ARM_CURRENT_LIMIT, 0);
         resetState();
@@ -54,13 +54,13 @@ public class arm {
         baseMotor.stop();
     }
 
-    public void goToPosition(double pos) {
-        if(pos < holdingPosition){
-            currentMode = mode.HOLDING;
+    public void goToPosition(double pos,boolean Scoring) {
+        if(Scoring){
+            currentMode = mode.SCORING;
             baseMotor.setPosition(pos,0);
         }
-        else if(pos>holdingPosition){
-            currentMode = mode.EXTENDED;
+        else {
+            currentMode = mode.NOTSCORING;
             baseMotor.setPosition(pos,1);
         }
         position = pos;
@@ -81,8 +81,7 @@ public class arm {
 
     public void resetState() {
         position = defaultPosition;
-        currentMode = mode.HOLDING;
-        baseMotor.setPosition(position);
+        currentMode = mode.NOTSCORING;
     }
 
     public String getName() {

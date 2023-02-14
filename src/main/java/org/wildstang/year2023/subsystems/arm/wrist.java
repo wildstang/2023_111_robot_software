@@ -71,7 +71,6 @@ public class wrist {
 
     public void resetState() {
         position = minPosition;
-        baseMotor.setPosition(position);
     }
 
     public String getName() {
