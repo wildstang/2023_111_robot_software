@@ -279,7 +279,7 @@ public class MasterControlProgram implements Subsystem {
             AimHelper.changePipeline("AprilTag");
         }
         //get position corresponding to button
-        if(buttonToPosition.containsKey(source) && ((DigitalInput) source).getValue()){
+        if(buttonToPosition.containsKey(source) && getDigitalInput(source).getValue()){
             lastPosition = currentPosition;
             currentPosition = buttonToPosition.get(source);
             if(currentMode == modes.CUBE){
@@ -337,6 +337,14 @@ public class MasterControlProgram implements Subsystem {
             stringToPosition.put(pos.name,pos);
         }
 
+    }  
+    private DigitalInput getDigitalInput(Input source){
+        for (DigitalInput digimon:buttonToPosition.keySet()){
+            if(source == digimon){
+                return digimon;
+            }
+        }
+        return buttonToPosition.keySet().iterator().next();
     }
 
     public void autoSetPosition(String pos){ //auto override code. get position corresponding to string.
