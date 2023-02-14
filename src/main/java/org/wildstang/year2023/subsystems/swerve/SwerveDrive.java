@@ -411,8 +411,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             totalDist += 0.25*modules[i].getPosition();
         } 
         if(limelight.TargetInView && (limelight.currentPipeline == 0) && (limelight.getDistance()<DriveConstants.MAX_LL_UPDATE_DIST)){
-            xPosition = (xPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.id)[0]+(limelight.getNormalDistance()*Math.sin(getGyroAngle()))+(limelight.getParallelDistance()*Math.cos(getGyroAngle())));
-            yPosition = (yPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.id)[1]+(limelight.getNormalDistance()*Math.cos(getGyroAngle()))+(limelight.getParallelDistance()*Math.sin(getGyroAngle())));
+            xPosition = (xPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[0]+(limelight.getNormalDistance()*Math.sin(getGyroAngle()))+(limelight.getParallelDistance()*Math.cos(getGyroAngle())));
+            yPosition = (yPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[1]+(limelight.getNormalDistance()*Math.cos(getGyroAngle()))+(limelight.getParallelDistance()*Math.sin(getGyroAngle())));
         }
 
     }

@@ -29,6 +29,7 @@ public class AimHelper implements Subsystem {
     private WsRemoteAnalogInput ty; // y angle
     private WsRemoteAnalogInput tx; // x angle
     private WsRemoteAnalogInput tv;
+    private WsRemoteAnalogInput id;
     private WsRemoteAnalogOutput ledModeEntry;
     private WsRemoteAnalogOutput llModeEntry;
 
@@ -38,7 +39,7 @@ public class AimHelper implements Subsystem {
     public double x;
     public double y;
 
-    public int id;
+    public int ID;
 
     private double modifier;
 
@@ -84,6 +85,7 @@ public class AimHelper implements Subsystem {
             TargetInView = false;
             x = tx.getValue();
             y = ty.getValue();
+            ID = (int) id.getValue();
             dataLife = 0;
         }
         else {
@@ -186,6 +188,7 @@ public class AimHelper implements Subsystem {
         LC = new LimeConsts();
         x = 0;  //x and y angular offsets from limelight. Only updated when calcTargetCoords is called.
         y = 0;
+        ID = 0;
         TargetInView = false; //is the target in view? only updated when calcTargetCoords is called.
         TargetAbsoluteDistance = 0; //distance to target in feet. Only updated when calcTargetCoords is called.
         TargetNormalDistance = 0; 
@@ -194,6 +197,7 @@ public class AimHelper implements Subsystem {
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
+        id = (WsRemoteAnalogInput) WSInputs.LL_ID.get();
         ledModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_LEDS.get();
         llModeEntry = (WsRemoteAnalogOutput) WSOutputs.LL_MODE.get();
 
