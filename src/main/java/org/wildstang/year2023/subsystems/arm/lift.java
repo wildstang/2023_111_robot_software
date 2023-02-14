@@ -64,7 +64,7 @@ public class lift {
             position = pos;
             SmartDashboard.putNumber("Lift target", pos);
         } else {
-            SmartDashboard.putNumber("Lift target", -999);
+            SmartDashboard.putNumber("Lift target", pos<minPosition? minPosition:maxPosition);
         }
     }
     

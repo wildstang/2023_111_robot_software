@@ -28,7 +28,7 @@ public class wrist {
     private double position;
     private static final double tolerance = 4;
     private static final double minPosition = 0;
-    private static final double maxPosition = 180;
+    private static final double maxPosition = 360;
     public void init() {
         //joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
         position = minPosition;

@@ -47,7 +47,7 @@ public class MasterControlProgram implements Subsystem {
     private static final double liftResetBound = -0.9;
 
     private static final double liftFlipPos = 30;
-    private static final double wristCarryPos = 180;
+    private static final double wristOffset = 25;
 
     private static final double armAjustFactor = 5;
     private static final double wristAjustFactor = 5;
@@ -193,19 +193,11 @@ public class MasterControlProgram implements Subsystem {
             //hight limit stuff
             if(lastPosition.mode != currentPosition.mode &&(lastPosition.lPos > liftFlipPos || currentPosition.lPos>liftFlipPos) && liftState == modes.LIFT_AUTOMATIC){ //if in danger of violating height limit. This happens if flipping with either start or finish pos above safe lift flip position
                 liftHelper.goToPosition(liftFlipPos);
-                wristHelper.goToPosition(wristCarryPos);
                 delays = modes.HOLDING_ARM;
             }
             //everything else
             else{
                 armHelper.goToPosition(currentPosition.aPos+armAjust,currentPosition.isScoring); 
-                if(lastPosition.mode != currentPosition.mode){
-                    wristHelper.goToPosition(wristCarryPos); //if flipping in way not meeting HOLDING_ARM requirements, wrist still must be frozen
-                    delays = modes.HOLDING_WRIST;
-                }
-                else{
-                    wristHelper.goToPosition(currentPosition.wPos+wristAjust);
-                }
                 if(liftState == modes.LIFT_AUTOMATIC){
                     liftHelper.goToPosition(currentPosition.lPos);
                 }
@@ -219,7 +211,6 @@ public class MasterControlProgram implements Subsystem {
         }
         else if (posChanged){ //if flip manuver inturrpted, act as though flipping out of precaution. this might need fixing if it causes a problem.
             liftHelper.goToPosition(liftFlipPos);
-            wristHelper.goToPosition(wristCarryPos);
             delays = modes.HOLDING_ARM;
             posChanged = false;
         }
@@ -245,12 +236,8 @@ public class MasterControlProgram implements Subsystem {
         //if frozen and arm has finished, move lift and wrist to correct pos
         if(delays == modes.HOLDING_LIFT && armHelper.isReady()){
             liftHelper.goToPosition(currentPosition.lPos);
-            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
+            //wristHelper.goToPosition(currentPosition.wPos+wristAjust);
             delays = modes.FREE;
-        }
-        //if wrist was in carry pos and arm has finished moving, move wrist to correct pos
-        if(delays == modes.HOLDING_WRIST  &&armHelper.isReady()){
-            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
         //manual mode directly controls speed
         if(liftState == modes.LIFT_MANUAL){
@@ -259,8 +246,8 @@ public class MasterControlProgram implements Subsystem {
         //update arm/wrist ajustment even if preset not changed
         if(delays == modes.FREE){
             armHelper.goToPosition(currentPosition.aPos+armAjust,currentPosition.isScoring);
-            wristHelper.goToPosition(currentPosition.wPos+wristAjust);
         }
+        setWrist(currentPosition.wPos+wristAjust);
         //smartdashboard
         SmartDashboard.putNumber("arm pos",armHelper.getPosition());
         SmartDashboard.putNumber("wrist pos",wristHelper.getPosition());
@@ -356,5 +343,12 @@ public class MasterControlProgram implements Subsystem {
         else{
             SmartDashboard.putString("Error: autoSetPosition recived invalid String. Recived: "+pos,currentPosition.name);
         }
+    }
+    
+    private void setWrist(double pos){
+        pos = pos>armHelper.getPosition()+wristOffset?armHelper.getPosition()+wristOffset:pos;
+        pos = pos<armHelper.getPosition()-wristOffset?armHelper.getPosition()-wristOffset:pos;
+        wristHelper.goToPosition(pos);
+        
     }
 }
