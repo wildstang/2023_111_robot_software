@@ -8,6 +8,7 @@ import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.math3.util.DoubleArray;
 import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.AnalogInput;
@@ -48,7 +49,7 @@ public class AimHelper implements Subsystem {
 
     public LimeConsts LC;
 
-    private int dataLifeSpan = 5;
+    private int dataLifeSpan = 10;
     private int dataLife = 0; 
 
     //public int currentPipeline;
@@ -82,6 +83,7 @@ public class AimHelper implements Subsystem {
             } else{
                 x = 0; //no target case
                 y = 0;
+                target3D = new double[] {0,0,0,0,0,0};
             }
         }
     }
@@ -100,7 +102,7 @@ public class AimHelper implements Subsystem {
      */
     public double getNormalDistance() {
         //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return this.target3D[2];
+        return -this.target3D[2];
         //return TargetNormalDistance;
     }
 
