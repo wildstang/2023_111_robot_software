@@ -83,8 +83,8 @@ public class MasterControlProgram implements Subsystem {
         CUBE_MID(31.2,233.4,44.5,modes.FORWARD,"CUBE_MID","CUBE_MID",true),
         CUBE_HIGH(68,245.4,51.8,modes.FORWARD,"CUBE_HIGH","CUBE_HIGH",true),
 
-        STATION_FORWARD(25,203,58,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD",true),
-        STATION_REVERSE(40,140,310,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE",true);
+        STATION_FORWARD(25,203,58,modes.FORWARD,"STATION_FORWARD","STATION_FORWARD",false),
+        STATION_REVERSE(40,140,310,modes.REVERSE,"STATION_REVERSE","STATION_REVERSE",false);
         public final double lPos;
         public final double aPos;
         public final double wPos;
