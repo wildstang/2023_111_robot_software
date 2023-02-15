@@ -26,9 +26,6 @@ public class Arm {
     public double getPosition(){
         return (absEncoder.getPosition())%360;
     }
-    public double getRawPosition(){
-        return absEncoder.getPosition();
-    }
     public void setPosition(double position){
         //if (atPosition(position)){
             motor.setPosition((position)%360);

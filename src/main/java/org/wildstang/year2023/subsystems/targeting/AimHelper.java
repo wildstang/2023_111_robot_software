@@ -3,27 +3,16 @@ package org.wildstang.year2023.subsystems.targeting;
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsRemoteAnalogInput;
-import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.math3.util.DoubleArray;
 import org.wildstang.framework.core.Core;
 
-import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.year2023.robot.WSInputs;
-import org.wildstang.year2023.robot.WSOutputs;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import org.wildstang.year2023.subsystems.swerve.DriveConstants;
-import org.wildstang.year2023.subsystems.swerve.WSSwerveHelper;
 
 public class AimHelper implements Subsystem {
 
@@ -35,15 +24,9 @@ public class AimHelper implements Subsystem {
     public double y;
     private double[] target3D;
 
-    //private double modifier;
-
     public boolean TargetInView;
-    private boolean ledState;
     private boolean gamepiece;
-
     private double TargetAbsoluteDistance;
-    private double TargetNormalDistance;
-    private double TargetParallelDistance;
 
     private DigitalInput rightBumper, leftBumper;//, dup, ddown;
 
@@ -52,19 +35,7 @@ public class AimHelper implements Subsystem {
     private int dataLifeSpan = 10;
     private int dataLife = 0; 
 
-    //public int currentPipeline;
-    // private Map<String, Integer> pipelineStringToInt = new HashMap<String, Integer>() {{
-    //     put("aprilTag", 0);
-    //     put("reflective", 1);
-    // }};
-
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
-
-    public void changePipeline(String pipelineString) {
-        //currentPipeline = pipelineStringToInt.get(pipelineString);
-
-        //NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
-    }
 
     public void calcTargetCoords() { //update target coords.
         if(tv.getValue() == 1) {
@@ -134,12 +105,6 @@ public class AimHelper implements Subsystem {
         if (leftBumper.getValue()){
             gamepiece = LC.CONE;
         }
-        // if (source == dup && dup.getValue()) {
-        //     modifier++;
-        // }
-        // if (source == ddown && ddown.getValue()) {
-        //     modifier--;
-        // }
     }
 
     @Override
@@ -149,8 +114,6 @@ public class AimHelper implements Subsystem {
         y = 0;
         TargetInView = false; //is the target in view? only updated when calcTargetCoords is called.
         TargetAbsoluteDistance = 0; //distance to target in feet. Only updated when calcTargetCoords is called.
-        TargetNormalDistance = 0; 
-        TargetParallelDistance = 0; 
 
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
@@ -161,10 +124,6 @@ public class AimHelper implements Subsystem {
         rightBumper.addInputListener(this);
         leftBumper = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftBumper.addInputListener(this);
-        // dup = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_UP);
-        // dup.addInputListener(this);
-        // ddown = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_DPAD_DOWN);
-        // ddown.addInputListener(this);
 
         resetState();
     }
@@ -183,14 +142,10 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limelight 3DY", target3D[1]);
         SmartDashboard.putNumber("limelight 3DZ", target3D[2]);
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
-        //SmartDashboard.putNumber("Distance Modifier", modifier);
     }
 
     @Override
     public void resetState() {
-        //ledState = true;
-        //modifier = 0;
-        //changePipeline("aprilTag");
         gamepiece = LC.CONE;
     }
 

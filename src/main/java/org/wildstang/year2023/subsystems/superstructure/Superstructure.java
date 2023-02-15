@@ -218,15 +218,13 @@ public class Superstructure implements Subsystem{
         return "Superstructure";
     }   
     private void displayNumbers(){
-        SmartDashboard.putNumber("Arm Field Target", currentPos.getA(gamepiece));
+        SmartDashboard.putNumber("Arm Target", currentPos.getA(gamepiece));
         SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
-        SmartDashboard.putNumber("Wrist Field Target", currentPos.getW(gamepiece));
-        SmartDashboard.putNumber("Arm Field Position", arm.getPosition());
-        SmartDashboard.putNumber("Arm raw pos", arm.getRawPosition());
+        SmartDashboard.putNumber("Wrist Target", currentPos.getW(gamepiece));
+        SmartDashboard.putNumber("Arm Position", arm.getPosition());
         SmartDashboard.putNumber("Lift Encoder", lift.getPosition());
-        SmartDashboard.putNumber("Wrist Field Position", wrist.getPosition());
-        SmartDashboard.putNumber("Wrist raw pos", wrist.getRawPosition());
-        SmartDashboard.putBoolean("Cone or Cube", gamepiece);
+        SmartDashboard.putNumber("Wrist Position", wrist.getPosition());
+        SmartDashboard.putString("Cone or Cube", gamepiece? "Cone" : "Cube");
         SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
         SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
