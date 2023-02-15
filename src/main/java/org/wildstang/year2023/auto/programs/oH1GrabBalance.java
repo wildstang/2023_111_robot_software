@@ -33,7 +33,7 @@ public class oH1GrabBalance extends AutoProgram{
         scoreLowCone.addStep(new RunIntakeStep(-1));
         scoreLowCone.addStep(new MasterControlProgramStep("CONE_LOW_FORWARD"));
         scoreLowCone.addStep(new SetGyroStep(-180, swerve));
-        scoreLowCone.addStep(new LimeLightAimingStep("AprilTag"));
+        scoreLowCone.addStep(new LimeLightAimingStep("CONE"));
         addStep(scoreLowCone);
 
         addStep(new AutoStepDelay(500));

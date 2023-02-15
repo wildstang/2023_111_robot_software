@@ -73,6 +73,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private PIDController LLpidY = new PIDController(1, 1, 1);
     private double desiredReflectiveDistance = 22;
     private double desiredAprilTagDistance = 14.06;
+    public boolean gamePiece;
 
     public enum driveType {TELEOP, AUTO, CROSS, LL, AUTOBALANCE};
     public driveType driveState;
@@ -369,8 +370,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathTarget = headingTarget;
     }
 
-    public void setAiming() {
+    public void setAiming(Boolean newGamePiece) {
         driveState = driveType.LL;
+        gamePiece = newGamePiece;
     }
 
     /**
