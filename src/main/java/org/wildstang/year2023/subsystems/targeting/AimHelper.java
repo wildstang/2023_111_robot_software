@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AimHelper implements Subsystem {
+    
+    private static final double mToIn = 30.3701;
 
     private WsRemoteAnalogInput ty; // y angle
     private WsRemoteAnalogInput tx; // x angle
@@ -73,7 +75,7 @@ public class AimHelper implements Subsystem {
      */
     public double getNormalDistance() {
         //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return -this.target3D[2];
+        return get3DZ();
         //return TargetNormalDistance;
     }
 
@@ -82,11 +84,11 @@ public class AimHelper implements Subsystem {
      */
     public double getParallelDistance() {
         //TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
-        return this.target3D[0];
+        return get3DX();
         //return TargetParallelDistance;
     }
     public double getParallelSetpoint(){
-        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(this.target3D[0]);
+        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
         else return 0.0;
     }
 
@@ -138,9 +140,9 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
-        SmartDashboard.putNumber("limelight 3DX", target3D[0]);
-        SmartDashboard.putNumber("limelight 3DY", target3D[1]);
-        SmartDashboard.putNumber("limelight 3DZ", target3D[2]);
+        SmartDashboard.putNumber("limelight 3DX", get3DX());
+        SmartDashboard.putNumber("limelight 3DY", get3DY());
+        SmartDashboard.putNumber("limelight 3DZ", get3DZ());
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
     }
 
@@ -152,5 +154,14 @@ public class AimHelper implements Subsystem {
     @Override
     public String getName() {
         return "Aim Helper";
+    }
+    public double get3DX(){
+        return target3D[0]*mToIn;
+    }
+    public double get3DY(){
+        return target3D[1]*mToIn;
+    }
+    public double get3DZ(){
+        return -target3D[2]*mToIn;
     }
 }
