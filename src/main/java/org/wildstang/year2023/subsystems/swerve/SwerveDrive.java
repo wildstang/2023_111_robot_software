@@ -1,8 +1,6 @@
 package org.wildstang.year2023.subsystems.swerve;
 
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
@@ -17,10 +15,6 @@ import org.wildstang.year2023.subsystems.targeting.AimHelper;
 import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.math.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -263,8 +257,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.LL) {
 
-            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() + 5.0*aimOffset);
-            ySpeed = -LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+            xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() + 5.0*aimOffset);
+            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
             
             // if (limelight.currentPipeline == 0) {
             //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
@@ -285,7 +279,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (limelight.TargetInView){
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             } else {
-                this.swerveSignal = swerveHelper.setDrive(0, 0, 0, getGyroAngle());
+                this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
             }
             
             drive();

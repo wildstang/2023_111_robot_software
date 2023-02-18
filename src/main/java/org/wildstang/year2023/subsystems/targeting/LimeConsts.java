@@ -6,9 +6,9 @@ public class LimeConsts {
 
     public double TARGET_HEIGHT = 104-32; //In inches, between limelight and top of target. Not the height of the target
 
-    public double LIMELIGHT_DISTANCE_OFFSET = 12.2; //12.2 inches to meters, distance from limelight to front of front bumper
+    public double LIMELIGHT_DISTANCE_OFFSET = 9.0; //12.2 inches to meters, distance from limelight to front of front bumper
 
-    public double DESIRED_APRILTAG_DISTANCE = 13.8; //13.8 inches to m, distance from front bumper to april tag
+    public double DESIRED_APRILTAG_DISTANCE = 10.0; //13.8 inches to m, distance from front bumper to april tag
 
     public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters because WPILib units suck
 
