@@ -68,6 +68,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public enum driveType {TELEOP, AUTO, CROSS, LL};
     public driveType driveState;
 
+    private double distanceTraveled;
+    private double totalDist;
+    private double xPosition;
+    private double yPosition;
+
     @Override
     public void inputUpdate(Input source) {
         //determine if we are in cross or teleop
@@ -256,9 +261,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();        
         }
         if (driveState == driveType.LL) {
-
-            xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() + 5.0*aimOffset);
-            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+            UpdatePosition();
+            xSpeed = -LLpidX.calculate(xPosition, limelight.getParallelSetpoint() + 5.0*aimOffset);
+            ySpeed = LLpidY.calculate(yPosition, LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
             
             // if (limelight.currentPipeline == 0) {
             //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
@@ -276,11 +281,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
             if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;
 
-            if (limelight.TargetInView){
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-            } else {
-                this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
-            }
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             
             drive();
         }
@@ -311,6 +312,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
         isFieldCentric = true;
         isSnake = false;
+
+        totalDist = 0;
+        distanceTraveled = 0;
+        xPosition = 0;
+        yPosition = 0;
     }
 
     @Override
@@ -376,6 +382,27 @@ public class SwerveDrive extends SwerveDriveTemplate {
         driveState = driveType.LL;
     }
 
+    private void UpdatePosition(){
+        distanceTraveled = 0;
+        for (int i = 0; i < modules.length; i++) { //average of modules
+            distanceTraveled += 0.25*modules[i].getPosition()*modules[i].getDirection();
+        } 
+        distanceTraveled -= totalDist;
+        //account for rotation by change in gyro
+        distanceTraveled -= (Math.hypot(DriveConstants.ROBOT_WIDTH,DriveConstants.ROBOT_LENGTH)/2)*Math.toRadians(gyro.getYaw()-lastYaw);
+        xPosition += (Math.cos(Math.toRadians(getGyroAngle()))*distanceTraveled);
+        yPosition += (Math.sin(Math.toRadians(getGyroAngle()))*distanceTraveled);
+        //update last values
+        lastYaw = gyro.getYaw();
+        for (int i = 0; i < modules.length; i++) {
+            totalDist += 0.25*modules[i].getPosition()*modules[i].getDirection();
+        } 
+        if(limelight.TargetInView){
+            xPosition = limelight.getParallelDistance();
+            yPosition = limelight.getNormalDistance()*Math.cos(getGyroAngle());
+        }
+
+    }
     /**
      * Resets the gyro, and sets it the input number of degrees
      * Used for starting the match at a non-0 angle
