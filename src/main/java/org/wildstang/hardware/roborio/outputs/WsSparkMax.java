@@ -275,6 +275,10 @@ public class WsSparkMax extends WsMotorController {
         slotID = 0;
     }
 
+    public SparkMaxPIDController getPIDController(){
+        return motor.getPIDController();
+    }
+
     /*
      * Adds a closed loop control slot for the sparkmax
      * @param slotID the slot number of the constants, 0 is default, either 1-3 otherwise

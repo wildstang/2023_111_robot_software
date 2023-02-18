@@ -21,6 +21,8 @@ public class Arm {
         absEncoder.setInverted(SuperConts.ARM_ENCODER_DIRECTION);
         absEncoder.setZeroOffset(254.4);//54
         motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder, false);
+        motor.getPIDController().setSmartMotionMaxVelocity(2000, 0);
+        motor.getPIDController().setSmartMotionMaxAccel(1500, 0);
         motor.setCurrentLimit(30, 30, 0);
     }
     public double getPosition(){

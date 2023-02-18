@@ -55,6 +55,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double aimOffset;
     private double lastOffset;
     private boolean lastInView;
+    private boolean startingLL;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -62,7 +63,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
-    private Timer timer = new Timer();
 
     private AimHelper limelight;
     private LimeConsts LC;
@@ -148,6 +148,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //use the limelight for tracking
         if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
             driveState = driveType.LL;
+            startingLL = true;
         }
         else {
             if (driveState == driveType.LL) {
@@ -270,29 +271,23 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
             if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;
 
-            if (limelight.TargetInView){
+            if (limelight.TargetInView && startingLL){
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 lastOffset = (limelight.getParallelSetpoint()) -limelight.getParallelDistance();
                 if (!lastInView){
                     lastInView = true;
                 }
             } else {
+                startingLL = false;
                 if (lastInView){
                     resetDriveEncoders();
                     lastInView = false;
-                    timer.reset();timer.start();
                 }
-                // if (modules[0].getDirection(Math.signum(lastOffset)>0.0?90:270) ^ Math.signum(lastOffset)>0){
-                //     xSpeed = 0.01 * (-modules[0].getPosition() - (lastOffset + 5.0+aimOffset));
-                // } else {
-                //     xSpeed = 0.01 * (modules[0].getPosition() - (lastOffset + 5.0*aimOffset));
-                // }
                 if (Math.signum(lastOffset) >0){
                     xSpeed = 0.01 * (Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
                 } else {
                     xSpeed = 0.01 * (-Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
                 }
-                if (timer.get()>0.5) xSpeed = 0.01 * (5.0*aimOffset);
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, 0, 0, getGyroAngle());
             }
             
@@ -324,6 +319,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         aimOffset = 0.0;
         lastOffset = 0.0;
         lastInView = true;
+        startingLL = true;
 
         isFieldCentric = true;
         isSnake = false;
