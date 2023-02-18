@@ -104,17 +104,14 @@ public class WSSwerveHelper {
 
     /**determines the translational magnitude of the robot in autonomous
      * 
-     * @param pathPos path data for position of the robot, inches
      * @param pathVel path data for velocity of the robot, inches
-     * @param distTravelled distance the robot has travelled, inches
      * @return double for magnitude of translational vector
      */
-    public double getAutoPower(double pathPos, double pathVel, double distTravelled) {
+    public double getAutoPower(double pathVel) {
         if (pathVel == 0) return 0;
         double guess = pathVel * DriveConstants.DRIVE_F_V + DriveConstants.DRIVE_F_K + 0.02 * (pathVel - prevVel) * DriveConstants.DRIVE_F_I;
         this.prevVel = pathVel;
-        double check = DriveConstants.DRIVE_P * (pathPos - distTravelled);
-        return -(guess + check);
+        return -(guess);
     }
 
     /**returns magnitude of vector components */

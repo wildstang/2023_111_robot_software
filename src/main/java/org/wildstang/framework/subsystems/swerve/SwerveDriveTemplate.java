@@ -4,7 +4,7 @@ import org.wildstang.framework.subsystems.Subsystem;
 
 public abstract class SwerveDriveTemplate implements Subsystem{
     
-    public abstract void setAutoValues(double position, double velocity, double heading);
+    public abstract void setAutoValues(double velocity, double heading);
 
     public abstract void resetDriveEncoders();
 

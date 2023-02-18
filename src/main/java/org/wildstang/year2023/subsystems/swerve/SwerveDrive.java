@@ -54,15 +54,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private boolean isSnake;
     private boolean isFieldCentric;
     private double rotTarget;
-    private double pathPos;
     private double pathVel;
     private double pathHeading;
     private double pathTarget;
-    private double autoTravelled;
-    private double[] lastX = {0,0,0,0};
-    private double[] lastY = {0,0,0,0};
-    private double autoTempX;
-    private double autoTempY;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -263,7 +257,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle());
             drive();        
         }
         if (driveState == driveType.LL) {
@@ -301,7 +295,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("rotSpeed", rotSpeed);
         SmartDashboard.putString("Drive mode", driveState.toString());
         SmartDashboard.putBoolean("rotLocked", rotLocked);
-        SmartDashboard.putNumber("Auto position", pathPos);
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
@@ -316,15 +309,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         setToTeleop();
         rotLocked = false;
         rotTarget = 0.0;
-        pathPos = 0.0;
         pathVel = 0.0;
         pathHeading = 0.0;
         pathTarget = 0.0;
 
         isFieldCentric = true;
         isSnake = false;
-
-        autoTravelled = 0;
     }
 
     @Override
@@ -337,7 +327,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].resetDriveEncoders();
         }
-        //autoTravelled = 0.0;
     }
 
     /** sets the drive to teleop/cross, and sets drive motors to coast */
@@ -350,7 +339,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed = 0;
         ySpeed = 0;
         pathHeading = 0;
-        pathPos = 0;
         pathVel = 0;
         rotLocked = false;
     }
@@ -378,8 +366,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     /**sets autonomous values from the path data file */
-    public void setAutoValues(double position, double velocity, double heading) {
-        pathPos = position;
+    public void setAutoValues(double velocity, double heading) {
         pathVel = velocity;
         pathHeading = heading;
     }

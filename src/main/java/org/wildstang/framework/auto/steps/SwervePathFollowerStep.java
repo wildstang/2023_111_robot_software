@@ -10,16 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwervePathFollowerStep extends AutoStep {
 
-    private static final double ftToIn = 12;
     private static final double mToIn = 30.3701;
-    private static final int positionP = 7;
-    //private static final int velocityP = 8;
-    private static final int headingP = 15;
-    //dt, x, y, leftPos, leftVel, leftAcc, leftJer, centerPos, centerVel, centerAcc, centerJer, rightPos, rightVel, rightAcc, rightJer, heading
-    //0   1  2    3          4       5        6          7          8         9          10        11         12       13        14       15
-
     private SwerveDriveTemplate m_drive;
     private PathPlannerTrajectory pathData;
+    private boolean isBlue;
 
     private Timer timer;
 
@@ -28,9 +22,10 @@ public class SwervePathFollowerStep extends AutoStep {
      * @param pathData double[][] that contains path, should be from \frc\paths
      * @param drive the swerveDrive subsystem
      */
-    public SwervePathFollowerStep(PathPlannerTrajectory pathData, SwerveDriveTemplate drive) {
+    public SwervePathFollowerStep(PathPlannerTrajectory pathData, SwerveDriveTemplate drive, boolean isBlue) {
         this.pathData = pathData;
         m_drive = drive;
+        this.isBlue = isBlue;
         timer = new Timer();
     }
 
@@ -45,12 +40,12 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void update() {
         if (timer.get() >= pathData.getTotalTimeSeconds()) {
-            m_drive.setAutoValues(0,0, -pathData.getEndState().poseMeters.getRotation().getDegrees());
+            m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees());
             setFinished();
         } else {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
-            m_drive.setAutoValues(0, pathData.sample(timer.get()).velocityMetersPerSecond * mToIn, -pathData.sample(timer.get()).poseMeters.getRotation().getDegrees());
+            m_drive.setAutoValues( getVelocity(),getHeading());
             }
     }
 
@@ -59,4 +54,11 @@ public class SwervePathFollowerStep extends AutoStep {
         return "Swerve Path Follower";
     }
 
+    public double getVelocity(){
+        return pathData.sample(timer.get()).velocityMetersPerSecond * mToIn;
+    }
+    public double getHeading(){
+        if (isBlue) return (-pathData.sample(timer.get()).poseMeters.getRotation().getDegrees() + 360)%360;
+        else return (pathData.sample(timer.get()).poseMeters.getRotation().getDegrees()+360)%360;
+    }
 }
