@@ -404,7 +404,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         } 
         if(limelight.TargetInView){
             xPosition = limelight.getParallelDistance();
-            yPosition = limelight.getNormalDistance()*Math.cos(getGyroAngle());
+            yPosition = limelight.getNormalDistance();
             totalDist = 0;
             for (int i = 0; i < modules.length; i++) {
                 modules[i].resetDriveEncoders();
