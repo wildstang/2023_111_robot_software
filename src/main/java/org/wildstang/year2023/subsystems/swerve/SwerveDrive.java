@@ -398,7 +398,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private void UpdatePosition(){
         distanceTraveled = 0;
         for (int i = 0; i < modules.length; i++) { //average of modules
-            distanceTraveled += 0.25*modules[i].getPosition();
+            distanceTraveled += 0.25*modules[i].getPosition()*Math.cos(modules[i].target-modules[i].getAngle());
         } 
         distanceTraveled -= totalDist;
         //account for rotation by change in gyro
@@ -408,11 +408,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //update last values
         lastYaw = gyro.getYaw();
         for (int i = 0; i < modules.length; i++) {
-            totalDist += 0.25*modules[i].getPosition();
+            totalDist += 0.25*modules[i].getPosition()*Math.cos(modules[i].target-modules[i].getAngle());;
         } 
         if(limelight.TargetInView && (limelight.currentPipeline == 0) && (limelight.getDistance()<DriveConstants.MAX_LL_UPDATE_DIST)){
-            xPosition = (xPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[0]+(limelight.getNormalDistance()*Math.sin(getGyroAngle()))+(limelight.getParallelDistance()*Math.cos(getGyroAngle())));
-            yPosition = (yPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[1]+(limelight.getNormalDistance()*Math.cos(getGyroAngle()))+(limelight.getParallelDistance()*Math.sin(getGyroAngle())));
+            xPosition = (xPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[0]+limelight.getParallelDistance());
+            yPosition = (yPosition*DriveConstants.RET_FACTOR)+((1-DriveConstants.RET_FACTOR)*aprilPos.get(limelight.ID)[1]+limelight.getNormalDistance());
         }
 
     }

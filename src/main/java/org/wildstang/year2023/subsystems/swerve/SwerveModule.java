@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
 
-    private double target;
+    public double target;
     private double encoderTarget;
     private double drivePower;
     private double chassisOffset;
