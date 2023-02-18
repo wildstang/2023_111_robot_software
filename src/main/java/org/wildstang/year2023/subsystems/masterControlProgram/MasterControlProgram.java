@@ -19,7 +19,7 @@ import java.util.*;
 public class MasterControlProgram implements Subsystem {
     
     //inputs
-    private DigitalInput highGoal, midGoal, lowGoal, stationForward, stationReverse, cubeMode, coneMode,groundForward,groundReverse,reset,halt;
+    private DigitalInput highGoal, midGoal, lowGoal, stationForward, stationReverse, cubeMode, coneMode,groundForward,groundReverse,reset,halt,deploy;
     private AnalogInput liftManual,armAjuster,wristAjuster;
     // motors
     
@@ -111,6 +111,7 @@ public class MasterControlProgram implements Subsystem {
     private modes delays;
     private position currentPosition;
     private position lastPosition;
+    private position stashedPosition;
 
     @Override
     public void init() {
@@ -163,6 +164,9 @@ public class MasterControlProgram implements Subsystem {
         armAjuster = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_JOYSTICK_Y); 
         armAjuster.addInputListener(this);
 
+        deploy = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER); 
+        deploy.addInputListener(this);
+
         AimHelper = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
 
         armHelper = new arm();
@@ -177,6 +181,7 @@ public class MasterControlProgram implements Subsystem {
         currentMode = modes.CUBE;
         currentPosition = position.HOLDING;
         lastPosition = position.HOLDING;
+        stashedPosition = position.HOLDING;
         posChanged = false;
         haltSignal = false;
         liftResetSignal = false;
@@ -267,12 +272,19 @@ public class MasterControlProgram implements Subsystem {
         }
         //get position corresponding to button
         if(buttonToPosition.containsKey(source) && getDigitalInput(source).getValue()){
-            lastPosition = currentPosition;
-            currentPosition = buttonToPosition.get(source);
+            stashedPosition = buttonToPosition.get(source);
             if(currentMode == modes.CUBE){
-                currentPosition = stringToPosition.get(currentPosition.cube);
+                stashedPosition = stringToPosition.get(currentPosition.cube);
             }
             SmartDashboard.putString("currentPosition",currentPosition.name);
+        }
+        if(deploy.getValue()){
+            lastPosition = currentPosition;
+            currentPosition = stashedPosition;
+        }
+        else{
+            lastPosition = currentPosition;
+            currentPosition = position.HOLDING;
         }
         
         
