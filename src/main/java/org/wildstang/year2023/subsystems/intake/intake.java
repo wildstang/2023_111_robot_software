@@ -89,4 +89,15 @@ public class intake implements Subsystem {
     @Override
     public void selfTest() {
     }
+    public void intakeOn(){
+        speed = ingestSpeed;
+        isHolding = true;
+    }
+    public void intakeExpel(){
+        speed = expelSpeed;
+        isHolding = false;
+    }
+    public void intakeOff(){
+        speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
+    }
 }

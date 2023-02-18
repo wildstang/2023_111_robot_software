@@ -57,6 +57,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathVel;
     private double pathHeading;
     private double pathTarget;
+    private double aimOffset;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -156,7 +157,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotLocked = false;
             }
         }
-
+        aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
 
     }
  
@@ -262,7 +263,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.LL) {
 
-            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint());
+            xSpeed = LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() + 5.0*aimOffset);
             ySpeed = -LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
             
             // if (limelight.currentPipeline == 0) {
@@ -312,6 +313,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathVel = 0.0;
         pathHeading = 0.0;
         pathTarget = 0.0;
+        aimOffset = 0.0;
 
         isFieldCentric = true;
         isSnake = false;

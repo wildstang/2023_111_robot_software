@@ -91,13 +91,7 @@ public class Superstructure implements Subsystem{
         // }
         
         if (currentPos != lastPos){
-            if (lastPos.getDirection() != currentPos.getDirection()){
-                motion = modes.WRIST;
-            } else if (currentPos.getA(gamepiece) < SuperConts.ANTISCOOP){
-                motion = modes.LIFTDELAY;
-            } else {
-                motion = modes.SIMPLE;
-            }
+            determineMotion();
         }
         lastPos = currentPos;
     }
@@ -217,6 +211,15 @@ public class Superstructure implements Subsystem{
     public String getName() {
         return "Superstructure";
     }   
+    private void determineMotion(){
+        if (lastPos.getDirection() != currentPos.getDirection()){
+            this.motion = modes.WRIST;
+        } else if (currentPos.getA(gamepiece) < SuperConts.ANTISCOOP){
+            this.motion = modes.LIFTDELAY;
+        } else {
+            this.motion = modes.SIMPLE;
+        }
+    }
     private void displayNumbers(){
         SmartDashboard.putNumber("Arm Target", currentPos.getA(gamepiece));
         SmartDashboard.putNumber("Lift Target", currentPos.getL(gamepiece));
@@ -228,5 +231,13 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
         SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
+    }
+    public void goToPosition(SuperPos position){
+        currentPos = position;
+        if (currentPos != lastPos) determineMotion();
+        lastPos = currentPos;
+    }
+    public void setGamepiece(boolean newGamePiece){
+        this.gamepiece = newGamePiece;
     }
 }
