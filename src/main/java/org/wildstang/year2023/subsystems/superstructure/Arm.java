@@ -51,6 +51,6 @@ public class Arm {
         return getPosition() > 200;
     }
     public boolean notScooping(){
-        return getPosition() > 90.0;
+        return getPosition() > SuperConts.ANTISCOOP;
     }
 }

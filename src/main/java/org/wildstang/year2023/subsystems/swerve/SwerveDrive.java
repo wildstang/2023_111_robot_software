@@ -16,6 +16,7 @@ import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**Class: SwerveDrive
@@ -52,6 +53,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathHeading;
     private double pathTarget;
     private double aimOffset;
+    private double lastOffset;
+    private boolean lastInView;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -59,6 +62,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
+    private Timer timer = new Timer();
 
     private AimHelper limelight;
     private LimeConsts LC;
@@ -257,19 +261,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.LL) {
 
-            xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() + 5.0*aimOffset);
+            xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() - 5.0*aimOffset);
             ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
             
-            // if (limelight.currentPipeline == 0) {
-            //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_APRILTAG_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
-            // } else if (limelight.currentPipeline == 1) {
-            //     ySpeed = LLpidY.calculate(limelight.getNormalDistance(), limelight.LC.DESIRED_REFLECTIVE_DISTANCE + limelight.LC.LIMELIGHT_DISTANCE_OFFSET);
-            // }
-            //flip if rotated other direction. 
-            // if (rotTarget > 90) {
-            //     ySpeed = -ySpeed;
-            //     xSpeed = -xSpeed;
-            // }
             if (rotLocked){
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             }
@@ -278,8 +272,28 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
             if (limelight.TargetInView){
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+                lastOffset = (limelight.getParallelSetpoint()) -limelight.getParallelDistance();
+                if (!lastInView){
+                    lastInView = true;
+                }
             } else {
-                this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+                if (lastInView){
+                    resetDriveEncoders();
+                    lastInView = false;
+                    timer.reset();timer.start();
+                }
+                // if (modules[0].getDirection(Math.signum(lastOffset)>0.0?90:270) ^ Math.signum(lastOffset)>0){
+                //     xSpeed = 0.01 * (-modules[0].getPosition() - (lastOffset + 5.0+aimOffset));
+                // } else {
+                //     xSpeed = 0.01 * (modules[0].getPosition() - (lastOffset + 5.0*aimOffset));
+                // }
+                if (Math.signum(lastOffset) >0){
+                    xSpeed = 0.01 * (Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
+                } else {
+                    xSpeed = 0.01 * (-Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
+                }
+                if (timer.get()>0.5) xSpeed = 0.01 * (5.0*aimOffset);
+                this.swerveSignal = swerveHelper.setDrive(xSpeed, 0, 0, getGyroAngle());
             }
             
             drive();
@@ -308,6 +322,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathHeading = 0.0;
         pathTarget = 0.0;
         aimOffset = 0.0;
+        lastOffset = 0.0;
+        lastInView = true;
 
         isFieldCentric = true;
         isSnake = false;

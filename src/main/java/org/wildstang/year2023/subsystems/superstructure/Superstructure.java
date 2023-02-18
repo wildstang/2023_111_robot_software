@@ -212,10 +212,10 @@ public class Superstructure implements Subsystem{
         return "Superstructure";
     }   
     private void determineMotion(){
-        if (lastPos.getDirection() != currentPos.getDirection()){
-            this.motion = modes.WRIST;
-        } else if (currentPos.getA(gamepiece) < SuperConts.ANTISCOOP){
+        if (lastPos.getA(gamepiece) < SuperConts.ANTISCOOP){
             this.motion = modes.LIFTDELAY;
+        } else if (lastPos.getDirection() != currentPos.getDirection()){
+            this.motion = modes.WRIST;
         } else {
             this.motion = modes.SIMPLE;
         }
