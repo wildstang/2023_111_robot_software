@@ -72,6 +72,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double totalDist;
     private double xPosition;
     private double yPosition;
+    private double lastYaw;
+    private double moduleDirection;
 
     @Override
     public void inputUpdate(Input source) {
@@ -317,6 +319,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         distanceTraveled = 0;
         xPosition = 0;
         yPosition = 0;
+        lastYaw = 0;
     }
 
     @Override
@@ -385,7 +388,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private void UpdatePosition(){
         distanceTraveled = 0;
         for (int i = 0; i < modules.length; i++) { //average of modules
-            distanceTraveled += 0.25*modules[i].getPosition()*modules[i].getDirection();
+            moduleDirection = Math.abs(modules[i].getAngle()-modules[i].target)>=90?-1:1;
+            distanceTraveled += 0.25*modules[i].getPosition()*moduleDirection;
         } 
         distanceTraveled -= totalDist;
         //account for rotation by change in gyro
@@ -395,11 +399,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //update last values
         lastYaw = gyro.getYaw();
         for (int i = 0; i < modules.length; i++) {
-            totalDist += 0.25*modules[i].getPosition()*modules[i].getDirection();
+            moduleDirection = Math.abs(modules[i].getAngle()-modules[i].target)>=90?-1:1;
+            totalDist += 0.25*modules[i].getPosition()*moduleDirection;
         } 
         if(limelight.TargetInView){
             xPosition = limelight.getParallelDistance();
             yPosition = limelight.getNormalDistance()*Math.cos(getGyroAngle());
+            totalDist = 0;
+            for (int i = 0; i < modules.length; i++) {
+                modules[i].resetDriveEncoders();
+            } 
         }
 
     }
