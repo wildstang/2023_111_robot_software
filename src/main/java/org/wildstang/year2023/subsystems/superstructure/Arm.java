@@ -29,11 +29,11 @@ public class Arm {
         return (absEncoder.getPosition())%360;
     }
     public void setPosition(double position){
-        //if (atPosition(position)){
+        if (atPosition(position)){
             motor.setPosition((position)%360);
-        // } else {
-        //    motor.setSpeed(getSpeed(position));
-        // }
+        } else {
+           motor.setSpeed(getSpeed(position));
+        }
     }
     public double getSpeed(double target){
         if (getPosition() > target && getPosition() <= 180.0){

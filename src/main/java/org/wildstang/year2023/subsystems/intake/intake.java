@@ -12,6 +12,7 @@ import org.wildstang.framework.subsystems.Subsystem;
 
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSOutputs;
+import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 
 /**
  * Sample Subsystem that controls a motor with a joystick.
@@ -23,18 +24,19 @@ public class intake implements Subsystem {
     // outputs
     private WsSparkMax intakeMotor;
     private AnalogInput ingest, expel, driverLT, driverRT;
-    private DigitalInput driverLB, driverRB;
+    private DigitalInput driverLB, driverRB, operatorLB, operatorRB;
     
 
     // states
     private static final double ingestSpeed = 1;
-    private static final double expelSpeed = -1;
+    private static final double expelSpeedCone = -1;
+    private static final double expelSpeedCube = -0.8;
     private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
 
     private double speed, in, out;
 
-    private boolean isHolding;
+    private boolean isHolding, gamepiece;
     @Override
     public void init() {
 
@@ -52,6 +54,10 @@ public class intake implements Subsystem {
         driverLB.addInputListener(this);
         driverRB = (DigitalInput) WSInputs.DRIVER_RIGHT_SHOULDER.get();
         driverRB.addInputListener(this);
+        operatorLB = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
+        operatorLB.addInputListener(this);
+        operatorRB = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
+        operatorRB.addInputListener(this);
         resetState();
     }
 
@@ -59,6 +65,7 @@ public class intake implements Subsystem {
     public void resetState() {
         speed = 0;
         isHolding = false;
+        gamepiece = SuperConts.CONE;
     }
 
     @Override
@@ -70,11 +77,13 @@ public class intake implements Subsystem {
     public void inputUpdate(Input source) {
         in = Math.abs(ingest.getValue());
         out = Math.abs(expel.getValue());
+        if (operatorLB.getValue()) gamepiece = SuperConts.CONE;
+        if (operatorRB.getValue()) gamepiece = SuperConts.CUBE;
         if ((in > deadband && in >= out) || (driverLB.getValue() || driverRB.getValue())) {
-            speed = ingestSpeed * 1;
+            speed = ingestSpeed;
             isHolding = true;
         } else if ((out > deadband && out > in) || (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband)) {
-            speed = expelSpeed * 1;
+            speed = gamepiece ? expelSpeedCone : expelSpeedCube;
             isHolding = false;
         } else {
             speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
@@ -94,7 +103,7 @@ public class intake implements Subsystem {
         isHolding = true;
     }
     public void intakeExpel(){
-        speed = expelSpeed;
+        speed = expelSpeedCone;
         isHolding = false;
     }
     public void intakeOff(){
