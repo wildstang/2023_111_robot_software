@@ -148,6 +148,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //use the limelight for tracking
         if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
             driveState = driveType.LL;
+            xSpeed *= 0.5;
+            ySpeed *= 0.5;
             startingLL = true;
         }
         else {
@@ -262,35 +264,17 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.LL) {
 
-            xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() - 5.0*aimOffset);
-            ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
-            
+            if (limelight.getGamePiece()){
+                xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() - 5.0*aimOffset);
+                ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+                if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
+                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3;
+            }
             if (rotLocked){
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             }
-            if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
-            if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;
-
-            if (limelight.TargetInView && startingLL){
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                lastOffset = (limelight.getParallelSetpoint()) -limelight.getParallelDistance();
-                if (!lastInView){
-                    lastInView = true;
-                }
-            } else {
-                startingLL = false;
-                if (lastInView){
-                    resetDriveEncoders();
-                    lastInView = false;
-                }
-                if (Math.signum(lastOffset) >0){
-                    xSpeed = 0.01 * (Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
-                } else {
-                    xSpeed = 0.01 * (-Math.abs(modules[0].getPosition()) - (lastOffset - 5.0*aimOffset));
-                }
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, 0, 0, getGyroAngle());
-            }
             
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             drive();
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());

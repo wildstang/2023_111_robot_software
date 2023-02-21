@@ -96,7 +96,9 @@ public class AimHelper implements Subsystem {
         calcTargetCoords();
         return (this.x) * -0.015;
     }
-
+    public boolean getGamePiece(){
+        return gamepiece;
+    }
 
     @Override
     public void inputUpdate(Input source) {
