@@ -14,38 +14,28 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 public class LedController implements Subsystem {
 
     private DigitalInput rightShoulder;
-    private DigitalInput leftShoulder;
+    private DigitalInput leftShoulder, start, select;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
 
     private int port = 1;//placeholder port
     private int length = 60;//placeholder length
+    private int initialHue = 0;
+    private boolean isRainbow;
 
     @Override
     public void update(){
+        if (isRainbow){
+            rainbow();
+            led.setData(ledBuffer);
+        }
 
     }
 
     @Override
     public void inputUpdate(Input source) {
-        if(rightShoulder.getValue() || leftShoulder.getValue()){
-            if(rightShoulder.getValue()){
-                if(leftShoulder.getValue() == false){
-                    cubeDisplay();
-                }else{
-                    resetState();
-                }
-            }
-        
-            if(leftShoulder.getValue()){
-                if(rightShoulder.getValue() == false){
-                    coneDisplay();
-                }else{
-                    resetState();
-                }
-            }
-            resetState();
-        }
+        if (rightShoulder.getValue()) cubeDisplay();
+        if (leftShoulder.getValue()) coneDisplay();
     }
 
     @Override
@@ -55,6 +45,10 @@ public class LedController implements Subsystem {
         rightShoulder.addInputListener(this);
         leftShoulder = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_SHOULDER);
         leftShoulder.addInputListener(this);
+        start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
+        start.addInputListener(this);
+        select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
+        select.addInputListener(this);
 
         //Outputs
         led = new AddressableLED(port);
@@ -67,7 +61,7 @@ public class LedController implements Subsystem {
 
     public void cubeDisplay(){
         for (var i = 0; i < length; i++) {
-            ledBuffer.setRGB(i, 215, 0, 250);
+            ledBuffer.setRGB(i, 255, 0, 255);
         }
          
         led.setData(ledBuffer);
@@ -77,7 +71,7 @@ public class LedController implements Subsystem {
 
     public void coneDisplay(){
         for (var i = 0; i < length; i++) {
-            ledBuffer.setRGB(i, 250, 0, 250);
+            ledBuffer.setRGB(i, 255, 255, 0);
         }
          
         led.setData(ledBuffer);
@@ -91,18 +85,23 @@ public class LedController implements Subsystem {
 
     @Override
     public void resetState() {
-        led.stop();
-        for (var i = 0; i < length; i++) {
-            ledBuffer.setRGB(i, 0, 0, 0);
-        }
-        led.setData(ledBuffer);
-        led.setSyncTime(0);
+        initialHue = 0;
+        rainbow();
+        isRainbow = true;
     }
 
     @Override
     public String getName() {
         return "Led Controller";
     }
-    
+    private void rainbow(){
+        for (int i = 0; i < ledBuffer.getLength(); i++){
+            ledBuffer.setHSV(i, (initialHue + (i*180/ledBuffer.getLength()))%180, 255, 128);
+        }
+        initialHue = (initialHue + 3) % 180;
+        led.setData(ledBuffer);
+        led.setSyncTime(2000000);
+        led.start();
+    }
     
 }
