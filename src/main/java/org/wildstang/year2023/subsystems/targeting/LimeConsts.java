@@ -10,7 +10,7 @@ public class LimeConsts {
 
     public double DESIRED_APRILTAG_DISTANCE = 10.0; //13.8 inches to m, distance from front bumper to april tag
 
-    public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters because WPILib units suck
+    public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters
 
     public double[] AUTO_ALIGN_PID_X = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
 

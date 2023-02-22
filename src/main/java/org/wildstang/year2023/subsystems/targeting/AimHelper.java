@@ -24,10 +24,10 @@ public class AimHelper implements Subsystem {
 
     public double x;
     public double y;
-    private double[] target3D;
+    public double[] target3D;
 
     public boolean TargetInView;
-    private boolean gamepiece;
+    public boolean gamepiece;
     private double TargetAbsoluteDistance;
 
     private DigitalInput rightBumper, leftBumper;//, dup, ddown;
