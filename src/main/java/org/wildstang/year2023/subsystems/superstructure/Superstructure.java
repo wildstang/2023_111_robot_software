@@ -199,7 +199,7 @@ public class Superstructure implements Subsystem{
         lastPos = SuperPos.NEUTRAL;
         scoring = score.HIGH;
         intaking = intake.UPRIGHT;
-        stationing = station.SINGLE;
+        stationing = station.DOUBLE;
         timer.reset(); timer.start();
     }
 

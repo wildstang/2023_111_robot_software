@@ -8,8 +8,8 @@ public final class SuperConts {
     public static final double LIFTSTAGE = 36.0;
 
     public static final boolean ARM_ENCODER_DIRECTION = false;
-    public static final double ARM_THRESHOLD = 15.0;
-    public static final double ARM_SLOW = 0.15;
+    public static final double ARM_THRESHOLD = 30.0;
+    public static final double ARM_SLOW = 0.6;
     public static final double ARM_FAST = 0.6-ARM_SLOW;
     public static final double ANTISCOOP = 100.0;
     
