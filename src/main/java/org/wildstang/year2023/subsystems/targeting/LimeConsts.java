@@ -12,9 +12,9 @@ public class LimeConsts {
 
     public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters
 
-    public double[] AUTO_ALIGN_PID_X = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
+    public double[] AUTO_ALIGN_PID_X = {0.02,0,0}; // TODO: Needs to be tuned, kP, kI, kD
 
-    public double[] AUTO_ALIGN_PID_Y = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
+    public double[] AUTO_ALIGN_PID_Y = {0.02,0,0}; // TODO: Needs to be tuned, kP, kI, kD
     
     public final boolean CONE = true;
     public final boolean CUBE = false;

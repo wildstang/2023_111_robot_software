@@ -1,4 +1,4 @@
-package org.wildstang.year2023.auto;
+package org.wildstang.year2023.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
