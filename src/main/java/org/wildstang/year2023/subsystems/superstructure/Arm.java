@@ -21,8 +21,6 @@ public class Arm {
         absEncoder.setInverted(SuperConts.ARM_ENCODER_DIRECTION);
         absEncoder.setZeroOffset(201.5);//54
         motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder, false);
-        motor.getPIDController().setSmartMotionMaxVelocity(2000, 0);
-        motor.getPIDController().setSmartMotionMaxAccel(1500, 0);
         motor.setCurrentLimit(30, 30, 0);
     }
     public double getPosition(){
@@ -39,11 +37,11 @@ public class Arm {
         if (getPosition() > target && getPosition() <= 180.0){
             return -SuperConts.ARM_SLOW;
         } else if (getPosition() < target && getPosition() >= 180.0){
-            return SuperConts.ARM_SLOW;
+            return SuperConts.ARM_SLOW*0.5;
         } else if (getPosition() > target && getPosition() >= 180.0){
-            return -SuperConts.ARM_SLOW - SuperConts.ARM_FAST * (-Math.toDegrees(Math.sin(getPosition())));
+            return -SuperConts.ARM_SLOW;
         } else {
-            return SuperConts.ARM_SLOW + SuperConts.ARM_FAST * (Math.toDegrees(Math.sin(getPosition())));
+            return SuperConts.ARM_SLOW*1.2;
         }
     }
     public boolean atPosition(double position){
