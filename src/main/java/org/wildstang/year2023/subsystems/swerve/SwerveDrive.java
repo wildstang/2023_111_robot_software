@@ -426,4 +426,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public SwerveModulePosition[] odoPosition(){
         return new SwerveModulePosition[]{modules[0].odoPosition(), modules[1].odoPosition(), modules[2].odoPosition(), modules[3].odoPosition()};
     }
+    public void setOdo(Pose2d starting){
+        odometry.resetPosition(odoAngle(), odoPosition(), starting);
+    }
 }

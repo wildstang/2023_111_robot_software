@@ -11,6 +11,7 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
+import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
 import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.superstructure.SuperPos;
@@ -27,6 +28,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new SetGyroStep(180.0, swerve));
         group1.addStep(new PathHeadingStep(180.0, swerve));
+        group1.addStep(new StartOdometryStep(1.78, 4.96, 180.0));
         group1.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         group1.addStep(new AutoStepDelay(600));
         addStep(group1);
@@ -39,7 +41,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group3 = new AutoParallelStepGroup();
         group3.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A", new PathConstraints(4, 3)),
-            swerve, false));
+            swerve, true));
         AutoSerialStepGroup group3A = new AutoSerialStepGroup();
         group3A.addStep(new AutoStepDelay(200));
         AutoParallelStepGroup group3B = new AutoParallelStepGroup();
@@ -56,7 +58,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group4 = new AutoParallelStepGroup();
         group4.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 B", new PathConstraints(4, 3)),
-            swerve, false));
+            swerve, true));
         group4.addStep(new IntakeOffStep());
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(2000));
@@ -72,7 +74,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group6 = new AutoParallelStepGroup();
         group6.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 C", new PathConstraints(4, 3)),
-            swerve, false));
+            swerve, true));
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
         group6A.addStep(new AutoStepDelay(200));
         AutoParallelStepGroup group6B = new AutoParallelStepGroup();
@@ -89,7 +91,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group7 = new AutoParallelStepGroup();
         group7.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 D", new PathConstraints(4, 3)),
-            swerve, false));
+            swerve, true));
         group7.addStep(new IntakeOffStep());
         AutoSerialStepGroup group7A = new AutoSerialStepGroup();
         group7A.addStep(new AutoStepDelay(2100));
@@ -105,7 +107,7 @@ public class Top_3pE extends AutoProgram{
         AutoParallelStepGroup group9 = new AutoParallelStepGroup();
         group9.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         group9.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e E", new PathConstraints(4, 3)),
-        swerve, false));
+        swerve, true));
 
         //autobalance step
 
