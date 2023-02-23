@@ -18,7 +18,8 @@ public class Lift {
     }
 
     public void setPosition(double newPosition){
-        motor.setPosition(newPosition);
+        if (newPosition < 0) motor.setPosition(0);
+        else motor.setPosition(newPosition);
     }
     
 }

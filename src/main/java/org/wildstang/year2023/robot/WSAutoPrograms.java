@@ -3,7 +3,7 @@ package org.wildstang.year2023.robot;
 import org.wildstang.framework.core.AutoPrograms;
 import org.wildstang.year2023.auto.Programs.SampleAutoProgram;
 import org.wildstang.year2023.auto.Programs.Testprogram;
-import org.wildstang.year2023.auto.Programs.Top_3pE;
+import org.wildstang.year2023.auto.Programs.Blue_Top_3pE;
 
 /**
  * All active AutoPrograms are enumerated here.
@@ -14,7 +14,7 @@ public enum WSAutoPrograms implements AutoPrograms {
     // enumerate programs
     SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
     TEST_PROGRAM("Test Program", Testprogram.class),
-    TOP_3P1("Top_3pE", Top_3pE.class)
+    TOP_3P1("Top_3pE", Blue_Top_3pE.class)
     ;
 
     /**

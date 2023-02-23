@@ -20,7 +20,7 @@ import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
-public class Top_3pE extends AutoProgram{
+public class Blue_Top_3pE extends AutoProgram{
     
     protected void defineSteps(){
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
@@ -114,6 +114,6 @@ public class Top_3pE extends AutoProgram{
     }
 
     public String toString(){
-        return "Top_3pE";
+        return "BLUE Top_3pE";
     }
 }
