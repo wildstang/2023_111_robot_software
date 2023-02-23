@@ -3,9 +3,9 @@ package org.wildstang.year2023.subsystems.swerve;
 public final class DriveConstants {
 
     /** robot length from swerve pod to swerve pod, in inches */
-    public static final double ROBOT_LENGTH = 11.5;
+    public static final double ROBOT_LENGTH = 11;
     /** robot width from swerve pod to swerve pod, in inches */
-    public static final double ROBOT_WIDTH = 11.5;
+    public static final double ROBOT_WIDTH = 11;
     /**speed with which the robot rotates relative to drive speed */
     public static final double ROTATION_SPEED = 0.50;
     /**drive motor gear ratio */

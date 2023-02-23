@@ -139,23 +139,6 @@ public class SwerveModule {
         return driveMotor.getPosition() * DriveConstants.WHEEL_DIAMETER * Math.PI / DriveConstants.DRIVE_RATIO;
     }
 
-    
-
-
-    /** returns drive encoder distance in meters
-     * @return double drive encoder distance in meters
-    */
-    public double getPositionMeters() {
-        return getPosition()*.0254;
-    }
-
-    /** returns drive module position compatible with wpilib 
-     * @return returns wpilib compatible swerve position
-    */
-    public SwerveModulePosition getSwerveModulePosition() {
-        return new SwerveModulePosition(getPositionMeters(), new Rotation2d(getAngle()*Math.PI));
-    }
-
     /**returns raw drive encoder value, rotations
      * @return drive encoder value, rotations
      */

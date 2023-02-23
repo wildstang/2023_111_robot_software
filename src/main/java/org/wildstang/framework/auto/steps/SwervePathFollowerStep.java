@@ -49,8 +49,8 @@ public class SwervePathFollowerStep extends AutoStep {
 
             Pose2d localRobotPose = m_drive.returnPose();
             Pose2d localAutoPose = pathData.sample(timer.get()).poseMeters;
-            double xOffset = localRobotPose.getX() - localAutoPose.getX();
-            double yOffset = localRobotPose.getY() - localAutoPose.getY();
+            double yOffset = -(localRobotPose.getX() - localAutoPose.getX());
+            double xOffset = localRobotPose.getY() - localAutoPose.getY();
 
             m_drive.setAutoValues( getVelocity(),getHeading(), xOffset, yOffset);
             }
