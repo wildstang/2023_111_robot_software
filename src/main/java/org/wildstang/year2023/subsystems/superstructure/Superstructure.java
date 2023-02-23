@@ -50,7 +50,7 @@ public class Superstructure implements Subsystem{
         if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
         if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
         if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
-        if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
+        //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
 
         if (timer.hasElapsed(0.25)){
             if (Math.abs(driverLT.getValue()) > 0.25){
