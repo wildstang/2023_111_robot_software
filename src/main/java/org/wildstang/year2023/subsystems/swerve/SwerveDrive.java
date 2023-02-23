@@ -60,8 +60,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double lastOffset;
     private boolean lastInView;
     private boolean startingLL;
-    private double xAbsPos;
-    private double yAbsPos;
+    public double xAbsPos;
+    public double yAbsPos;
+    private double pathXOffset = 0;
+    private double pathYOffset = 0;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -128,7 +130,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 positions[1],positions[2],positions[3],positions[4]
             });
             xAbsPos = m_odometry.getPoseMeters().getX();
-            xAbsPos = m_odometry.getPoseMeters().getY();
+            yAbsPos = m_odometry.getPoseMeters().getY();
         }
     }
 
@@ -218,6 +220,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
 
+    }
+
+    public Pose2d returnPose(){
+        return m_odometry.getPoseMeters();
     }
  
     @Override
@@ -321,7 +327,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle());
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
             drive();        
         }
         if (driveState == driveType.LL) {
@@ -335,9 +341,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
             if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;
 
+            double parallelDistance = xAbsPos-LC.APRILTAG_ABS_OFFSET_X[(int) limelight.tid];
+
             if (limelight.TargetInView && startingLL){
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                lastOffset = (limelight.getParallelSetpoint()) -limelight.getParallelDistance();
+                lastOffset = (limelight.getParallelSetpoint()) - parallelDistance;
                 if (!lastInView){
                     lastInView = true;
                 }
@@ -440,9 +448,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     /**sets autonomous values from the path data file */
-    public void setAutoValues(double velocity, double heading) {
+    public void setAutoValues(double velocity, double heading, double xOffset, double yOffset) {
         pathVel = velocity;
         pathHeading = heading;
+        pathXOffset = xOffset;
+        pathYOffset = yOffset;
     }
 
     /**sets the autonomous heading controller to a new target */

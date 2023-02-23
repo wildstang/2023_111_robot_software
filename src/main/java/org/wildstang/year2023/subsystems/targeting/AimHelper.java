@@ -25,8 +25,8 @@ public class AimHelper implements Subsystem {
     public double x;
     public double y;
     private double[] target3D;
-    private double tid;
-    private int tidInt;
+    public double tid;
+    private Integer tidInt;
     private double[] targetOffset;
 
     public boolean TargetInView;
