@@ -63,9 +63,7 @@ public class LedController implements Subsystem {
         for (var i = 0; i < length; i++) {
             ledBuffer.setRGB(i, 255, 0, 255);
         }
-         
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
         led.start();
     }
 
@@ -75,7 +73,6 @@ public class LedController implements Subsystem {
         }
          
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
         led.start();
     }
 
@@ -100,7 +97,6 @@ public class LedController implements Subsystem {
         }
         initialHue = (initialHue + 3) % 180;
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
         led.start();
     }
     
