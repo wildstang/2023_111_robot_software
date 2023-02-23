@@ -16,6 +16,10 @@ import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -56,6 +60,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double lastOffset;
     private boolean lastInView;
     private boolean startingLL;
+    private double xAbsPos;
+    private double yAbsPos;
     
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
@@ -71,6 +77,60 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public enum driveType {TELEOP, AUTO, CROSS, LL};
     public driveType driveState;
+
+    private SwerveDriveOdometry m_odometry;
+
+    
+    private void createNewOdometry(){
+        //for odometry
+        Translation2d m_frontLeftLocation = new Translation2d(DriveConstants.ROBOT_LENGTH/2*.0254, DriveConstants.ROBOT_WIDTH/2*.0254);
+        Translation2d m_frontRightLocation = new Translation2d(DriveConstants.ROBOT_LENGTH/2*.0254, -DriveConstants.ROBOT_WIDTH/2*.0254);
+        Translation2d m_backLeftLocation = new Translation2d(-DriveConstants.ROBOT_LENGTH/2*.0254, DriveConstants.ROBOT_WIDTH/2*.0254);
+        Translation2d m_backRightLocation = new Translation2d(-DriveConstants.ROBOT_LENGTH/2*.0254, -DriveConstants.ROBOT_WIDTH/2*.0254);
+
+        SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+            m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
+        );
+        SwerveModulePosition positions[] = new SwerveModulePosition[] {
+            modules[1].getSwerveModulePosition(),
+            modules[2].getSwerveModulePosition(),
+            modules[3].getSwerveModulePosition(),
+            modules[4].getSwerveModulePosition()
+        };
+
+        if(limelight.TargetInView) {
+            xAbsPos = limelight.getAbsolutePosition()[0];
+            yAbsPos = limelight.getAbsolutePosition()[2];
+        } else {
+            xAbsPos = LC.DEFAULT_POSITION_X;
+            yAbsPos = LC.DEFAULT_POSITION_Y;
+        }
+
+        m_odometry = new SwerveDriveOdometry(
+            m_kinematics, new Rotation2d(getGyroAngle()),
+            positions,
+            new Pose2d(xAbsPos, yAbsPos, new Rotation2d()));
+    }
+
+    private void updateOdometry(){
+        if(limelight.TargetInView){
+            createNewOdometry();
+        } else {
+            SwerveModulePosition positions[] = new SwerveModulePosition[] {
+                modules[1].getSwerveModulePosition(),
+                modules[2].getSwerveModulePosition(),
+                modules[3].getSwerveModulePosition(),
+                modules[4].getSwerveModulePosition()
+            };
+
+            m_odometry.update(new Rotation2d(getGyroAngle()),
+                new SwerveModulePosition[] {
+                positions[1],positions[2],positions[3],positions[4]
+            });
+            xAbsPos = m_odometry.getPoseMeters().getX();
+            xAbsPos = m_odometry.getPoseMeters().getY();
+        }
+    }
 
     @Override
     public void inputUpdate(Input source) {
@@ -219,6 +279,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
         limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
+   
+        createNewOdometry();
     }
     
     @Override
@@ -227,6 +289,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
+        updateOdometry();
+
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
             this.swerveSignal = swerveHelper.setCross();
@@ -302,6 +366,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putNumber("Absolute X Position", xAbsPos);
+        SmartDashboard.putNumber("Absolute Y Distance", yAbsPos);
     }
     
     @Override

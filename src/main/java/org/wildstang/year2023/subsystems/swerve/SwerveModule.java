@@ -6,6 +6,8 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 public class SwerveModule {
 
@@ -133,6 +135,23 @@ public class SwerveModule {
     */
     public double getPosition() {
         return driveMotor.getPosition() * DriveConstants.WHEEL_DIAMETER * Math.PI / DriveConstants.DRIVE_RATIO;
+    }
+
+    
+
+
+    /** returns drive encoder distance in meters
+     * @return double drive encoder distance in meters
+    */
+    public double getPositionMeters() {
+        return getPosition()*.0254;
+    }
+
+    /** returns drive module position compatible with wpilib 
+     * @return returns wpilib compatible swerve position
+    */
+    public SwerveModulePosition getSwerveModulePosition() {
+        return new SwerveModulePosition(getPositionMeters(), new Rotation2d(getAngle()*Math.PI));
     }
 
     /**returns raw drive encoder value, rotations

@@ -15,6 +15,12 @@ public class LimeConsts {
     public double[] AUTO_ALIGN_PID_X = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
 
     public double[] AUTO_ALIGN_PID_Y = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
+
+    public double[] APRILTAG_ABS_OFFSET_X = {5,10,15,20,20,15,10,5}; //TODO: Change offset constants using onshape measure
+    public double[] APRILTAG_ABS_OFFSET_Y = {1.01599,1.01599,1.01599,1.01599,1,30,30-1.01599,30-1.01599,30-1.01599,30-1.01599}; //TODO: Change offset constants using onshape measure
+    
+    public double DEFAULT_POSITION_X = 0;
+    public double DEFAULT_POSITION_Y = 0;
     
     public final boolean CONE = true;
     public final boolean CUBE = false;
