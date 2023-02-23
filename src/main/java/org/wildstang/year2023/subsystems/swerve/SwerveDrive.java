@@ -62,6 +62,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double lastOffset;
     private boolean lastInView;
     private boolean startingLL;
+    public double xAbsPos;
+    public double yAbsPos;
+    private double pathXOffset = 0;
+    private double pathYOffset = 0;
     
     private final double mToIn = 39.37;
     private final double inToM = 1.0/mToIn;
@@ -243,6 +247,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], -limelight.target3D[0]), odoAngle()));
         } 
         robotPose = odometry.update(odoAngle(), odoPosition());
+        xAbsPos = odometry.getPoseMeters().getX();
+        yAbsPos = odometry.getPoseMeters().getY();
 
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
@@ -274,7 +280,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle());
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
             drive();        
         }
         if (driveState == driveType.LL) {
@@ -322,6 +328,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putNumber("Absolute X Position", xAbsPos);
+        SmartDashboard.putNumber("Absolute Y Distance", yAbsPos);
     }
     
     @Override
@@ -395,9 +403,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     /**sets autonomous values from the path data file */
-    public void setAutoValues(double velocity, double heading) {
+    public void setAutoValues(double velocity, double heading, double xOffset, double yOffset) {
         pathVel = velocity;
         pathHeading = heading;
+        pathXOffset = xOffset;
+        pathYOffset = yOffset;
     }
 
     /**sets the autonomous heading controller to a new target */
@@ -433,5 +443,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public void setOdo(Pose2d starting){
         odometry.resetPosition(odoAngle(), odoPosition(), starting);
+    }
+    public Pose2d returnPose(){
+        return odometry.getPoseMeters();
     }
 }

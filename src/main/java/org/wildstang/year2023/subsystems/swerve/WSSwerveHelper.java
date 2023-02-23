@@ -78,8 +78,8 @@ public class WSSwerveHelper {
      * @param i_gyro the gyro value, field centric, in bearing degrees
      * @return SwerveSignal that is the command for the robot to move
      */
-    public SwerveSignal setAuto(double i_power, double i_heading, double i_rot, double i_gyro) {
-        return setDrive(i_power * -Math.sin(Math.toRadians(i_heading)), i_power * -Math.cos(Math.toRadians(i_heading)), i_rot, i_gyro);
+    public SwerveSignal setAuto(double i_power, double i_heading, double i_rot, double i_gyro, double xOffset, double yOffset) {
+        return setDrive(i_power * -Math.sin(Math.toRadians(i_heading))+ xOffset*.5, i_power * -Math.cos(Math.toRadians(i_heading))+ yOffset*.5, i_rot, i_gyro); //TODO: change xxoffset multiplier
     }
 
     /**automatically creates a rotational joystick value to rotate the robot towards a specific target

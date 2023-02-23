@@ -25,6 +25,9 @@ public class AimHelper implements Subsystem {
     public double x;
     public double y;
     public double[] target3D;
+    public double tid;
+    private Integer tidInt;
+    private double[] targetOffset;
 
     public boolean TargetInView;
     public boolean gamepiece;
@@ -45,6 +48,7 @@ public class AimHelper implements Subsystem {
             x = tx.getValue();
             y = ty.getValue();
             target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
             dataLife = 0;
         }
         else {
@@ -92,6 +96,17 @@ public class AimHelper implements Subsystem {
         else return 0.0;
     }
 
+    public double[] getAbsolutePosition(){
+        double offsetX = LC.APRILTAG_ABS_OFFSET_X[tidInt = (int) tid];
+        double offsetY = LC.APRILTAG_ABS_OFFSET_Y[tidInt = (int) tid];
+        
+        double[] newArray = target3D;
+        newArray[0] = target3D[0] + offsetX;
+        newArray[2] = target3D[2] + offsetY;
+        
+        return newArray;
+    }
+
     public double getRotPID() {
         calcTargetCoords();
         return (this.x) * -0.015;
@@ -120,7 +135,8 @@ public class AimHelper implements Subsystem {
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
-        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);;
+        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
 
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);

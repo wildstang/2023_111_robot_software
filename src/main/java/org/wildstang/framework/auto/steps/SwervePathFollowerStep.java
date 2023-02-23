@@ -5,6 +5,7 @@ import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -40,12 +41,18 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void update() {
         if (timer.get() >= pathData.getTotalTimeSeconds()) {
-            m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees());
+            m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
             setFinished();
         } else {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
-            m_drive.setAutoValues( getVelocity(),getHeading());
+
+            Pose2d localRobotPose = m_drive.returnPose();
+            Pose2d localAutoPose = pathData.sample(timer.get()).poseMeters;
+            double xOffset = localRobotPose.getX() - localAutoPose.getX();
+            double yOffset = localRobotPose.getY() - localAutoPose.getY();
+
+            m_drive.setAutoValues( getVelocity(),getHeading(), xOffset, yOffset);
             }
     }
 
