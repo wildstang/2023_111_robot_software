@@ -2,16 +2,16 @@ package org.wildstang.year2023.subsystems.superstructure;
 
 public enum SuperPos {
 
-    SCORE_HIGH       (68,245.4,51.8,68,245.4,51.8,true),
-    SCORE_MID        (31.2,233.4,44.5,31.2,233.4,44.5,true),
-    SCORE_LOW        (0,270,50,0,270,50,true),
+    SCORE_HIGH       (69,245.4,51.8,69,245.4,51.8,true),
+    SCORE_MID        (32.2,233.4,44.5,32.2,233.4,44.5,true),
+    SCORE_LOW        (0,231,26,0,231,26,true),
     NEUTRAL          (0,195,180,0,195,180,false),
     INTAKE_FRONT     (13.5,283,52,13.5,283,52,true),
     INTAKE_FRONT_LOW (0,283,52,0,283,52,true),
-    HP_STATION_DOUBLE(31,203,68,31,203,68,true),
+    HP_STATION_DOUBLE(25,203,62,19,203,60,true),
     HP_STATION_SINGLE(40,70,180,40,70,180,false),
-    INTAKE_BACK      (33,56.4,310,26.7,56.4,310,false),
-    INTAKE_BACK_LOW  (26.7, 56.4, 302.0, 26.7, 56.4, 310.0, false);
+    INTAKE_BACK      (33.9,56.4,310,28.7,56.4,310,false),
+    INTAKE_BACK_LOW  (26.7, 56.4, 316.0, 28.7, 56.4, 310.0, false);
     //upright cone back 26.7 56.4 302
 
     public final double cubeL;

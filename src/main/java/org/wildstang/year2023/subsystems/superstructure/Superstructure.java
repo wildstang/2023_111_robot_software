@@ -46,15 +46,15 @@ public class Superstructure implements Subsystem{
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
-        if (source == rightClick && rightClick.getValue()){
-            adjustMode = (adjustMode+1)%3;
-        }
-        if (source == start && start.getValue()){
-            modifier[adjustMode] +=1;
-        }
-        if (source == select && select.getValue()){
-            modifier[adjustMode] -=1;
-        }
+        // if (source == rightClick && rightClick.getValue()){
+        //     adjustMode = (adjustMode+1)%3;
+        // }
+        // if (source == start && start.getValue()){
+        //     modifier[adjustMode] +=1;
+        // }
+        // if (source == select && select.getValue()){
+        //     modifier[adjustMode] -=1;
+        // }
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
         if (source == Y && Y.getValue()) scoring = score.HIGH;
@@ -168,36 +168,36 @@ public class Superstructure implements Subsystem{
         if (motion == modes.SIMPLE){
             if (liftWait){
                 if (arm.notScooping()){
-                    lift.setPosition(modifier[1]+currentPos.getL(gamepiece));
+                    lift.setPosition(currentPos.getL(gamepiece));
                     liftWait = false;
                 } else {
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                lift.setPosition(modifier[1]+currentPos.getL(gamepiece));
+                lift.setPosition(currentPos.getL(gamepiece));
             }  
 
             if (armWait){
                 if (lift.getPosition() < SuperConts.LIFTSTAGE){
-                    arm.setPosition(modifier[0]+currentPos.getA(gamepiece));
+                    arm.setPosition(currentPos.getA(gamepiece));
                     armWait = false;
                 } else {
                     arm.setPosition(arm.getPosition());
                 }
             } else {
-                arm.setPosition(modifier[0]+currentPos.getA(gamepiece));
+                arm.setPosition(currentPos.getA(gamepiece));
             }
 
             if (wristWait){
                 if (arm.pastLift() && !armWait){
-                    wrist.setPosition(modifier[2]+currentPos.getW(gamepiece));
+                    wrist.setPosition(currentPos.getW(gamepiece));
                     wristWait = false;
                 } else {
                     //wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
                     wrist.setPosition((360-arm.getPosition())%360);
                 }
             } else {
-                wrist.setPosition(modifier[2]+currentPos.getW(gamepiece));
+                wrist.setPosition(currentPos.getW(gamepiece));
             }
         }
         displayNumbers();
@@ -216,7 +216,7 @@ public class Superstructure implements Subsystem{
         intaking = intake.UPRIGHT;
         stationing = station.DOUBLE;
         timer.reset(); timer.start();
-        modifier = new double[]{0.0,0.0,0.0};adjustMode=0;
+        // modifier = new double[]{0.0,0.0,0.0};adjustMode=0;
     }
 
     @Override
@@ -247,10 +247,10 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
         SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
-        SmartDashboard.putNumber("Arm Modifier", modifier[0]);
-        SmartDashboard.putNumber("Lift Modifier", modifier[1]);
-        SmartDashboard.putNumber("Wrist Modifier", modifier[2]);
-        SmartDashboard.putString("Modifier Mode", adjustMode==0?"Arm":(adjustMode==1?"Lift":"Wrist"));
+        // SmartDashboard.putNumber("Arm Modifier", modifier[0]);
+        // SmartDashboard.putNumber("Lift Modifier", modifier[1]);
+        // SmartDashboard.putNumber("Wrist Modifier", modifier[2]);
+        // SmartDashboard.putString("Modifier Mode", adjustMode==0?"Arm":(adjustMode==1?"Lift":"Wrist"));
     }
     public void goToPosition(SuperPos position){
         currentPos = position;
