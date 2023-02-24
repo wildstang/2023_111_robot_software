@@ -99,10 +99,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
         }
         else if (driveState != driveType.AUTO) {
-            driveState = driveType.TELEOP;
             for (int i = 0; i < modules.length; i++) {
                 modules[i].setDriveBrake(false);
             }
+            driveState = driveType.TELEOP;
         }
         //get x and y speeds
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);

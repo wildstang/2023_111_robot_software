@@ -51,6 +51,10 @@ public class Superstructure implements Subsystem{
         }
         if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
         if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
+        if (start.getValue() && select.getValue() && (source == start || source == select)) {
+            if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
+            else currentPos = SuperPos.NEUTRAL;
+        }
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
         if (source == Y && Y.getValue()) scoring = score.HIGH;
@@ -59,7 +63,7 @@ public class Superstructure implements Subsystem{
         if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
         //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
 
-        if (timer.hasElapsed(0.25)){
+        if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
             if (Math.abs(driverLT.getValue()) > 0.25){
                 if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
                 if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
