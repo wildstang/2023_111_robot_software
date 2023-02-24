@@ -38,7 +38,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AnalogInput rightTrigger;//thrust
     private AnalogInput leftTrigger;//aiming
     // private DigitalInput rightBumper;//robot centric control
-    // private DigitalInput leftBumper;//intake
+    private DigitalInput leftBumper;//intake
     private DigitalInput select;//gyro reset
     private DigitalInput start;//snake mode
     private DigitalInput faceUp;//rotation lock 0 degrees
@@ -120,7 +120,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         else {
             isSnake = false;
         }
-        if (source == faceUp && faceUp.getValue()){
+        if ((source == faceUp && faceUp.getValue()) || leftBumper.getValue()){
             rotTarget = 0.0;
             rotLocked = true;
         }
@@ -128,7 +128,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotTarget = 270.0;
             rotLocked = true;
         }
-        if (source == faceDown && faceDown.getValue()){
+        if ((source == faceDown && faceDown.getValue()) || Math.abs(leftTrigger.getValue()) > 0.15){
             rotTarget = 180.0;
             rotLocked = true;
         }
@@ -140,7 +140,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //get rotational joystick
         rotSpeed = rightStickX.getValue()*Math.abs(rightStickX.getValue());
         rotSpeed = swerveHelper.scaleDeadband(rotSpeed, DriveConstants.DEADBAND);
-
+        if (Math.abs(leftTrigger.getValue()) > 0.15 || leftBumper.getValue()) rotSpeed = 0;
         //if the rotational joystick is being used, the robot should not be auto tracking heading
         if (rotSpeed != 0) {
             rotLocked = false;
@@ -200,8 +200,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         leftTrigger.addInputListener(this);
         // rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
         // rightBumper.addInputListener(this);
-        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
-        // leftBumper.addInputListener(this);
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_SELECT);
         select.addInputListener(this);
         start = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_START);
@@ -446,5 +446,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public Pose2d returnPose(){
         return odometry.getPoseMeters();
+    }
+    public double getRotTarget(){
+        return rotTarget;
     }
 }

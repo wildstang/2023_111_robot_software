@@ -1,5 +1,6 @@
 package org.wildstang.year2023.subsystems.superstructure;
 
+import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
@@ -7,6 +8,8 @@ import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
+import org.wildstang.year2023.robot.WSSubsystems;
+import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,8 +36,9 @@ public class Superstructure implements Subsystem{
     public Wrist wrist;
     private Timer timer = new Timer();
     private double liftMod;
+    private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;
 
 
     @Override
@@ -61,10 +65,12 @@ public class Superstructure implements Subsystem{
                 if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
                 if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
                 if (lastPos != currentPos) timer.reset();
+                swerveWait = true;
             } else if (driverLB.getValue()){
                 if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
                 if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
+                swerveWait = true;
             } else if (driverRB.getValue()){
                 if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
                 if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
@@ -135,12 +141,16 @@ public class Superstructure implements Subsystem{
         arm = new Arm((WsSparkMax) WSOutputs.ARM_ONE.get());
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
         wrist = new Wrist((WsSparkMax) WSOutputs.WRIST.get());
+        swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
 
         resetState();
     }
 
     @Override
     public void update() {
+        if (swerveWait && Math.abs(swerve.getGyroAngle() - swerve.getRotTarget()) < 15.0){
+            swerveWait = false;
+        }
         if (motion == modes.ARMDELAY){
             //armWait = true;
             wristWait = true;
@@ -156,8 +166,8 @@ public class Superstructure implements Subsystem{
             motion = modes.SIMPLE;
         }
         if (motion == modes.SIMPLE){
-            if (liftWait){
-                if (arm.notScooping()){
+            if (liftWait || swerveWait){
+                if (arm.notScooping() && !swerveWait){
                     lift.setPosition(liftMod + currentPos.getL(gamepiece));
                     liftWait = false;
                 } else {
@@ -167,8 +177,8 @@ public class Superstructure implements Subsystem{
                 lift.setPosition(liftMod + currentPos.getL(gamepiece));
             }  
 
-            if (armWait){
-                if (lift.getPosition() < SuperConts.LIFTSTAGE){
+            if (armWait || swerveWait){
+                if (lift.getPosition() < SuperConts.LIFTSTAGE && !swerveWait){
                     arm.setPosition(currentPos.getA(gamepiece));
                     armWait = false;
                 } else {
@@ -178,8 +188,8 @@ public class Superstructure implements Subsystem{
                 arm.setPosition(currentPos.getA(gamepiece));
             }
 
-            if (wristWait){
-                if (arm.pastLift() && !armWait){
+            if (wristWait || swerveWait){
+                if (arm.pastLift() && !armWait || !swerveWait){
                     wrist.setPosition(currentPos.getW(gamepiece));
                     wristWait = false;
                 } else {
@@ -207,6 +217,7 @@ public class Superstructure implements Subsystem{
         stationing = station.SINGLE;
         timer.reset(); timer.start();
         liftMod = 0.0;
+        swerveWait = false;
     }
 
     @Override
