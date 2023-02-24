@@ -151,6 +151,7 @@ public class Superstructure implements Subsystem{
         if (swerveWait && Math.abs(swerve.getGyroAngle() - swerve.getRotTarget()) < 15.0){
             swerveWait = false;
         }
+        if (timer.hasElapsed(0.5)) swerveWait = false;
         if (motion == modes.ARMDELAY){
             //armWait = true;
             wristWait = true;

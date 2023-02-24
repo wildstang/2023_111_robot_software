@@ -19,7 +19,7 @@ public class Arm {
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.ARM_ENCODER_DIRECTION);
-        absEncoder.setZeroOffset(197.26);//54
+        absEncoder.setZeroOffset(199.0);//54
         motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder, false);
         motor.setCurrentLimit(30, 30, 0);
     }
@@ -36,7 +36,7 @@ public class Arm {
     public double getSpeed(double target){
         if (getPosition() > target && getPosition() <= 180.0){
             return -SuperConts.ARM_SLOW;
-        } else if (getPosition() < target && getPosition() >= 180.0){
+        } else if (getPosition() < target && getPosition() >= 200.0){
             return SuperConts.ARM_SLOW*0.5;
         } else if (getPosition() > target && getPosition() >= 180.0){
             return -SuperConts.ARM_SLOW;

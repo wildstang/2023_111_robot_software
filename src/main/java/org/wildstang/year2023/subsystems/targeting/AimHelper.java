@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AimHelper implements Subsystem {
     
-    private static final double mToIn = 30.3701;
+    private static final double mToIn = 39.3701;
 
     private WsRemoteAnalogInput ty; // y angle
     private WsRemoteAnalogInput tx; // x angle
