@@ -1,12 +1,9 @@
 package org.wildstang.year2023.subsystems.led;
 
-import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.outputs.WsRemoteAnalogOutput;
 import org.wildstang.year2023.robot.WSInputs;
-import org.wildstang.year2023.robot.WSOutputs;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -29,21 +26,21 @@ public class LedController implements Subsystem {
             rainbow();
             led.setData(ledBuffer);
         }
-
     }
 
     @Override
     public void inputUpdate(Input source) {
         if (rightShoulder.getValue()) cubeDisplay();
         if (leftShoulder.getValue()) coneDisplay();
+        if (start.getValue() && select.getValue()) isRainbow = true;
     }
 
     @Override
     public void init() {
         //Inputs
-        rightShoulder = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
+        rightShoulder = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
         rightShoulder.addInputListener(this);
-        leftShoulder = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_SHOULDER);
+        leftShoulder = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftShoulder.addInputListener(this);
         start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
         start.addInputListener(this);
@@ -53,30 +50,25 @@ public class LedController implements Subsystem {
         //Outputs
         led = new AddressableLED(port);
         ledBuffer = new AddressableLEDBuffer(length);
-
         led.setLength(ledBuffer.getLength());
-
         led.setData(ledBuffer);
+        led.start();
     }
 
     public void cubeDisplay(){
         for (var i = 0; i < length; i++) {
             ledBuffer.setRGB(i, 255, 0, 255);
         }
-         
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
-        led.start();
+        isRainbow = false;
     }
 
     public void coneDisplay(){
         for (var i = 0; i < length; i++) {
             ledBuffer.setRGB(i, 255, 255, 0);
         }
-         
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
-        led.start();
+        isRainbow = false;
     }
 
     @Override
@@ -86,7 +78,6 @@ public class LedController implements Subsystem {
     @Override
     public void resetState() {
         initialHue = 0;
-        rainbow();
         isRainbow = true;
     }
 
@@ -94,14 +85,12 @@ public class LedController implements Subsystem {
     public String getName() {
         return "Led Controller";
     }
+    
     private void rainbow(){
         for (int i = 0; i < ledBuffer.getLength(); i++){
             ledBuffer.setHSV(i, (initialHue + (i*180/ledBuffer.getLength()))%180, 255, 128);
         }
         initialHue = (initialHue + 3) % 180;
         led.setData(ledBuffer);
-        led.setSyncTime(2000000);
-        led.start();
-    }
-    
+    } 
 }

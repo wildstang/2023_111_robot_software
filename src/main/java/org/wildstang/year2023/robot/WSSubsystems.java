@@ -9,6 +9,7 @@ import org.wildstang.year2023.subsystems.superstructure.Superstructure;
 import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
 import org.wildstang.year2023.subsystems.intake.intake;
+import org.wildstang.year2023.subsystems.led.LedController;
 
 /**
  * All subsystems are enumerated here.
@@ -24,6 +25,7 @@ public enum WSSubsystems implements Subsystems {
     INTAKE("Intake", intake.class),
     //WRIST("Wrist", Wrist.class),
     SUPERSTRUCTURE("Superstructure", Superstructure.class),
+    LED("Led Controller", LedController.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
 

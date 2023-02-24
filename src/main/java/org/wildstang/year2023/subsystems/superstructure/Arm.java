@@ -36,12 +36,14 @@ public class Arm {
     public double getSpeed(double target){
         if (getPosition() > target && getPosition() <= 180.0){
             return -SuperConts.ARM_SLOW;
-        } else if (getPosition() < target && getPosition() >= 200.0){
-            return SuperConts.ARM_SLOW*0.5;
         } else if (getPosition() > target && getPosition() >= 180.0){
             return -SuperConts.ARM_SLOW;
+        } else if (getPosition() < target && getPosition() >= 180.0){
+            return SuperConts.ARM_SLOW*0.5;
+        } else if (getPosition() < target && getPosition() >= 150.0){
+            return SuperConts.ARM_SLOW * 0.8;
         } else {
-            return SuperConts.ARM_SLOW*1.2;
+            return SuperConts.ARM_SLOW*1.0;
         }
     }
     public boolean atPosition(double position){

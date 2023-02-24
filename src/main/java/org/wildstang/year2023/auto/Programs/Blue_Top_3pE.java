@@ -12,8 +12,10 @@ import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
+import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
 import org.wildstang.year2023.robot.WSSubsystems;
+import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 import org.wildstang.year2023.subsystems.superstructure.SuperPos;
 import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 
@@ -73,6 +75,7 @@ public class Blue_Top_3pE extends AutoProgram{
 
         AutoParallelStepGroup group6 = new AutoParallelStepGroup();
         group6.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        group6.addStep(new SuperGamePieceStep(SuperConts.CUBE));
         group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 C", new PathConstraints(4, 3)),
             swerve, true));
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
