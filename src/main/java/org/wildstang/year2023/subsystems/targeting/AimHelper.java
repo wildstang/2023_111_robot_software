@@ -91,8 +91,8 @@ public class AimHelper implements Subsystem {
         return get3DX();
         //return TargetParallelDistance;
     }
-    public double getParallelSetpoint(){
-        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
+    public double getParallelSetpoint(boolean isStation){
+        if (gamepiece == LC.CONE || isStation) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
         else return 0.0;
     }
 

@@ -61,14 +61,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathHeading;
     private double pathTarget;
     private double aimOffset;
-    private double lastOffset;
-    private boolean lastInView;
     private boolean startingLL;
     public double xAbsPos;
     public double yAbsPos;
     private double pathXOffset = 0;
     private double pathYOffset = 0;
     private boolean autoOverride;
+    private boolean isStation;
     
     private final double mToIn = 39.37;
     private final double inToM = 1.0/mToIn;
@@ -168,6 +167,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 driveState = driveType.LL;
                 startingLL = true;
                 autoOverride = false;
+                isStation = false;
+            }
+        } else if (leftBumper.getValue() && driveState != driveType.CROSS){
+            if (driveState == driveType.TELEOP){
+                driveState = driveType.LL;
+                startingLL = true;
+                autoOverride = false;
+                isStation = true;
             }
         }
         else {
@@ -312,21 +319,27 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 xSpeed*=0.4;
                 ySpeed*=0.4;
             } else {
-                if (!limelight.gamepiece || (limelight.TargetInView && startingLL)){
-                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint() - 5.0*aimOffset);
-                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+                if (limelight.TargetInView && startingLL){
+                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 5.0*aimOffset);
+                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.DESIRED_APRILTAG_DISTANCE : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
                     if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
                     if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;    
                 } else {
                     startingLL = false;
-                    ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET));
-                    if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
+                    if (isStation){
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE));
+                    } else {
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET));
+                    }
+                    if (!limelight.gamepiece){
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn + 10.0*aimOffset);
+                    } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
                         xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
                     } else {
                         xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(2.0*LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
                     }
-                    if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
-                    if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;
+                    //if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
+                    //if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;
                     if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
                     if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2; 
                 }
@@ -363,10 +376,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathHeading = 0.0;
         pathTarget = 0.0;
         aimOffset = 0.0;
-        lastOffset = 0.0;
-        lastInView = true;
         startingLL = true;
         autoOverride = false;
+        isStation = false;
 
         isFieldCentric = true;
         isSnake = false;
