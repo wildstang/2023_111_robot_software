@@ -16,6 +16,9 @@ public class SwervePathFollowerStep extends AutoStep {
     private PathPlannerTrajectory pathData;
     private boolean isBlue;
 
+    private double xOffset, yOffset;
+    private Pose2d localAutoPose, localRobotPose;
+
     private Timer timer;
 
     /** Sets the robot to track a new path
@@ -33,7 +36,6 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void initialize() {
         //start path
-        m_drive.resetDriveEncoders();
         m_drive.setToAuto();
         timer.start();
     }
@@ -47,10 +49,14 @@ public class SwervePathFollowerStep extends AutoStep {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
 
-            Pose2d localRobotPose = m_drive.returnPose();
-            Pose2d localAutoPose = pathData.sample(timer.get()).poseMeters;
-            double yOffset = -(localRobotPose.getX() - localAutoPose.getX());
-            double xOffset = localRobotPose.getY() - localAutoPose.getY();
+            localRobotPose = m_drive.returnPose();
+            localAutoPose = pathData.sample(timer.get()).poseMeters;
+            yOffset = -(localRobotPose.getX() - localAutoPose.getX());
+            if (isBlue){
+                xOffset = localRobotPose.getY() - localAutoPose.getY();
+            } else {
+                xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
+            }
 
             m_drive.setAutoValues( getVelocity(),getHeading(), xOffset, yOffset);
             }

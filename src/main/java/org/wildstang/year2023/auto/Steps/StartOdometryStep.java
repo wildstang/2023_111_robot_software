@@ -13,15 +13,21 @@ public class StartOdometryStep extends AutoStep{
 
     private double x, y, heading;
     private SwerveDrive swerve;
-    private final double inToM = 0.0254;
+    private boolean color;//true for blue, false for red
 
-    public StartOdometryStep(double X, double Y, double pathHeading){
+    public StartOdometryStep(double X, double Y, double pathHeading, boolean allianceColor){
         x = X;
         y = Y;
         heading = pathHeading;
+        color = allianceColor;
     }
     public void update(){
-        swerve.setOdo(new Pose2d(new Translation2d(x*inToM, y*inToM), new Rotation2d(Math.toRadians(360.0-heading))));
+        if (color){
+            swerve.setOdo(new Pose2d(new Translation2d(x, y), new Rotation2d(Math.toRadians(360.0-heading))));
+        } else {
+            swerve.setOdo(new Pose2d(new Translation2d(x, 8.016-y), new Rotation2d(Math.toRadians(360.0-heading))));
+        }
+        this.setFinished();
     }
     public void initialize(){
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);

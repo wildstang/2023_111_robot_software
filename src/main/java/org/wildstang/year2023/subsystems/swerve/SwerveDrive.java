@@ -47,6 +47,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private DigitalInput faceDown;//rotation lock 180 degrees
     private DigitalInput dpadLeft;//defense mode
     private DigitalInput rightStickButton;//auto drive override
+    private DigitalInput ostart, oselect;//both to activate brake mode
 
     private double xSpeed;
     private double ySpeed;
@@ -98,7 +99,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             }
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
         }
-        else if (driveState != driveType.AUTO) {
+        else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             for (int i = 0; i < modules.length; i++) {
                 modules[i].setDriveBrake(false);
             }
@@ -179,6 +180,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
 
+        if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
+            for (int i = 0; i < modules.length; i++) {
+                modules[i].setDriveBrake(true);
+            }
+        }
     }
  
     @Override
@@ -225,6 +231,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         dpadLeft.addInputListener(this);
         rightStickButton = (DigitalInput) WSInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
         rightStickButton.addInputListener(this);
+        ostart = (DigitalInput) WSInputs.MANIPULATOR_START.get();
+        ostart.addInputListener(this);
+        oselect = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
+        oselect.addInputListener(this);
     }
 
     public void initOutputs() {
@@ -254,7 +264,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void update() {
         if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        } 
+        } else if (limelight.TargetInView && driveState == driveType.AUTO){
+            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        }
         robotPose = odometry.update(odoAngle(), odoPosition());
         xAbsPos = odometry.getPoseMeters().getX();
         yAbsPos = odometry.getPoseMeters().getY();
@@ -344,7 +356,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed = 0;
         ySpeed = 0;
         rotSpeed = 0;
-        //gyro.reset();
         setToTeleop();
         rotLocked = false;
         rotTarget = 0.0;
@@ -391,7 +402,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     /**sets the drive to autonomous */
     public void setToAuto() {
         driveState = driveType.AUTO;
-        resetDriveEncoders();
+        for (int i = 0; i < modules.length; i++) {
+            modules[i].setDriveBrake(true);
+        }
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */
