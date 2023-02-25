@@ -58,6 +58,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double[] lastY = {0,0,0,0};
     private double autoTempX;
     private double autoTempY;
+    private double gyroPitch;
+    private double gyroRoll;
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
@@ -66,7 +68,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     //private AimHelper limelight;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    public enum driveType {TELEOP, AUTO, CROSS, LL, AUTO_BALANCE};
     public driveType driveState;
 
     @Override
@@ -251,11 +253,33 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
             drive();        
         }
-        // if (driveState == driveType.LL) {
-        //     //rotSpeed = -limelight.getRotPID();
-        //     this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-        //     drive();
-        // }
+        //if (driveState == driveType.LL) {
+        //    //rotSpeed = -limelight.getRotPID();
+        //    this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+        //    drive();
+        //}
+        if (driveState == driveType.AUTO_BALANCE){
+            //storing variables
+            gyroPitch = gyro.getPitch();
+            gyroRoll = gyro.getRoll();
+
+            if (Math.abs(gyroPitch) >= 5){
+                ySpeed = gyroPitch * 0.5;
+            }
+            else {
+                ySpeed = 0;
+            }
+            if (Math.abs(gyroRoll) >= 5){
+                xSpeed = gyroRoll * 0.5;
+            }
+            else {
+                xSpeed = 0;
+            }
+
+            //ignores robot's location the field, so translation can be robot centric 
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, 0, 0);
+            drive();
+        }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
