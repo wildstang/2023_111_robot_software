@@ -19,8 +19,8 @@ public class Superstructure implements Subsystem{
     private enum modes {SIMPLE, ARMDELAY, LIFTDELAY, WRIST, WAITING}
     private enum score {HIGH, MID, LOW}
     private String[] scoreString = new String[]{"High", "Mid", "Low"};
-    private enum intake {UPRIGHT, TIPPED}
-    private String[] intakeString = new String[]{"Upright", "Tipped"};
+    private enum intake {UPRIGHT, TIPPED, FRONT}
+    private String[] intakeString = new String[]{"Upright", "Tipped", "Front"};
     private enum station {DOUBLE, SINGLE}
     private String[] stationString = new String[]{"Double", "Single"};
 
@@ -60,6 +60,7 @@ public class Superstructure implements Subsystem{
         if (source == Y && Y.getValue()) scoring = score.HIGH;
         if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
         if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
+        if (source == X && X.getValue()) intaking = intake.FRONT;
         if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
         //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
 
@@ -72,12 +73,13 @@ public class Superstructure implements Subsystem{
                 swerveWait = true;
             } else if (driverLB.getValue()){
                 if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
-                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
+                //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
                 swerveWait = true;
             } else if (driverRB.getValue()){
                 if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
                 if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
+                if (intaking == intake.FRONT) currentPos = SuperPos.INTAKE_FRONT;
                 if (lastPos != currentPos) timer.reset();
             } else {
                 currentPos = SuperPos.NEUTRAL;

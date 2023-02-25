@@ -12,12 +12,16 @@ public class LimeConsts {
 
     public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters
 
+    public double STATION_HORIZONTAL_OFFSET = 30.0;
+
+    public double STATION_VERTICAL_OFFSET = 12.0;
+
     public double[] AUTO_ALIGN_PID_X = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
 
     public double[] AUTO_ALIGN_PID_Y = {0.01,0,0}; // TODO: Needs to be tuned, kP, kI, kD
 
     public double[] APRILTAG_ABS_OFFSET_X = {1.0275, 1.0275, 1.0275, 0.362, 0.362, 1.0275, 1.0275, 1.0275}; 
-    public double[] APRILTAG_ABS_OFFSET_Y = {6.938,5.268,3.592,1.266,6.75,4.425,2.75,1.072}; 
+    public double[] APRILTAG_ABS_OFFSET_Y = {6.938,  5.268,  3.592,  1.266, 6.75,  4.425,  2.75,   1.072}; 
     
     public double DEFAULT_POSITION_X = 0;
     public double DEFAULT_POSITION_Y = 0;
