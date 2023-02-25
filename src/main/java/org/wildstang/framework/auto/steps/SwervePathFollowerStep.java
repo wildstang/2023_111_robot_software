@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwervePathFollowerStep extends AutoStep {
 
-    private static final double mToIn = 30.3701;
+    private static final double mToIn = 39.3701;
     private SwerveDriveTemplate m_drive;
     private PathPlannerTrajectory pathData;
     private boolean isBlue;
@@ -49,6 +49,7 @@ public class SwervePathFollowerStep extends AutoStep {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
 
+            m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
             localRobotPose = m_drive.returnPose();
             localAutoPose = pathData.sample(timer.get()).poseMeters;
             yOffset = -(localRobotPose.getX() - localAutoPose.getX());
@@ -57,8 +58,12 @@ public class SwervePathFollowerStep extends AutoStep {
             } else {
                 xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
             }
+            SmartDashboard.putNumber("auto align X", localAutoPose.getX());
+            SmartDashboard.putNumber("auto align robot Y", localAutoPose.getY());
+            xOffset = 0;
+            yOffset = 0;
 
-            m_drive.setAutoValues( getVelocity(),getHeading(), xOffset, yOffset);
+            m_drive.setAutoValues( getVelocity(),getHeading(), 2.0*xOffset, 2.0*yOffset);
             }
     }
 

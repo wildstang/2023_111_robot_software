@@ -271,8 +271,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void update() {
         if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        } else if (limelight.TargetInView && driveState == driveType.AUTO){
-            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        // } else if (limelight.TargetInView && driveState == driveType.AUTO){
+        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
         }
         robotPose = odometry.update(odoAngle(), odoPosition());
         xAbsPos = odometry.getPoseMeters().getX();
@@ -321,18 +321,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
             } else {
                 if (limelight.TargetInView && startingLL){
                     xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 5.0*aimOffset);
-                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.DESIRED_APRILTAG_DISTANCE : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.STATION_VERTICAL_OFFSET : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
                     if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
                     if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;    
                 } else {
                     startingLL = false;
                     if (isStation){
-                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE));
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.STATION_VERTICAL_OFFSET));
                     } else {
                         ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET));
                     }
                     if (!limelight.gamepiece){
                         xSpeed = 0.01 * (robotPose.getY()*mToIn + 10.0*aimOffset);
+                    } else if (isStation){
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.STATION_HORIZONTAL_OFFSET) * 10.0*aimOffset);
                     } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
                         xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
                     } else {
@@ -347,8 +349,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
         }   
-        SmartDashboard.putNumber("Align robotY", robotPose.getY()*mToIn);
-        SmartDashboard.putNumber("Align robotX", robotPose.getX()*mToIn);
+        SmartDashboard.putNumber("Align robotY", robotPose.getY());
+        SmartDashboard.putNumber("Align robotX", robotPose.getX());
         SmartDashboard.putNumber("Align limeX", -limelight.target3D[2]*mToIn);
         SmartDashboard.putNumber("Align limeY", limelight.target3D[0]*mToIn);
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
@@ -360,8 +362,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
-        SmartDashboard.putNumber("Absolute X Position", xAbsPos);
-        SmartDashboard.putNumber("Absolute Y Distance", yAbsPos);
+        SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
+        SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
     }
     
     @Override
@@ -475,7 +477,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         return new SwerveModulePosition[]{modules[0].odoPosition(), modules[1].odoPosition(), modules[2].odoPosition(), modules[3].odoPosition()};
     }
     public void setOdo(Pose2d starting){
-        odometry.resetPosition(odoAngle(), odoPosition(), starting);
+        this.odometry.resetPosition(odoAngle(), odoPosition(), starting);
     }
     public Pose2d returnPose(){
         return odometry.getPoseMeters();

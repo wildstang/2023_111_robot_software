@@ -26,8 +26,9 @@ public class AimHelper implements Subsystem {
     public double y;
     public double[] target3D;
     public double tid;
-    private Integer tidInt;
-    private double[] targetOffset;
+    private int tidInt;
+    private double offsetX;
+    private double offsetY;
 
     public boolean TargetInView;
     public boolean gamepiece;
@@ -92,19 +93,18 @@ public class AimHelper implements Subsystem {
         //return TargetParallelDistance;
     }
     public double getParallelSetpoint(boolean isStation){
-        if (gamepiece == LC.CONE || isStation) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
+        if (isStation) return LC.STATION_HORIZONTAL_OFFSET * Math.signum(get3DX());
+        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
         else return 0.0;
     }
 
     public double[] getAbsolutePosition(){
-        double offsetX = LC.APRILTAG_ABS_OFFSET_X[tidInt = (int) tid];
-        double offsetY = LC.APRILTAG_ABS_OFFSET_Y[tidInt = (int) tid];
+        if (tid >= 1.0 && tid <= 8.0){
+            offsetX = LC.APRILTAG_ABS_OFFSET_X[tidInt = -1 + (int) tid];
+            offsetY = LC.APRILTAG_ABS_OFFSET_Y[tidInt = -1 + (int) tid];
+        }
         
-        double[] newArray = target3D;
-        newArray[0] = target3D[0] + offsetX;
-        newArray[2] = target3D[2] + offsetY;
-        
-        return newArray;
+        return new double[]{-target3D[2]+offsetX, target3D[0]+offsetY};
     }
 
     public double getRotPID() {
@@ -156,15 +156,18 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limelight distance", getDistance());
         SmartDashboard.putNumber("limelight tx", tx.getValue());
         SmartDashboard.putNumber("limelight ty", ty.getValue());
-        SmartDashboard.putNumber("limelight 3DX", get3DX());
+        SmartDashboard.putNumber("limelight 3DX", target3D[0]);
         SmartDashboard.putNumber("limelight 3DY", get3DY());
-        SmartDashboard.putNumber("limelight 3DZ", get3DZ());
+        SmartDashboard.putNumber("limelight 3DZ", target3D[2]);
         SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
     }
 
     @Override
     public void resetState() {
         gamepiece = LC.CONE;
+        tid = 1;
+        offsetX = 0;
+        offsetY = 0;
     }
 
     @Override
