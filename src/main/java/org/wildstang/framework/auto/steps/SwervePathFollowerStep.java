@@ -60,10 +60,10 @@ public class SwervePathFollowerStep extends AutoStep {
             }
             SmartDashboard.putNumber("auto align X", localAutoPose.getX());
             SmartDashboard.putNumber("auto align robot Y", localAutoPose.getY());
-            xOffset = 0;
-            yOffset = 0;
+            //xOffset = 0;
+            //yOffset = 0;
 
-            m_drive.setAutoValues( getVelocity(),getHeading(), 2.0*xOffset, 2.0*yOffset);
+            m_drive.setAutoValues( getVelocity(),getHeading(), 0.4*xOffset, 0.4*yOffset);
             }
     }
 

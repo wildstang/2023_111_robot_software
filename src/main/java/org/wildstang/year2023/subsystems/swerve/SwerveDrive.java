@@ -61,6 +61,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathHeading;
     private double pathTarget;
     private double aimOffset;
+    private double vertOffset;
     private boolean startingLL;
     public double xAbsPos;
     public double yAbsPos;
@@ -79,6 +80,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     private SwerveDriveOdometry odometry;
     private Pose2d robotPose;
+    private Timer autoTimer = new Timer();
 
     private AimHelper limelight;
     private LimeConsts LC;
@@ -186,6 +188,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             autoOverride = true;
         }
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
+        vertOffset = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);
 
         if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
             for (int i = 0; i < modules.length; i++) {
@@ -271,8 +274,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void update() {
         if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        // } else if (limelight.TargetInView && driveState == driveType.AUTO){
-        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
+            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+            autoTimer.reset();
         }
         robotPose = odometry.update(odoAngle(), odoPosition());
         xAbsPos = odometry.getPoseMeters().getX();
@@ -320,25 +324,25 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 ySpeed*=0.4;
             } else {
                 if (limelight.TargetInView && startingLL){
-                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 5.0*aimOffset);
-                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.STATION_VERTICAL_OFFSET : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 20.0*aimOffset);
+                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.STATION_VERTICAL_OFFSET - 10*vertOffset: LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET - 10*vertOffset);
                     if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
                     if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;    
                 } else {
                     startingLL = false;
                     if (isStation){
-                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.STATION_VERTICAL_OFFSET));
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.STATION_VERTICAL_OFFSET) + 10*vertOffset);
                     } else {
-                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET));
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET) + 10*vertOffset);
                     }
                     if (!limelight.gamepiece){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn + 10.0*aimOffset);
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn + 20.0*aimOffset);
                     } else if (isStation){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.STATION_HORIZONTAL_OFFSET) * 10.0*aimOffset);
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.STATION_HORIZONTAL_OFFSET) + 20.0*aimOffset);
                     } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 20.0*aimOffset);
                     } else {
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(2.0*LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(2.0*LC.APRILTAG_HORIZONTAL_OFFSET) + 20.0*aimOffset);
                     }
                     //if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
                     //if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;
@@ -378,6 +382,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathHeading = 0.0;
         pathTarget = 0.0;
         aimOffset = 0.0;
+        vertOffset = 0.0;
         startingLL = true;
         autoOverride = false;
         isStation = false;
@@ -385,6 +390,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         isFieldCentric = true;
         isSnake = false;
         robotPose = new Pose2d();
+        autoTimer.reset();autoTimer.start();
     }
 
     @Override
@@ -419,6 +425,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDriveBrake(true);
         }
+        autoTimer.reset();autoTimer.start();
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */
