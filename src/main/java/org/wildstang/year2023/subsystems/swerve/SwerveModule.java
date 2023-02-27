@@ -1,13 +1,15 @@
 package org.wildstang.year2023.subsystems.swerve;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 public class SwerveModule {
 
@@ -154,5 +156,8 @@ public class SwerveModule {
 
     public WsSparkMax getDriveMotor() {
         return driveMotor;
+    }
+    public SwerveModulePosition odoPosition(){
+        return new SwerveModulePosition(getPosition()*0.0254, new Rotation2d(Math.toRadians(360-getAngle())));
     }
 }

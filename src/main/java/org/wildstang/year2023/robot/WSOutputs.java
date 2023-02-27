@@ -31,6 +31,8 @@ public enum WSOutputs implements Outputs {
     // ---------------------------------
     // Motors
     // ---------------------------------
+    ARM_ONE("Arm", new WsSparkMaxConfig(CANConstants.ARM, true)),
+    //rename this String, and it shouldn't be a follower, but a normal motor
     TEST_MOTOR("Test Motor", new WsPhoenixConfig(CANConstants.EXAMPLE_MOTOR_CONTROLLER, WsMotorControllers.VICTOR_SPX)),
 
     DRIVE1("Module 1 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE1, true)),
@@ -42,21 +44,25 @@ public enum WSOutputs implements Outputs {
     DRIVE4("Module 4 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE4, true)),
     ANGLE4("Module 4 Angle Motor", new WsSparkMaxConfig(CANConstants.ANGLE4, true)),
     
-
+    LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.LIFT, true)),
+    LIFT_Follower("Lift Follower", new WsSparkMaxFollowerConfig("Lift Driver", CANConstants.LIFT_FOLLOWER, true, true)),
+    WRIST("Wrist", new WsSparkMaxConfig(CANConstants.WRIST, true)),
+    //lets use WsSparkMaxFollowerConfig for the lift follower. Also, all caps LIFT_FOLLOWER
+    INTAKE_MOTOR("Intake Motor", new WsSparkMaxConfig(CANConstants.INTAKE, true)),
     // ---------------------------------
     // Servos
     // ---------------------------------
-    TEST_SERVO("Test Servo", new WsServoConfig(0, 0)),
+    //TEST_SERVO("Test Servo", new WsServoConfig(0, 0)),
 
     // ********************************
     // DIO Outputs
     // ********************************
-    DIO_O_0("Test Digital Output 0", new WsDigitalOutputConfig(0, true)), // Channel 0, Initially Low
+    //DIO_O_0("Test Digital Output 0", new WsDigitalOutputConfig(0, true)), // Channel 0, Initially Low
 
     // ********************************
     // Solenoids
     // ********************************
-    TEST_SOLENOID("Test Solenoid", new WsSolenoidConfig(PneumaticsModuleType.REVPH, 0, false)),
+    //TEST_SOLENOID("Test Solenoid", new WsSolenoidConfig(PneumaticsModuleType.REVPH, 0, false)),
     
     // ********************************
     // Relays
@@ -65,8 +71,8 @@ public enum WSOutputs implements Outputs {
     // ********************************
     // NetworkTables
     // ********************************
-    LL_MODE("camMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
-    LL_LEDS("ledMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
+    // LL_MODE("camMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
+    // LL_LEDS("ledMode", new WsRemoteAnalogOutputConfig("limelight", 0)),
 
     // ********************************
     // Others ...

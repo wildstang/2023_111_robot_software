@@ -1,8 +1,6 @@
 package org.wildstang.year2023.subsystems.swerve;
 
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
@@ -14,9 +12,17 @@ import org.wildstang.year2023.robot.WSInputs;
 import org.wildstang.year2023.robot.WSOutputs;
 import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
+import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**Class: SwerveDrive
@@ -30,9 +36,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AnalogInput leftStickY;//translation joystick y
     private AnalogInput rightStickX;//rot joystick
     private AnalogInput rightTrigger;//thrust
-    private AnalogInput leftTrigger;//aiming
-    private DigitalInput rightBumper;//robot centric control
-    private DigitalInput leftBumper;//intake
+    private AnalogInput leftTrigger;//scoring autodrive
+    // private DigitalInput rightBumper;//robot centric control
+    private DigitalInput leftBumper;//hp station pickup
     private DigitalInput select;//gyro reset
     private DigitalInput start;//snake mode
     private DigitalInput faceUp;//rotation lock 0 degrees
@@ -40,6 +46,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private DigitalInput faceLeft;//rotation lock 270 degrees
     private DigitalInput faceDown;//rotation lock 180 degrees
     private DigitalInput dpadLeft;//defense mode
+    private DigitalInput rightStickButton;//auto drive override
+    private DigitalInput ostart, oselect;//both to activate brake mode
 
     private double xSpeed;
     private double ySpeed;
@@ -49,22 +57,33 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private boolean isSnake;
     private boolean isFieldCentric;
     private double rotTarget;
-    private double pathPos;
     private double pathVel;
     private double pathHeading;
     private double pathTarget;
-    private double autoTravelled;
-    private double[] lastX = {0,0,0,0};
-    private double[] lastY = {0,0,0,0};
-    private double autoTempX;
-    private double autoTempY;
+    private double aimOffset;
+    private boolean startingLL;
+    public double xAbsPos;
+    public double yAbsPos;
+    private double pathXOffset = 0;
+    private double pathYOffset = 0;
+    private boolean autoOverride;
+    private boolean isStation;
+    
+    private final double mToIn = 39.37;
+    private final double inToM = 1.0/mToIn;
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
-    //private AimHelper limelight;
+    private SwerveDriveOdometry odometry;
+    private Pose2d robotPose;
+
+    private AimHelper limelight;
+    private LimeConsts LC;
+    private PIDController LLpidX;// = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
+    private PIDController LLpidY;// = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
 
     public enum driveType {TELEOP, AUTO, CROSS, LL};
     public driveType driveState;
@@ -79,11 +98,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             }
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
         }
-        else if (driveState != driveType.AUTO) {
-            driveState = driveType.TELEOP;
+        else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             for (int i = 0; i < modules.length; i++) {
                 modules[i].setDriveBrake(false);
             }
+            driveState = driveType.TELEOP;
         }
         //get x and y speeds
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
@@ -94,12 +113,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             gyro.setYaw(0.0);
         }
 
-        //assign thrust
-        thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
-        xSpeed *= thrustValue;
-        ySpeed *= thrustValue;
-        rotSpeed *= thrustValue;
-
         //determine snake or pid locks
         if (start.getValue() && (Math.abs(xSpeed) > 0.1 || Math.abs(ySpeed) > 0.1)) {
             rotLocked = true;
@@ -109,7 +122,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         else {
             isSnake = false;
         }
-        if (source == faceUp && faceUp.getValue()){
+        if ((source == faceUp && faceUp.getValue()) || leftBumper.getValue()){
             rotTarget = 0.0;
             rotLocked = true;
         }
@@ -117,7 +130,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotTarget = 270.0;
             rotLocked = true;
         }
-        if (source == faceDown && faceDown.getValue()){
+        if ((source == faceDown && faceDown.getValue()) || Math.abs(leftTrigger.getValue()) > 0.15){
             rotTarget = 180.0;
             rotLocked = true;
         }
@@ -129,30 +142,55 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //get rotational joystick
         rotSpeed = rightStickX.getValue()*Math.abs(rightStickX.getValue());
         rotSpeed = swerveHelper.scaleDeadband(rotSpeed, DriveConstants.DEADBAND);
-
+        if (Math.abs(leftTrigger.getValue()) > 0.15 || leftBumper.getValue()) rotSpeed = 0;
         //if the rotational joystick is being used, the robot should not be auto tracking heading
         if (rotSpeed != 0) {
             rotLocked = false;
         }
+        
+        //assign thrust
+        thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
+        xSpeed *= thrustValue;
+        ySpeed *= thrustValue;
+        rotSpeed *= thrustValue;
+        
 
+        // if (Math.abs(leftTrigger.getValue()) > 0.15){
+        //     xSpeed /=2.0;
+        //     ySpeed /=2.0;
+        //     //rotTarget = 180.0;
+        //     //rotLocked = true;
+        // }
         //use the limelight for tracking
-        // if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
-        //     driveState = driveType.LL;
-        //     xSpeed*=0.5;
-        //     ySpeed*=0.5;
-        // }
-        // else {
-        //     if (driveState == driveType.LL) {
-        //         driveState = driveType.TELEOP;
-        //         rotLocked = false;
-        //     }
-        // }
+        if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
+            if (driveState == driveType.TELEOP){
+                driveState = driveType.LL;
+                startingLL = true;
+                autoOverride = false;
+                isStation = false;
+            }
+        } else if (leftBumper.getValue() && driveState != driveType.CROSS){
+            if (driveState == driveType.TELEOP){
+                driveState = driveType.LL;
+                startingLL = true;
+                autoOverride = false;
+                isStation = true;
+            }
+        }
+        else {
+            if (driveState == driveType.LL) {
+                driveState = driveType.TELEOP;
+            }
+        }
+        if (source == rightStickButton && rightStickButton.getValue()){
+            autoOverride = true;
+        }
+        aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
 
-        //field centric while using the camera
-        isFieldCentric = !(rightBumper.getValue() && Math.abs(leftTrigger.getValue()) < 0.15);
-        if (!isFieldCentric) {
-            rotTarget = 0;
-            rotSpeed *= 0.25;
+        if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
+            for (int i = 0; i < modules.length; i++) {
+                modules[i].setDriveBrake(true);
+            }
         }
     }
  
@@ -165,6 +203,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public void initInputs() {
+        LC = new LimeConsts();
+        LLpidX = new PIDController(LC.AUTO_ALIGN_PID_X[0], LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2]);
+        LLpidY = new PIDController(LC.AUTO_ALIGN_PID_Y[0], LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2]);
+
+
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
         leftStickY = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_Y);
@@ -175,8 +218,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rightTrigger.addInputListener(this);
         leftTrigger = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
-        rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
-        rightBumper.addInputListener(this);
+        // rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
+        // rightBumper.addInputListener(this);
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_SELECT);
@@ -193,6 +236,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         faceDown.addInputListener(this);
         dpadLeft = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
         dpadLeft.addInputListener(this);
+        rightStickButton = (DigitalInput) WSInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
+        rightStickButton.addInputListener(this);
+        ostart = (DigitalInput) WSInputs.MANIPULATOR_START.get();
+        ostart.addInputListener(this);
+        oselect = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
+        oselect.addInputListener(this);
     }
 
     public void initOutputs() {
@@ -209,7 +258,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         };
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
-        //limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
+        limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
+        odometry = new SwerveDriveOdometry(new SwerveDriveKinematics(new Translation2d(0.2794, 0.2794), new Translation2d(0.2794, -0.2794),
+            new Translation2d(-0.2794, 0.2794), new Translation2d(-0.2794, -0.2794)), odoAngle(), odoPosition(), new Pose2d());
     }
     
     @Override
@@ -218,6 +269,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
+        if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
+            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
+        } else if (limelight.TargetInView && driveState == driveType.AUTO){
+            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        }
+        robotPose = odometry.update(odoAngle(), odoPosition());
+        xAbsPos = odometry.getPoseMeters().getX();
+        yAbsPos = odometry.getPoseMeters().getY();
+
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
             this.swerveSignal = swerveHelper.setCross();
@@ -248,24 +308,60 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathPos, pathVel, autoTravelled), pathHeading, rotSpeed, getGyroAngle());
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
             drive();        
         }
-        // if (driveState == driveType.LL) {
-        //     //rotSpeed = -limelight.getRotPID();
-        //     this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-        //     drive();
-        // }
+        if (driveState == driveType.LL) {
+            if (rotLocked){
+                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+            }
+            if (autoOverride){
+                xSpeed*=0.4;
+                ySpeed*=0.4;
+            } else {
+                if (limelight.TargetInView && startingLL){
+                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 5.0*aimOffset);
+                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.DESIRED_APRILTAG_DISTANCE : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET);
+                    if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
+                    if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;    
+                } else {
+                    startingLL = false;
+                    if (isStation){
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE));
+                    } else {
+                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET));
+                    }
+                    if (!limelight.gamepiece){
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn + 10.0*aimOffset);
+                    } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
+                    } else {
+                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(2.0*LC.APRILTAG_HORIZONTAL_OFFSET) + 10.0*aimOffset);
+                    }
+                    //if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
+                    //if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;
+                    if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
+                    if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2; 
+                }
+            }
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
+            drive();
+        }   
+        SmartDashboard.putNumber("Align robotY", robotPose.getY()*mToIn);
+        SmartDashboard.putNumber("Align robotX", robotPose.getX()*mToIn);
+        SmartDashboard.putNumber("Align limeX", -limelight.target3D[2]*mToIn);
+        SmartDashboard.putNumber("Align limeY", limelight.target3D[0]*mToIn);
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
         SmartDashboard.putNumber("rotSpeed", rotSpeed);
         SmartDashboard.putString("Drive mode", driveState.toString());
         SmartDashboard.putBoolean("rotLocked", rotLocked);
-        SmartDashboard.putNumber("Auto position", pathPos);
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putNumber("Absolute X Position", xAbsPos);
+        SmartDashboard.putNumber("Absolute Y Distance", yAbsPos);
     }
     
     @Override
@@ -273,19 +369,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed = 0;
         ySpeed = 0;
         rotSpeed = 0;
-        //gyro.reset();
         setToTeleop();
         rotLocked = false;
         rotTarget = 0.0;
-        pathPos = 0.0;
         pathVel = 0.0;
         pathHeading = 0.0;
         pathTarget = 0.0;
+        aimOffset = 0.0;
+        startingLL = true;
+        autoOverride = false;
+        isStation = false;
 
         isFieldCentric = true;
         isSnake = false;
-
-        autoTravelled = 0;
+        robotPose = new Pose2d();
     }
 
     @Override
@@ -298,7 +395,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].resetDriveEncoders();
         }
-        //autoTravelled = 0.0;
     }
 
     /** sets the drive to teleop/cross, and sets drive motors to coast */
@@ -311,7 +407,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed = 0;
         ySpeed = 0;
         pathHeading = 0;
-        pathPos = 0;
         pathVel = 0;
         rotLocked = false;
     }
@@ -319,7 +414,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     /**sets the drive to autonomous */
     public void setToAuto() {
         driveState = driveType.AUTO;
-        resetDriveEncoders();
+        for (int i = 0; i < modules.length; i++) {
+            modules[i].setDriveBrake(true);
+        }
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */
@@ -339,10 +436,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     /**sets autonomous values from the path data file */
-    public void setAutoValues(double position, double velocity, double heading) {
-        pathPos = position;
+    public void setAutoValues(double velocity, double heading, double xOffset, double yOffset) {
         pathVel = velocity;
         pathHeading = heading;
+        pathXOffset = xOffset;
+        pathYOffset = yOffset;
     }
 
     /**sets the autonomous heading controller to a new target */
@@ -369,5 +467,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if (!isFieldCentric) return 0;
         //limelight.setGyroValue((gyro.getYaw() + 360)%360);
         return (359.99 - gyro.getYaw()+360)%360;
-    }    
+    }  
+    public Rotation2d odoAngle(){
+        return new Rotation2d(Math.toRadians(360-getGyroAngle()));
+    }
+    public SwerveModulePosition[] odoPosition(){
+        return new SwerveModulePosition[]{modules[0].odoPosition(), modules[1].odoPosition(), modules[2].odoPosition(), modules[3].odoPosition()};
+    }
+    public void setOdo(Pose2d starting){
+        odometry.resetPosition(odoAngle(), odoPosition(), starting);
+    }
+    public Pose2d returnPose(){
+        return odometry.getPoseMeters();
+    }
+    public double getRotTarget(){
+        return rotTarget;
+    }
 }
