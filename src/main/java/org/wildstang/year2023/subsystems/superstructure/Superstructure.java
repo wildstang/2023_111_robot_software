@@ -36,74 +36,74 @@ public class Superstructure implements Subsystem{
     public Wrist wrist;
     private Timer timer = new Timer();
     private double liftMod;
-    private SwerveDrive swerve;
+    //private SwerveDrive swerve;
 
     private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;
 
 
     @Override
     public void inputUpdate(Input source) {
-        if (source == leftBumper && leftBumper.getValue()){
-            gamepiece = SuperConts.CONE;
-        }
-        if (source == rightBumper && rightBumper.getValue()){
-            gamepiece = SuperConts.CUBE;
-        }
-        if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
-        if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
-        if (start.getValue() && select.getValue() && (source == start || source == select)) {
-            if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
-            else currentPos = SuperPos.NEUTRAL;
-        }
-        if (source == A && A.getValue()) scoring = score.LOW;
-        if (source == B && B.getValue()) scoring = score.MID;
-        if (source == Y && Y.getValue()) scoring = score.HIGH;
-        if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
-        if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
-        if (source == X && X.getValue()) intaking = intake.FRONT;
-        if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
-        //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
-
-        if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
-            if (Math.abs(driverLT.getValue()) > 0.25){
-                if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
-                if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
-                if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
-                if (lastPos != currentPos) timer.reset();
-                swerveWait = true;
-            } else if (driverLB.getValue()){
-                if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
-                //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
-                if (lastPos != currentPos) timer.reset();
-                swerveWait = true;
-            } else if (driverRB.getValue()){
-                if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
-                if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
-                if (intaking == intake.FRONT) currentPos = SuperPos.INTAKE_FRONT;
-                if (lastPos != currentPos) timer.reset();
-            } else {
-                currentPos = SuperPos.NEUTRAL;
-                if (lastPos != currentPos) timer.reset();
-            }
-        }
-
-        // if (source == A && A.getValue()){
-        //     currentPos = SuperPos.SCORE_LOW;
-        // }if (source == B && B.getValue()){
-        //     currentPos = SuperPos.SCORE_MID;
-        // }if (source == X && X.getValue()){
-        //     currentPos = SuperPos.NEUTRAL;
-        // }if (source == Y && Y.getValue()){
-        //     currentPos = SuperPos.SCORE_HIGH;
-        // }if (source == dUp && dUp.getValue()){
-        //     currentPos = SuperPos.HP_STATION_FRONT;
-        // }if (source == dRight && dRight.getValue()){
-        //     currentPos = SuperPos.INTAKE_BACK;
-        // }if (source == dLeft && dLeft.getValue()){
-        //     currentPos = SuperPos.INTAKE_FRONT;
-        // }if (source ==  dDown&& dDown.getValue()){
-        //     currentPos = SuperPos.INTAKE_BACK_LOW;
+        // if (source == leftBumper && leftBumper.getValue()){
+        //     gamepiece = SuperConts.CONE;
         // }
+        // if (source == rightBumper && rightBumper.getValue()){
+        //     gamepiece = SuperConts.CUBE;
+        // }
+        // if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
+        // if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
+        // if (start.getValue() && select.getValue() && (source == start || source == select)) {
+        //     if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
+        //     else currentPos = SuperPos.NEUTRAL;
+        // }
+        // if (source == A && A.getValue()) scoring = score.LOW;
+        // if (source == B && B.getValue()) scoring = score.MID;
+        // if (source == Y && Y.getValue()) scoring = score.HIGH;
+        // if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
+        // if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
+        // if (source == X && X.getValue()) intaking = intake.FRONT;
+        // if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
+        // //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
+
+        // if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
+        //     if (Math.abs(driverLT.getValue()) > 0.25){
+        //         if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
+        //         if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
+        //         if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
+        //         if (lastPos != currentPos) timer.reset();
+        //         swerveWait = true;
+        //     } else if (driverLB.getValue()){
+        //         if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
+        //         //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
+        //         if (lastPos != currentPos) timer.reset();
+        //         swerveWait = true;
+        //     } else if (driverRB.getValue()){
+        //         if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
+        //         if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
+        //         if (intaking == intake.FRONT) currentPos = SuperPos.INTAKE_FRONT;
+        //         if (lastPos != currentPos) timer.reset();
+        //     } else {
+        //         currentPos = SuperPos.NEUTRAL;
+        //         if (lastPos != currentPos) timer.reset();
+        //     }
+        // }
+
+        if (source == A && A.getValue()){
+            currentPos = SuperPos.SCORE_LOW;
+        }if (source == B && B.getValue()){
+            currentPos = SuperPos.SCORE_MID;
+        }if (source == X && X.getValue()){
+            currentPos = SuperPos.NEUTRAL;
+        }if (source == Y && Y.getValue()){
+            currentPos = SuperPos.SCORE_HIGH;
+        }if (source == dUp && dUp.getValue()){
+            currentPos = SuperPos.HP_STATION_DOUBLE;
+        }if (source == dRight && dRight.getValue()){
+            currentPos = SuperPos.INTAKE_BACK;
+        }if (source == dLeft && dLeft.getValue()){
+            currentPos = SuperPos.INTAKE_FRONT;
+        }if (source ==  dDown&& dDown.getValue()){
+            currentPos = SuperPos.INTAKE_BACK_LOW;
+        }
         
         if (currentPos != lastPos){
             determineMotion();
@@ -147,17 +147,17 @@ public class Superstructure implements Subsystem{
         arm = new Arm((WsSparkMax) WSOutputs.ARM_ONE.get());
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
         wrist = new Wrist((WsSparkMax) WSOutputs.WRIST.get());
-        swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
+        //swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
 
         resetState();
     }
 
     @Override
     public void update() {
-        if (swerveWait && Math.abs(swerve.getGyroAngle() - swerve.getRotTarget()) < 15.0){
-            swerveWait = false;
-        }
-        if (timer.hasElapsed(0.5)) swerveWait = false;
+        // if (swerveWait && Math.abs(swerve.getGyroAngle() - swerve.getRotTarget()) < 15.0){
+        //     swerveWait = false;
+        // }
+        //if (timer.hasElapsed(0.5)) swerveWait = false;
         if (motion == modes.ARMDELAY){
             //armWait = true;
             wristWait = true;
