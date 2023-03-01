@@ -188,7 +188,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             autoOverride = true;
         }
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
-        vertOffset = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);
+        vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), DriveConstants.DEADBAND);
 
         if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
             for (int i = 0; i < modules.length; i++) {
