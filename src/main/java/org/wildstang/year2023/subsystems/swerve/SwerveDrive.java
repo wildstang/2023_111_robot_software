@@ -171,14 +171,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 autoOverride = false;
                 isStation = false;
             }
-        } else if (leftBumper.getValue() && driveState != driveType.CROSS){
+        } /*else if (leftBumper.getValue() && driveState != driveType.CROSS){
             if (driveState == driveType.TELEOP){
                 driveState = driveType.LL;
                 startingLL = true;
                 autoOverride = false;
                 isStation = true;
             }
-        }
+        }*/
         else {
             if (driveState == driveType.LL) {
                 driveState = driveType.TELEOP;
