@@ -25,7 +25,7 @@ public class Superstructure implements Subsystem{
     private String[] stationString = new String[]{"Double", "Single"};
 
     private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, driverLB, driverRB;
-    private AnalogInput driverLT;
+    private AnalogInput driverLT, driverRT;
     private modes motion;
     private score scoring;
     private intake intaking;
@@ -35,7 +35,7 @@ public class Superstructure implements Subsystem{
     public Lift lift;
     public Wrist wrist;
     private Timer timer = new Timer();
-    private double liftMod;
+    private double liftMod, liftAdjust;
     private SwerveDrive swerve;
 
     private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;
@@ -51,6 +51,7 @@ public class Superstructure implements Subsystem{
         }
         if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
         if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
+        liftAdjust = 10.0 * Math.abs(driverRT.getValue());
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
@@ -139,6 +140,8 @@ public class Superstructure implements Subsystem{
         start.addInputListener(this);
         driverLT = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
         driverLT.addInputListener(this);
+        driverRT = (AnalogInput) WSInputs.DRIVER_RIGHT_TRIGGER.get();
+        driverRT.addInputListener(this);
         driverLB = (DigitalInput) WSInputs.DRIVER_LEFT_SHOULDER.get();
         driverLB.addInputListener(this);
         driverRB = (DigitalInput) WSInputs.DRIVER_RIGHT_SHOULDER.get();
@@ -181,7 +184,11 @@ public class Superstructure implements Subsystem{
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                lift.setPosition(liftMod + currentPos.getL(gamepiece));
+                if (currentPos == SuperPos.HP_STATION_DOUBLE){
+                    lift.setPosition(liftMod + currentPos.getL(gamepiece) - liftAdjust);
+                } else {
+                    lift.setPosition(liftMod + currentPos.getL(gamepiece));
+                }
             }  
 
             if (armWait || swerveWait){
@@ -224,6 +231,7 @@ public class Superstructure implements Subsystem{
         stationing = station.SINGLE;
         timer.reset(); timer.start();
         liftMod = 0.0;
+        liftAdjust = 0.0;
         swerveWait = false;
     }
 

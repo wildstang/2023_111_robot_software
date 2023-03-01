@@ -152,6 +152,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
+        if (leftBumper.getValue()) thrustValue = 1 - DriveConstants.DRIVE_THRUST;
         xSpeed *= thrustValue;
         ySpeed *= thrustValue;
         rotSpeed *= thrustValue;
