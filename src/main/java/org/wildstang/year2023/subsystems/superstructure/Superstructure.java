@@ -96,9 +96,9 @@ public class Superstructure implements Subsystem{
         }if (source == Y && Y.getValue()){
             currentPos = SuperPos.SCORE_HIGH;
         }if (source == dUp && dUp.getValue()){
-            currentPos = SuperPos.HP_STATION_DOUBLE;
-        }if (source == dRight && dRight.getValue()){
             currentPos = SuperPos.INTAKE_BACK;
+        }if (source == dRight && dRight.getValue()){
+            currentPos = SuperPos.HP_STATION_DOUBLE;
         }if (source == dLeft && dLeft.getValue()){
             currentPos = SuperPos.INTAKE_FRONT;
         }if (source ==  dDown&& dDown.getValue()){
