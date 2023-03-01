@@ -29,6 +29,7 @@ public class SwervePathFollowerStep extends AutoStep {
     public SwervePathFollowerStep(PathPlannerTrajectory pathData, SwerveDriveTemplate drive, boolean isBlue) {
         this.pathData = pathData;
         m_drive = drive;
+        
         this.isBlue = isBlue;
         timer = new Timer();
     }
