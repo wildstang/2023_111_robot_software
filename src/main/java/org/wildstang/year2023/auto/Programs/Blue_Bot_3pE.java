@@ -116,7 +116,7 @@ public class Blue_Bot_3pE extends AutoProgram{
         swerve, color));
 
         //autobalance step
-        addStep(new AutoBalanceStep())
+        addStep(new AutoBalanceStep());
     }
 
     public String toString(){
