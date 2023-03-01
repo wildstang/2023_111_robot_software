@@ -14,6 +14,7 @@ import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
+import org.wildstang.year2023.auto.Steps.AutoBalanceStep;
 import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 import org.wildstang.year2023.subsystems.superstructure.SuperPos;
@@ -115,6 +116,7 @@ public class Red_Top_3pE extends AutoProgram{
         swerve, color));
 
         //autobalance step
+        addStep(new AutoBalanceStep());
 
     }
 
