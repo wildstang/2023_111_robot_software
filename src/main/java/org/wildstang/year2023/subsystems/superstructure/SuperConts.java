@@ -14,7 +14,7 @@ public final class SuperConts {
     
     public static final boolean WRIST_ENCODER_DIRECTION = false;
 
-    public static final double LIFT_P = 0.1;
+    public static final double LIFT_P = 0.3;
     public static final double LIFT_I = 0.0;
     public static final double LIFT_D = 0.0;
     public static final double ARM_P = 0.0111;

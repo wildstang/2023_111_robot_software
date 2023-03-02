@@ -189,7 +189,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             autoOverride = true;
         }
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
-        vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), DriveConstants.DEADBAND);
+        vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
         if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
             for (int i = 0; i < modules.length; i++) {
@@ -341,9 +341,17 @@ public class SwerveDrive extends SwerveDriveTemplate {
                     } else if (isStation){
                         xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.STATION_HORIZONTAL_OFFSET) + 20.0*aimOffset);
                     } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.APRILTAG_HORIZONTAL_OFFSET) + 20.0*aimOffset);
+                        if (Math.signum(robotPose.getY())>0.0){
+                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (LC.HORIZONTAL_SCORE_LEFT) + 20.0*aimOffset);
+                        } else {
+                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (-LC.HORIZONTAL_SCORE_RIGHT) + 20.0*aimOffset);
+                        }
                     } else {
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(2.0*LC.APRILTAG_HORIZONTAL_OFFSET) + 20.0*aimOffset);
+                        if (Math.signum(robotPose.getY())>0.0){
+                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (2.0*LC.HORIZONTAL_SCORE_LEFT) + 20.0*aimOffset);
+                        } else {
+                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (-2.0*LC.HORIZONTAL_SCORE_RIGHT) + 20.0*aimOffset);
+                        }
                     }
                     //if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
                     //if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;

@@ -10,6 +10,9 @@ public class LimeConsts {
 
     public double DESIRED_APRILTAG_DISTANCE = 14.0; //13.8 inches to m, distance from front bumper to april tag
 
+    public double HORIZONTAL_SCORE_LEFT = 22.0;
+    public double HORIZONTAL_SCORE_RIGHT = 26.0;
+
     public double APRILTAG_HORIZONTAL_OFFSET = 22;//22 in to meters
 
     public double STATION_HORIZONTAL_OFFSET = 30.0;
