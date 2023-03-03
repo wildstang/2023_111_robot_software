@@ -8,7 +8,6 @@ import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
-import org.wildstang.year2023.auto.Steps.AutoBalanceStep;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
@@ -23,7 +22,7 @@ import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
-public class Blue_Top_3pE extends AutoProgram{
+public class Blue_Top_3 extends AutoProgram{
 
     private boolean color = true;//true for blue, false for red
     
@@ -69,22 +68,32 @@ public class Blue_Top_3pE extends AutoProgram{
         group6A.addStep(new AutoStepDelay(200));
         group6A.addStep(new IntakeOffStep());
         group6A.addStep(new AutoStepDelay(1000));
-        addStep(new PathHeadingStep(color ? 225 : 135, swerve));
+        addStep(new PathHeadingStep(225, swerve));
         group6A.addStep(new IntakeOnStep());
         group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
         group6.addStep(group6A);
         addStep(group6);
 
-        //balance
+        //score second pickup piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e alt", new PathConstraints(4, 3)), swerve, color));
-        addStep(new AutoBalanceStep());
+        AutoParallelStepGroup group7 = new AutoParallelStepGroup();
+        group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 D", new PathConstraints(4, 3)),
+            swerve, color));
+        AutoSerialStepGroup group7A = new AutoSerialStepGroup();
+        group7A.addStep(new AutoStepDelay(1800));
+        group7A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        group7.addStep(group7A);
+        addStep(group7);
 
+        addStep(new OuttakeStep());
+        addStep(new AutoStepDelay(200));
+
+        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
     }
 
     public String toString(){
-        return "BLUE Top_3pE";
+        return "BLUE Top_3";
     }
 }

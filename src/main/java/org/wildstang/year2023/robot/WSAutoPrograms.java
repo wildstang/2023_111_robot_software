@@ -3,7 +3,13 @@ package org.wildstang.year2023.robot;
 import org.wildstang.framework.core.AutoPrograms;
 import org.wildstang.year2023.auto.Programs.SampleAutoProgram;
 import org.wildstang.year2023.auto.Programs.Testprogram;
+import org.wildstang.year2023.auto.Programs.Blue_Bot_3pE;
+import org.wildstang.year2023.auto.Programs.Blue_Middle;
+import org.wildstang.year2023.auto.Programs.Blue_Top_3;
 import org.wildstang.year2023.auto.Programs.Blue_Top_3pE;
+import org.wildstang.year2023.auto.Programs.Red_Bot_3pE;
+import org.wildstang.year2023.auto.Programs.Red_Middle;
+import org.wildstang.year2023.auto.Programs.Red_Top_3;
 import org.wildstang.year2023.auto.Programs.Red_Top_3pE;
 
 /**
@@ -13,10 +19,17 @@ import org.wildstang.year2023.auto.Programs.Red_Top_3pE;
 public enum WSAutoPrograms implements AutoPrograms {
 
     // enumerate programs
-    SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
+    //SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
     TEST_PROGRAM("Test Program", Testprogram.class),
     BLUE_TOP_3PE("BLUE Top_3pE", Blue_Top_3pE.class),
-    RED_TOP_3PE("RED Top_3pE", Red_Top_3pE.class)
+    BLUE_TOP_3("BLUE Top_3", Blue_Top_3.class),
+    BLUE_BOT_3PE("BLUE Bot_3pE", Blue_Bot_3pE.class),
+    BLUE_MIDDLE("BLUE Middle", Blue_Middle.class),
+    RED_TOP_3PE("RED Top_3pE", Red_Top_3pE.class),
+    RED_TOP_3("RED Top_3", Red_Top_3.class),
+    RED_BOT_3PE("RED Bot_3pE", Red_Bot_3pE.class),
+    RED_MIDDLE("RED Middle", Red_Middle.class)
+
     ;
 
     /**
