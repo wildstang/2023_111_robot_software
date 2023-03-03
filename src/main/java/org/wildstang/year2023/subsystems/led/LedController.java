@@ -24,7 +24,6 @@ public class LedController implements Subsystem {
     public void update(){
         if (isRainbow){
             rainbow();
-            led.setData(ledBuffer);
         }
     }
 

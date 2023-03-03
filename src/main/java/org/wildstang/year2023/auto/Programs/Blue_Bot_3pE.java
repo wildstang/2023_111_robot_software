@@ -40,10 +40,10 @@ public class Blue_Bot_3pE extends AutoProgram{
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 A", new PathConstraints(4, 3)),
-            swerve, color));
         addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
         addStep(new IntakeOnStep());
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 A", new PathConstraints(4, 3)),
+            swerve, color));
 
         //move and score first pickup piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));

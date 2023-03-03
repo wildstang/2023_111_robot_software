@@ -275,9 +275,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void update() {
         if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
-            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
-            autoTimer.reset();
+        // } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
+        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        //     autoTimer.reset();
         }
         robotPose = odometry.update(odoAngle(), odoPosition());
         xAbsPos = odometry.getPoseMeters().getX();
@@ -432,7 +432,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void setToTeleop() {
         driveState = driveType.TELEOP;
         for (int i = 0; i < modules.length; i++) {
-            modules[i].setDriveBrake(false);
+            modules[i].setDriveBrake(true);
         }
         rotSpeed = 0;
         xSpeed = 0;

@@ -68,7 +68,7 @@ public class Red_Top_3 extends AutoProgram{
         group6A.addStep(new AutoStepDelay(200));
         group6A.addStep(new IntakeOffStep());
         group6A.addStep(new AutoStepDelay(1000));
-        addStep(new PathHeadingStep(225, swerve));
+        addStep(new PathHeadingStep(color ? 225 : 135, swerve));
         group6A.addStep(new IntakeOnStep());
         group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
         group6.addStep(group6A);
