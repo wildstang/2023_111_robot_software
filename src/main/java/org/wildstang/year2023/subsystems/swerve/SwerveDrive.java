@@ -87,7 +87,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private PIDController LLpidX;// = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
     private PIDController LLpidY;// = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL};
+    public enum driveType {TELEOP, AUTO, CROSS, LL, BALANCE};
     public driveType driveState;
 
     @Override
@@ -362,6 +362,19 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
         }   
+        if (driveState == driveType.BALANCE){
+            if (Math.abs(gyro.getRoll()) > 1.0){
+                ySpeed = 0.06 * Math.signum(gyro.getPitch());
+                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3;
+            } else {
+                ySpeed = 0.0;
+            }
+            xSpeed = 0.0;
+            rotSpeed = swerveHelper.getRotControl(180.0, getGyroAngle());
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+            drive();
+
+        }
         SmartDashboard.putNumber("Align robotY", robotPose.getY());
         SmartDashboard.putNumber("Align robotX", robotPose.getX());
         SmartDashboard.putNumber("Align limeX", -limelight.target3D[2]*mToIn);
@@ -377,6 +390,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
         SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
         SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
+        SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
     }
     
     @Override

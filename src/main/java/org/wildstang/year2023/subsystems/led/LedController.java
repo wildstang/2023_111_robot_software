@@ -53,6 +53,7 @@ public class LedController implements Subsystem {
         led.setLength(ledBuffer.getLength());
         led.setData(ledBuffer);
         led.start();
+        resetState();
     }
 
     public void cubeDisplay(){
