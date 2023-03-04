@@ -29,6 +29,9 @@ public class Blue_Top_3pBalance extends AutoProgram{
 
     private boolean isCube = true; //true for true, false for false
 
+    private int balls = 3;
+    private boolean balance = true;
+    
     protected void defineSteps(){
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
         AutoParallelStepGroup Score1 = new AutoParallelStepGroup();
@@ -102,14 +105,14 @@ public class Blue_Top_3pBalance extends AutoProgram{
 
         addStep(Score1);
         addStep(Vomit1);
-
+        if(balls > 1){
         addStep(StartToWaypoint1AndStop);
         addStep(IntakeOnBit);
-      //  addStep(IntakeOffBit);
         addStep(Waypoint1ToStart);
         addStep(Score2);
         addStep(Vomit1);
-
+        }
+        if(balls >2){
         addStep(StartToWaypoint1);
         addStep(Waypoint1To2);
         addStep(IntakeOnBit);
@@ -117,13 +120,15 @@ public class Blue_Top_3pBalance extends AutoProgram{
         addStep(Waypoint1ToStart);
         addStep(Score3);
         addStep(Vomit1);
-
+        }
+        if(balance){
         addStep(Waypoint1ToStart);
         addStep(Waypoint1ToStation);
+        }
         //autobalance here
 
     }
     public String toString(){
-        return "BLUE Top_3pAndBalance";
+        return "top poly auto";
     }
 }
