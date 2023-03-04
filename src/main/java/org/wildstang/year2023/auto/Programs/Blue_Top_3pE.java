@@ -79,7 +79,7 @@ public class Blue_Top_3pE extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e alt", new PathConstraints(4, 3)), swerve, color));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(4, 3)), swerve, color));
         addStep(new AutoBalanceStep());
 
     }

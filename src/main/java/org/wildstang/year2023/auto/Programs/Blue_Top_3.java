@@ -91,6 +91,8 @@ public class Blue_Top_3 extends AutoProgram{
         addStep(new AutoStepDelay(200));
 
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+1", new PathConstraints(4, 3)), swerve, color));
+    
     }
 
     public String toString(){

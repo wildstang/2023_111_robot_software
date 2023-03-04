@@ -41,14 +41,14 @@ public class Red_Top_3 extends AutoProgram{
         //grab first game piece
         addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
         addStep(new IntakeOnStep());
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A", new PathConstraints(4, 3)),
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A red", new PathConstraints(4, 3)),
             swerve, color));
 
         //move and score first pickup piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
         AutoParallelStepGroup group4 = new AutoParallelStepGroup();
-        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 B", new PathConstraints(4, 3)),
+        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 B red", new PathConstraints(4, 3)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1600));
@@ -62,7 +62,7 @@ public class Red_Top_3 extends AutoProgram{
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
        AutoParallelStepGroup group6 = new AutoParallelStepGroup();
-        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 C", new PathConstraints(4, 3)),
+        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 C red", new PathConstraints(4, 3)),
             swerve, color));
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
         group6A.addStep(new AutoStepDelay(200));
@@ -79,7 +79,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
         AutoParallelStepGroup group7 = new AutoParallelStepGroup();
-        group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 D", new PathConstraints(4, 3)),
+        group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 D red", new PathConstraints(4, 3)),
             swerve, color));
         AutoSerialStepGroup group7A = new AutoSerialStepGroup();
         group7A.addStep(new AutoStepDelay(1800));
@@ -90,6 +90,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(200));
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+1", new PathConstraints(4, 3)), swerve, color));
     }
 
     public String toString(){
