@@ -79,10 +79,13 @@ public class intake implements Subsystem {
         out = Math.abs(expel.getValue());
         if (operatorLB.getValue()) gamepiece = SuperConts.CONE;
         if (operatorRB.getValue()) gamepiece = SuperConts.CUBE;
-        if ((in > deadband && in >= out) || (driverLB.getValue() || driverRB.getValue())) {
+        if (out > deadband && out > in){
+            speed = expelSpeedCone;
+            isHolding = false;
+        } else if ((in > deadband && in >= out) || (driverLB.getValue() || driverRB.getValue())) {
             speed = ingestSpeed;
             isHolding = true;
-        } else if ((out > deadband && out > in) || (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband)) {
+        } else if (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband) {
             speed = gamepiece ? expelSpeedCone : expelSpeedCube;
             isHolding = false;
         } else {

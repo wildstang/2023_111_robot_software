@@ -25,7 +25,7 @@ public class Superstructure implements Subsystem{
     private String[] stationString = new String[]{"Double", "Single"};
 
     private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, driverLB, driverRB;
-    private AnalogInput driverLT, driverRT;
+    private AnalogInput driverLT, driverRT, leftStickY;
     private modes motion;
     private score scoring;
     private intake intaking;
@@ -35,7 +35,7 @@ public class Superstructure implements Subsystem{
     public Lift lift;
     public Wrist wrist;
     private Timer timer = new Timer();
-    private double liftMod, liftAdjust;
+    private double liftMod, launching;
     private SwerveDrive swerve;
 
     private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;
@@ -49,9 +49,10 @@ public class Superstructure implements Subsystem{
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
+        if (Math.abs(leftStickY.getValue()) > 0.4) launching = Math.abs(swerve.getGyroAngle()-180.0)<90.0 ? -45.0 : 45.0;
+        else launching = 0.0;
         if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
         if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
-        liftAdjust = 10.0 * Math.abs(driverRT.getValue());
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
@@ -118,6 +119,8 @@ public class Superstructure implements Subsystem{
         leftBumper.addInputListener(this);
         rightBumper = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
         rightBumper.addInputListener(this);
+        leftStickY = (AnalogInput) WSInputs.MANIPULATOR_LEFT_JOYSTICK_Y.get();
+        leftStickY.addInputListener(this);
         A = (DigitalInput) WSInputs.MANIPULATOR_FACE_DOWN.get();
         A.addInputListener(this);
         B = (DigitalInput) WSInputs.MANIPULATOR_FACE_RIGHT.get();
@@ -185,7 +188,7 @@ public class Superstructure implements Subsystem{
                 }
             } else {
                 if (currentPos == SuperPos.HP_STATION_DOUBLE){
-                    lift.setPosition(liftMod + currentPos.getL(gamepiece) - liftAdjust);
+                    lift.setPosition(liftMod + currentPos.getL(gamepiece));
                 } else {
                     lift.setPosition(liftMod + currentPos.getL(gamepiece));
                 }
@@ -207,11 +210,14 @@ public class Superstructure implements Subsystem{
                     wrist.setPosition(currentPos.getW(gamepiece));
                     wristWait = false;
                 } else {
-                    //wrist.setFollow((360-arm.getPosition())%360, arm.getSpeed(currentPos.getA(gamepiece)));
                     wrist.setPosition((360-arm.getPosition())%360);
                 }
             } else {
-                wrist.setPosition(currentPos.getW(gamepiece));
+                if (currentPos != SuperPos.NEUTRAL || launching == 0.0){
+                    wrist.setPosition(currentPos.getW(gamepiece));
+                } else {
+                    wrist.setPosition(currentPos.getW(gamepiece) + launching);
+                }
             }
         }
         displayNumbers();
@@ -228,10 +234,9 @@ public class Superstructure implements Subsystem{
         lastPos = SuperPos.NEUTRAL;
         scoring = score.HIGH;
         intaking = intake.UPRIGHT;
-        stationing = station.SINGLE;
+        stationing = station.DOUBLE;
         timer.reset(); timer.start();
         liftMod = 0.0;
-        liftAdjust = 0.0;
         swerveWait = false;
     }
 

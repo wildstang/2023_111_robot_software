@@ -26,6 +26,8 @@ public final class DriveConstants {
     public static final double DEADBAND = 0.05;
     /**factor of thrust for the drive trigger */
     public static final double DRIVE_THRUST = 0.4;
+    /**end game drive brake */
+    public static final double DRIVE_BRAKE = 0.3;
     /**slew rate limiter rates of limit for the drive
     *  value is max change per second
     *  i.e. 2.0 means it can go from 0 to 1.0 in 0.5 seconds

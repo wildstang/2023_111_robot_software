@@ -69,6 +69,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathYOffset = 0;
     private boolean autoOverride;
     private boolean isStation;
+    private boolean isEndGame = false;
     
     private final double mToIn = 39.37;
     private final double inToM = 1.0/mToIn;
@@ -92,6 +93,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void inputUpdate(Input source) {
+
+        if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
+            for (int i = 0; i < modules.length; i++) {
+                modules[i].setDriveBrake(true);
+            }
+            isEndGame = !isEndGame;
+        }
         //determine if we are in cross or teleop
         if (driveState != driveType.AUTO && dpadLeft.getValue()) {
             driveState = driveType.CROSS;
@@ -153,6 +161,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
         if (leftBumper.getValue()) thrustValue = 1 - DriveConstants.DRIVE_THRUST;
+        if (isEndGame) thrustValue = (1 - DriveConstants.DRIVE_THRUST) - Math.abs(rightTrigger.getValue()) * DriveConstants.DRIVE_BRAKE;
         xSpeed *= thrustValue;
         ySpeed *= thrustValue;
         rotSpeed *= thrustValue;
@@ -191,11 +200,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
         vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
-        if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
-            for (int i = 0; i < modules.length; i++) {
-                modules[i].setDriveBrake(true);
-            }
-        }
+        
     }
  
     @Override
@@ -409,6 +414,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         startingLL = true;
         autoOverride = false;
         isStation = false;
+        isEndGame = false;
 
         isFieldCentric = true;
         isSnake = false;
