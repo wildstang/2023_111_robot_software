@@ -278,4 +278,8 @@ public class Superstructure implements Subsystem{
     public void setGamepiece(boolean newGamePiece){
         this.gamepiece = newGamePiece;
     }
+    public void autoLaunch(boolean isTrue){
+        if (isTrue) this.launching = -45.0;
+        else this.launching = 0.0;
+    }
 }

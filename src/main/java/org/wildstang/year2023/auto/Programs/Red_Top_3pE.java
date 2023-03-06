@@ -14,6 +14,7 @@ import org.wildstang.year2023.auto.Steps.IntakeOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
+import org.wildstang.year2023.auto.Steps.SuperLaunchingStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
 import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.superstructure.SuperConts;
@@ -80,7 +81,18 @@ public class Red_Top_3pE extends AutoProgram{
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(4, 3)), swerve, color));
-        addStep(new AutoBalanceStep());
+        //changed stuff below
+        addStep(new SuperLaunchingStep(true));
+        AutoParallelStepGroup balance = new AutoParallelStepGroup();
+        balance.addStep(new AutoBalanceStep());
+        AutoSerialStepGroup throwing = new AutoSerialStepGroup();
+        throwing.addStep(new AutoStepDelay(200));
+        throwing.addStep(new OuttakeStep());
+        throwing.addStep(new AutoStepDelay(200));
+        throwing.addStep(new IntakeOffStep());
+        throwing.addStep(new SuperLaunchingStep(false));
+        balance.addStep(throwing);
+        addStep(balance);
 
     }
 
