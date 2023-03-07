@@ -56,8 +56,9 @@ public class Red_Top_3 extends AutoProgram{
         group4.addStep(group4A);
         addStep(group4);
 
+        addStep(new AutoStepDelay(200));
         addStep(new OuttakeStep());
-        addStep(new AutoStepDelay(300));
+        addStep(new AutoStepDelay(400));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
@@ -67,10 +68,10 @@ public class Red_Top_3 extends AutoProgram{
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
         group6A.addStep(new AutoStepDelay(200));
         group6A.addStep(new IntakeOffStep());
-        group6A.addStep(new AutoStepDelay(1000));
-        addStep(new PathHeadingStep(color ? 225 : 135, swerve));
+        group6A.addStep(new AutoStepDelay(600));
+        group6A.addStep(new PathHeadingStep(color ? 225 : 135, swerve));
         group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
+        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group6.addStep(group6A);
         addStep(group6);
 
@@ -90,7 +91,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(200));
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+1", new PathConstraints(4, 3)), swerve, color));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+1 red", new PathConstraints(4, 3)), swerve, color));
     }
 
     public String toString(){

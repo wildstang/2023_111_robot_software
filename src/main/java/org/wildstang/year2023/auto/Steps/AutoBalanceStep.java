@@ -14,7 +14,7 @@ public class AutoBalanceStep extends AutoStep{ //TODO: Make an autobalance step
     }
 
     public void update(){
-        //swerve.driveState = driveType.BALANCE; uncomment when charge station exists
+        swerve.driveState = driveType.BALANCE;// uncomment when charge station exists
         this.setFinished();
 
     }

@@ -368,8 +368,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }   
         if (driveState == driveType.BALANCE){
-            if (Math.abs(gyro.getRoll()) > 1.0){
-                ySpeed = 0.06 * Math.signum(gyro.getPitch());
+            if (Math.abs(gyro.getRoll()) > 5.0){
+                ySpeed = -0.01 * gyro.getRoll();
                 if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3;
             } else {
                 ySpeed = 0.0;
