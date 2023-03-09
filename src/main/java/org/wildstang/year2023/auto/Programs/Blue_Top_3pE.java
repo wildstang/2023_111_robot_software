@@ -77,7 +77,7 @@ public class Blue_Top_3pE extends AutoProgram{
         addStep(group6);
 
         //balance
-        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        addStep(new SuperstructureStep(SuperPos.PRETHROW));
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(4, 3)), swerve, color));
@@ -87,6 +87,7 @@ public class Blue_Top_3pE extends AutoProgram{
         balance.addStep(new AutoBalanceStep());
         AutoSerialStepGroup throwing = new AutoSerialStepGroup();
         throwing.addStep(new AutoStepDelay(200));
+        throwing.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         throwing.addStep(new OuttakeStep());
         throwing.addStep(new AutoStepDelay(200));
         throwing.addStep(new IntakeOffStep());

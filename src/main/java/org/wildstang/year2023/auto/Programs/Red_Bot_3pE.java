@@ -62,26 +62,29 @@ public class Red_Bot_3pE extends AutoProgram{
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        AutoParallelStepGroup group6 = new AutoParallelStepGroup();
-        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 C red", new PathConstraints(4, 3)),
-            swerve, color));
-        AutoSerialStepGroup group6A = new AutoSerialStepGroup();
-        group6A.addStep(new AutoStepDelay(200));
-        group6A.addStep(new IntakeOffStep());
-        group6A.addStep(new AutoStepDelay(1000));
-        addStep(new PathHeadingStep(color ? 135 : 225, swerve));
-        group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
-        group6.addStep(group6A);
-        addStep(group6);
-
-        //autobalance
-        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
-        addStep(new PathHeadingStep(180, swerve));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e D red", new PathConstraints(4, 3)),
-        swerve, color));
-        addStep(new AutoBalanceStep());
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 C", new PathConstraints(4, 3)),
+            swerve, color));
+        // AutoParallelStepGroup group6 = new AutoParallelStepGroup();
+        // group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 C red", new PathConstraints(4, 3)),
+        //     swerve, color));
+        // AutoSerialStepGroup group6A = new AutoSerialStepGroup();
+        // group6A.addStep(new AutoStepDelay(200));
+        // group6A.addStep(new IntakeOffStep());
+        // group6A.addStep(new AutoStepDelay(1000));
+        // addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        // group6A.addStep(new IntakeOnStep());
+        // group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        // group6.addStep(group6A);
+        // addStep(group6);
+
+        // //autobalance
+        // addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        // addStep(new IntakeOffStep());
+        // addStep(new PathHeadingStep(180, swerve));
+        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e D red", new PathConstraints(4, 3)),
+        // swerve, color));
+        // addStep(new AutoBalanceStep());
     }
 
     public String toString(){

@@ -24,7 +24,7 @@ public class Superstructure implements Subsystem{
     private enum station {DOUBLE, SINGLE}
     private String[] stationString = new String[]{"Double", "Single"};
 
-    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, driverLB, driverRB;
+    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, rightStickB, driverLB, driverRB;
     private AnalogInput driverLT, driverRT, leftStickY;
     private modes motion;
     private score scoring;
@@ -35,10 +35,10 @@ public class Superstructure implements Subsystem{
     public Lift lift;
     public Wrist wrist;
     private Timer timer = new Timer();
-    private double liftMod, launching;
+    private double liftMod, wristMod, launching;
     private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, modMode;
 
 
     @Override
@@ -49,10 +49,17 @@ public class Superstructure implements Subsystem{
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
+        if (rightStickB.getValue() && source == rightStickB) modMode = !modMode;
         if (Math.abs(leftStickY.getValue()) > 0.4) launching = Math.abs(swerve.getGyroAngle()-180.0)<90.0 ? -45.0 : 45.0;
         else launching = 0.0;
-        if (start.getValue() && source == dLeft && dLeft.getValue()) liftMod--;
-        if (start.getValue() && source == dRight && dRight.getValue()) liftMod++;
+        if (start.getValue() && source == dLeft && dLeft.getValue()) {
+            if (modMode) liftMod--;
+            else wristMod -= 3;
+        }
+        if (start.getValue() && source == dRight && dRight.getValue()) {
+            if (modMode) liftMod++;
+            else wristMod += 3;
+        }
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
@@ -141,6 +148,8 @@ public class Superstructure implements Subsystem{
         select.addInputListener(this);
         start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
         start.addInputListener(this);
+        rightStickB = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_JOYSTICK_BUTTON.get();
+        rightStickB.addInputListener(this);
         driverLT = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
         driverLT.addInputListener(this);
         driverRT = (AnalogInput) WSInputs.DRIVER_RIGHT_TRIGGER.get();
@@ -207,16 +216,16 @@ public class Superstructure implements Subsystem{
 
             if (wristWait || swerveWait){
                 if (arm.pastLift() && !armWait || !swerveWait){
-                    wrist.setPosition(currentPos.getW(gamepiece));
+                    wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
                     wristWait = false;
                 } else {
                     wrist.setPosition((360-arm.getPosition())%360);
                 }
             } else {
-                if (currentPos != SuperPos.NEUTRAL || launching == 0.0){
-                    wrist.setPosition(currentPos.getW(gamepiece));
+                if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
+                    wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
                 } else {
-                    wrist.setPosition(currentPos.getW(gamepiece) + launching);
+                    wrist.setPosition(currentPos.getW(gamepiece) + wristMod + launching);
                 }
             }
         }
@@ -237,6 +246,8 @@ public class Superstructure implements Subsystem{
         stationing = station.DOUBLE;
         timer.reset(); timer.start();
         liftMod = 0.0;
+        wristMod = 0.0;
+        modMode = true;
         swerveWait = false;
     }
 
@@ -269,6 +280,8 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
         SmartDashboard.putNumber("Lift Modifier", liftMod);
+        SmartDashboard.putNumber("Wrist Modifier", wristMod);
+        SmartDashboard.putString("Modifier Mode", modMode ? "Lift" : "Wrist");
     }
     public void goToPosition(SuperPos position){
         currentPos = position;
