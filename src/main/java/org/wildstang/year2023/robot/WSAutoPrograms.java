@@ -21,8 +21,8 @@ public enum WSAutoPrograms implements AutoPrograms {
 
     // enumerate programs
     //SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
-    TEST_PROGRAM("Test Program", Testprogram.class),
-    AUTOBALANCE("autobalance", AutobalanceTest.class),
+    //TEST_PROGRAM("Test Program", Testprogram.class),
+    //AUTOBALANCE("autobalance", AutobalanceTest.class),
     BLUE_TOP_3PE("BLUE Top_3pE", Blue_Top_3pE.class),
     BLUE_TOP_3("BLUE Top_3", Blue_Top_3.class),
     BLUE_BOT_3PE("BLUE Bot_3pE", Blue_Bot_3pE.class),

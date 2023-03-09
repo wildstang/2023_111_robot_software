@@ -27,9 +27,9 @@ public class Blue_Middle extends AutoProgram{
         addStep(new PathHeadingStep(180, swerve));
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new StartOdometryStep(1.8, 2.8, 180.0, color));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle A", new PathConstraints(4, 3)),
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle A", new PathConstraints(2.8, 2.25)),
             swerve, color));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B", new PathConstraints(4, 3)),
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B", new PathConstraints(2.8, 2.25)),
             swerve, color));
         addStep(new AutoBalanceStep());
 

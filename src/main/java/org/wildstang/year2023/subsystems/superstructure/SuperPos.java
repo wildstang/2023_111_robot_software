@@ -9,9 +9,9 @@ public enum SuperPos {
     STOWED           (0, 215, 225, 0, 215, 225, false),
     INTAKE_FRONT     (13.5,283,52,13.5,283,52,true),
     INTAKE_FRONT_LOW (0,283,52,0,283,52,true),
-    HP_STATION_DOUBLE(26,203,62,19,203,60,true),
+    HP_STATION_DOUBLE(25,203,62,19,203,60,true),
     HP_STATION_SINGLE(40,70,180,40,70,180,false),
-    INTAKE_BACK      (33,56.4,310,28.7,56.4,316,false),
+    INTAKE_BACK      (34,56.4,310,28.7,56.4,316,false),
     INTAKE_BACK_LOW  (26, 56.4, 316.0, 28.7, 56.4, 310.6, false),
     PRETHROW         (0, 170, 180, 0, 170, 180, false);
 

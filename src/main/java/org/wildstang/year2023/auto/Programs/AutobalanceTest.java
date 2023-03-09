@@ -29,11 +29,11 @@ public class AutobalanceTest extends AutoProgram{
     public void defineSteps(){
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
         
-        addStep(new SetGyroStep(225.0, swerve));
+        addStep(new SetGyroStep(180.0, swerve));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(6.83, 3.77, 225.0, true));
+        addStep(new StartOdometryStep(6.83, 3.77, 180.0, true));
         
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(4, 3)), swerve, true));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(2.8, 2.25)), swerve, true));
         addStep(new AutoBalanceStep());
 
         //or
