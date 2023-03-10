@@ -80,7 +80,7 @@ public class Red_Top_3pE extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.PRETHROW));
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(2.8, 2.25)), swerve, color));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e red", new PathConstraints(2.8, 2.25)), swerve, color));
         //changed stuff below
         addStep(new SuperLaunchingStep(true));
         AutoParallelStepGroup balance = new AutoParallelStepGroup();
