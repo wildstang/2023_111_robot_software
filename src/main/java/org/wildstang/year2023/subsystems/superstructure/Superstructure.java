@@ -174,7 +174,7 @@ public class Superstructure implements Subsystem{
         }
         if (timer.hasElapsed(0.5)) swerveWait = false;
         if (motion == modes.ARMDELAY){
-            //armWait = true;
+            armWait = true;
             wristWait = true;
             motion = modes.SIMPLE;
         }
@@ -211,7 +211,16 @@ public class Superstructure implements Subsystem{
             //         arm.setPosition(arm.getPosition());
             //     }
             // } else {
-                arm.setPosition(currentPos.getA(gamepiece));
+                if (armWait){
+                    if (lift.getPosition() > SuperConts.LIFTSTAGE){
+                        armWait = false;
+                        arm.setPosition(currentPos.getA(gamepiece));
+                    } else {
+                        arm.setPosition(arm.getPosition());
+                    }
+                } else {
+                    arm.setPosition(currentPos.getA(gamepiece));
+                }
             //}
 
             if (wristWait || swerveWait){
@@ -262,6 +271,8 @@ public class Superstructure implements Subsystem{
     private void determineMotion(){
         if (lastPos.getA(gamepiece) < SuperConts.ANTISCOOP){
             this.motion = modes.LIFTDELAY;
+        } else if (!lastPos.getDirection() && currentPos == SuperPos.SCORE_HIGH){
+            this.motion = modes.ARMDELAY;
         } else if (lastPos.getDirection() != currentPos.getDirection()){
             this.motion = modes.WRIST;
         } else {
