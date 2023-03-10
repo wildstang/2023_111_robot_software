@@ -12,30 +12,23 @@ public class Arm {
 
     private WsSparkMax motor;
     private AbsoluteEncoder absEncoder;
-    private Timer timer = new Timer();
-    private double lastPosition = 0.0;
 
     public Arm(WsSparkMax outputMotor){
         motor = outputMotor;
         motor.setBrake();
-        timer.reset();timer.start();
         absEncoder = motor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.ARM_ENCODER_DIRECTION);
-        absEncoder.setZeroOffset(141.3);//54
+        absEncoder.setZeroOffset(131.3);//54
         motor.initClosedLoop(SuperConts.ARM_P, SuperConts.ARM_I, SuperConts.ARM_D, 0, absEncoder, false);
-        motor.setCurrentLimit(25, 25, 0);
+        motor.setCurrentLimit(30, 30, 0);
     }
     public double getPosition(){
         return (absEncoder.getPosition())%360;
     }
     public void setPosition(double position){
-        if (position != lastPosition){
-            lastPosition = position;
-            timer.reset();
-        }
-        if (atPosition(position) || timer.hasElapsed(1.0)){
+        if (atPosition(position)){
             motor.setPosition((position)%360);
         } else {
            motor.setSpeed(getSpeed(position%360));
@@ -51,7 +44,7 @@ public class Arm {
         } else if (getPosition() < target && getPosition() >= 150.0){
             return Math.signum(target - getPosition()) * SuperConts.ARM_SLOW * 0.8;
         } else {
-            return 0.0;//SuperConts.ARM_SLOW*1.0;
+            return SuperConts.ARM_SLOW*1.0;
         }
     }
     public boolean atPosition(double position){

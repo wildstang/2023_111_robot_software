@@ -79,12 +79,12 @@ public class Superstructure implements Subsystem{
                 if (scoring == score.MID) currentPos = SuperPos.SCORE_MID;
                 if (scoring == score.LOW) currentPos = SuperPos.SCORE_LOW;
                 if (lastPos != currentPos) timer.reset();
-                swerveWait = true;
+                //swerveWait = true;
             } else if (driverLB.getValue()){
                 if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
                 //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
-                swerveWait = true;
+                //swerveWait = true;
             } else if (driverRB.getValue()){
                 if (intaking == intake.UPRIGHT) currentPos = SuperPos.INTAKE_BACK;
                 if (intaking == intake.TIPPED) currentPos = SuperPos.INTAKE_BACK_LOW;
@@ -203,16 +203,16 @@ public class Superstructure implements Subsystem{
                 }
             }  
 
-            if (armWait || swerveWait){
-                if (lift.getPosition() < SuperConts.LIFTSTAGE && !swerveWait){
-                    arm.setPosition(currentPos.getA(gamepiece));
-                    armWait = false;
-                } else {
-                    arm.setPosition(arm.getPosition());
-                }
-            } else {
+            // if (swerveWait){
+            //     if (lift.getPosition() < SuperConts.LIFTSTAGE && !swerveWait){
+            //         arm.setPosition(currentPos.getA(gamepiece));
+            //         armWait = false;
+            //     } else {
+            //         arm.setPosition(arm.getPosition());
+            //     }
+            // } else {
                 arm.setPosition(currentPos.getA(gamepiece));
-            }
+            //}
 
             if (wristWait || swerveWait){
                 if (arm.pastLift() && !armWait || !swerveWait){
