@@ -38,7 +38,7 @@ public class Superstructure implements Subsystem{
     private double liftMod, wristMod, launching;
     private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, modMode;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;//, modMode;
 
 
     @Override
@@ -49,17 +49,25 @@ public class Superstructure implements Subsystem{
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
-        if (rightStickB.getValue() && source == rightStickB) modMode = !modMode;
+        //if (rightStickB.getValue() && source == rightStickB) modMode = !modMode;
         if (Math.abs(leftStickY.getValue()) > 0.4) launching = Math.abs(swerve.getGyroAngle()-180.0)<90.0 ? -45.0 : 45.0;
         else launching = 0.0;
-        if (start.getValue() && source == dLeft && dLeft.getValue()) {
-            if (modMode) liftMod--;
-            else wristMod -= 3;
+        if (source == dLeft && dLeft.getValue()){
+            if (start.getValue()) wristMod -= 3;
+            else liftMod--;
         }
-        if (start.getValue() && source == dRight && dRight.getValue()) {
-            if (modMode) liftMod++;
-            else wristMod += 3;
+        if (source == dRight && dRight.getValue()){
+            if (start.getValue()) wristMod += 3;
+            else liftMod++;
         }
+        // if (start.getValue() && source == dLeft && dLeft.getValue()) {
+        //     if (modMode) liftMod--;
+        //     else wristMod -= 3;
+        // }
+        // if (start.getValue() && source == dRight && dRight.getValue()) {
+        //     if (modMode) liftMod++;
+        //     else wristMod += 3;
+        // }
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
@@ -256,7 +264,7 @@ public class Superstructure implements Subsystem{
         timer.reset(); timer.start();
         liftMod = 0.0;
         wristMod = 0.0;
-        modMode = true;
+        //modMode = true;
         swerveWait = false;
     }
 
@@ -292,7 +300,7 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
         SmartDashboard.putNumber("Lift Modifier", liftMod);
         SmartDashboard.putNumber("Wrist Modifier", wristMod);
-        SmartDashboard.putString("Modifier Mode", modMode ? "Lift" : "Wrist");
+        //SmartDashboard.putString("Modifier Mode", modMode ? "Lift" : "Wrist");
     }
     public void goToPosition(SuperPos position){
         currentPos = position;
