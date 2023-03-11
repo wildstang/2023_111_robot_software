@@ -5,7 +5,7 @@ public final class SuperConts {
     public static final boolean CONE = true;
     public static final boolean CUBE = false;
 
-    public static final double LIFTSTAGE = 32.0;
+    public static final double LIFTSTAGE = 20.0;
 
     public static final boolean ARM_ENCODER_DIRECTION = false;
     public static final double ARM_THRESHOLD = 30.0;
