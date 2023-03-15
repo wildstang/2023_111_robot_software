@@ -294,6 +294,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }
         if (driveState == driveType.TELEOP) {
+            limelight.changePipeline(0);
             if (rotLocked){
                 //if rotation tracking, replace rotational joystick value with controller generated one
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());

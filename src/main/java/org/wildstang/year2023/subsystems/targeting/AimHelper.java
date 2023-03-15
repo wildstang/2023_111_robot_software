@@ -43,6 +43,17 @@ public class AimHelper implements Subsystem {
 
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
+    public int currentPipeline;
+
+    /**changes the limelight pipeline.
+     * 0 is 3d Relative. 1 is AprilTag default. 2 is Retrotape default
+     * @param pipelineInt, desired number for which the pipeline should run. 
+    */
+    public void changePipeline(int pipelineInt) {
+        currentPipeline = pipelineInt;
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
+    }
+
     public void calcTargetCoords() { //update target coords.
         if(tv.getValue() == 1) {
             TargetInView = true;
@@ -142,6 +153,8 @@ public class AimHelper implements Subsystem {
         rightBumper.addInputListener(this);
         leftBumper = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftBumper.addInputListener(this);
+
+        changePipeline(0);
 
         resetState();
     }
