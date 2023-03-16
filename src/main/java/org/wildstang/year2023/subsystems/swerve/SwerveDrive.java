@@ -318,18 +318,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
             if (rotLocked){
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             }
-            if (autoOverride){
+            if (autoOverride || !limelight.TargetInView()){
                 xSpeed*=0.4;
                 ySpeed*=0.4;
             } else {
-                if (limelight.TargetInView()){
-                    //limelight get x signal
-                    xSpeed = limelight.getScoreX(aimOffset);
-                    //limelight get y signal
-                    ySpeed = limelight.getScoreY(vertOffset);
-                }
-                if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
-                if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2; 
+                xSpeed = limelight.getScoreX(aimOffset);
+                ySpeed = limelight.getScoreY(vertOffset);
+                if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
+                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
             }
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
@@ -349,10 +345,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         // SmartDashboard.putNumber("Align robotY", robotPose.getY());
         // SmartDashboard.putNumber("Align robotX", robotPose.getX());
-        SmartDashboard.putNumber("Align limeleftX", -limelight.ltarget3D[2]*mToIn);
-        SmartDashboard.putNumber("Align limeleftY", limelight.ltarget3D[0]*mToIn);
-        SmartDashboard.putNumber("Align limerightX", -limelight.rtarget3D[2]*mToIn);
-        SmartDashboard.putNumber("Align limerightY", limelight.rtarget3D[0]*mToIn);
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);

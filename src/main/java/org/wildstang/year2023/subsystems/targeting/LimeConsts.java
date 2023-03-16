@@ -6,11 +6,11 @@ public class LimeConsts {
 
     public double HORIZONTAL_APRILTAG_DISTANCE = 22.0; 
 
-    public double VERT_AUTOAIM_P = -0.01;
+    public double VERT_AUTOAIM_P = 0.01;
 
     public double HORI_AUTOAIM_P = 0.01;
 
-    public double OFFSET_HORIZONTAL = -10;
+    public double OFFSET_HORIZONTAL = 10;
 
     public double OFFSET_VERTICAL = -5;
 

@@ -70,36 +70,43 @@ public class AimHelper implements Subsystem {
         return ltv.getValue()==1 || rtv.getValue()==1;
     }
 
+    //get ySpeed value for auto drive
     public double getScoreY(double offset){
         if (rtv.getValue() == 0){
-            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + ltarget3D[2] - LC.VERTICAL_APRILTAG_DISTANCE);
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + getLeftVertical());
         } else if (ltv.getValue() == 0){
-            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + rtarget3D[2] - LC.VERTICAL_APRILTAG_DISTANCE);
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + getRightVertical());
         } else {
-            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (rtarget3D[2]+ltarget3D[2])/2 - LC.VERTICAL_APRILTAG_DISTANCE);
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (getLeftVertical() + getRightVertical())/2.0);
+        }
+    }
+    private double getLeftVertical(){
+        return ltarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
+    }
+    private double getRightVertical(){
+        return rtarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
+    }
+
+    //get xSpeed value for autodrive
+    public double getScoreX(double offset){
+        if (rtv.getValue() == 0){
+            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
+        } else if (ltv.getValue() == 0){
+            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getRightHorizontal());
+        } else {
+            if (Math.abs(getLeftHorizontal()) < Math.abs(getRightHorizontal())){
+                return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
+            } else {
+                return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getRightHorizontal());
+            }
         }
     }
 
-    public double getScoreX(double offset){
-        if (rtv.getValue() == 0){
-            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0] - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0));
-        } else if (ltv.getValue() == 0){
-            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0] + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0));
-        } else {
-            if (gamepiece){
-                if (Math.abs(ltarget3D[0] + LC.HORIZONTAL_APRILTAG_DISTANCE) < Math.abs(rtarget3D[0] - LC.HORIZONTAL_APRILTAG_DISTANCE)){
-                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0] + LC.HORIZONTAL_APRILTAG_DISTANCE);
-                } else {
-                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0] - LC.HORIZONTAL_APRILTAG_DISTANCE);
-                }
-            } else {
-                if (Math.abs(ltarget3D[0]) < Math.abs(rtarget3D[0])){
-                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0]);
-                } else {
-                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0]);
-                }
-            }
-        }
+    private double getLeftHorizontal(){
+        return ltarget3D[0]*mToIn + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0);
+    }
+    private double getRightHorizontal(){
+        return rtarget3D[0]*mToIn - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0);
     }
 
     @Override
@@ -139,13 +146,11 @@ public class AimHelper implements Subsystem {
     @Override
     public void update() {
         calcTargetCoords();
-        SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]);
-        SmartDashboard.putNumber("limeleft 3DY", ltarget3D[1]);
-        SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]);
+        SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]*mToIn);
+        SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeleft target in view", ltv.getValue() == 1);
-        SmartDashboard.putNumber("limeright 3DX", rtarget3D[0]);
-        SmartDashboard.putNumber("limeright 3DY", rtarget3D[1]);
-        SmartDashboard.putNumber("limeright 3DZ", rtarget3D[2]);
+        SmartDashboard.putNumber("limeright 3DX", rtarget3D[0]*mToIn);
+        SmartDashboard.putNumber("limeright 3DZ", rtarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeright target in view", rtv.getValue() == 1);
     }
 
