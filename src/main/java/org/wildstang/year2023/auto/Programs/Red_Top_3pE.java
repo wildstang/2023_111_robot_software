@@ -13,7 +13,7 @@ import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
-import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
+import org.wildstang.year2023.auto.Steps.LimeLightAimStep;
 import org.wildstang.year2023.auto.Steps.SuperLaunchingStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
 import org.wildstang.year2023.robot.WSSubsystems;

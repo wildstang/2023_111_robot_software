@@ -7,13 +7,13 @@ import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 import org.wildstang.year2023.subsystems.superstructure.Superstructure;
 import org.wildstang.year2023.subsystems.targeting.AimHelper;
 
-public class SuperGamePieceStep extends AutoStep{
+public class LimeLightAimStep extends AutoStep{
 
     private Superstructure superStructure;
     private AimHelper aimHelper;
     private boolean gamepiece;
 
-    public SuperGamePieceStep(boolean piece){
+    public LimeLightAimStep (boolean piece){
         this.gamepiece = piece;
         if (gamepiece = SuperConts.CONE){
             aimHelper.changePipeline(1);
@@ -32,7 +32,7 @@ public class SuperGamePieceStep extends AutoStep{
 
     }
     public String toString(){
-        return "Game Piece";
+        return "Lime Light Aim";
     }
     
 }

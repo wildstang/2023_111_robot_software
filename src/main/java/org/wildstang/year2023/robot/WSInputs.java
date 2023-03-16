@@ -139,6 +139,9 @@ public enum WSInputs implements Inputs {
     LL_TX("tx", new WsRemoteAnalogInputConfig("limelight")),
     LL_TY("ty", new WsRemoteAnalogInputConfig("limelight")),
     LL_TV("tv", new WsRemoteAnalogInputConfig("limelight")),
+    LL_TXRIGHT("tx", new WsRemoteAnalogInputConfig("limelightRight")),
+    LL_TYRIGHT("ty", new WsRemoteAnalogInputConfig("limelightRight")),
+    LL_TVRIGHT("tv", new WsRemoteAnalogInputConfig("limelightRight")),
 
     
     // ********************************

@@ -22,6 +22,10 @@ public class AimHelper implements Subsystem {
     private WsRemoteAnalogInput tx; // x angle
     private WsRemoteAnalogInput tv;
 
+    private WsRemoteAnalogInput tyRight; // y angle
+    private WsRemoteAnalogInput txRight; // x angle
+    private WsRemoteAnalogInput tvRight;
+
     public double x;
     public double y;
     public double[] target3D;
@@ -51,6 +55,11 @@ public class AimHelper implements Subsystem {
     */
     public void changePipeline(int pipelineInt) {
         currentPipeline = pipelineInt;
+        if (pipelineInt == 1){
+            gamepiece = LC.CUBE;
+        } else if (pipelineInt == 2){
+            gamepiece = LC.CONE;
+        }
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(currentPipeline);
     }
 
@@ -60,7 +69,16 @@ public class AimHelper implements Subsystem {
             x = tx.getValue();
             y = ty.getValue();
             target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            
             tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
+            dataLife = 0;
+        } else if (tvRight.getValue() == 1){
+            TargetInView = true;
+            x = txRight.getValue();
+            y = tyRight.getValue();
+            target3D = NetworkTableInstance.getDefault().getTable("limelightRight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            
+            tid = NetworkTableInstance.getDefault().getTable("limelightRight").getEntry("tid").getDouble(0);
             dataLife = 0;
         }
         else {
@@ -90,22 +108,19 @@ public class AimHelper implements Subsystem {
      * @return Get the x distance from robot to target (2023 game)
      */
     public double getNormalDistance() {
-        //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return get3DZ();
-        //return TargetNormalDistance;
+        return (currentPipeline == 0 ? get3DZ():getDistance()*Math.cos(Math.toRadians(this.x)));
     }
 
     /** 
      * @return Get the y distance from robot to target (2023 game)
      */
     public double getParallelDistance() {
-        //TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
-        return get3DX();
+        return (currentPipeline == 0 ? get3DX():getDistance()*Math.sin(Math.toRadians(this.x)));
         //return TargetParallelDistance;
     }
     public double getParallelSetpoint(boolean isStation){
         if (isStation) return LC.STATION_HORIZONTAL_OFFSET * Math.signum(get3DX());
-        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
+        if (gamepiece == LC.CONE && currentPipeline == 0) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
         else return 0.0;
     }
 
@@ -146,6 +161,7 @@ public class AimHelper implements Subsystem {
         ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
         tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
         tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
+        tvRight = (WsRemoteAnalogInput) WSInputs.LL_TVRIGHT.get();
         target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
         tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
 
