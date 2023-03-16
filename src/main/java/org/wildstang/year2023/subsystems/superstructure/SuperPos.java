@@ -2,18 +2,18 @@ package org.wildstang.year2023.subsystems.superstructure;
 
 public enum SuperPos {
 
-    SCORE_HIGH       (69,245.4,51.8,69,245.4,51.8,true),
-    SCORE_MID        (32.2,233.4,44.5,32.2,233.4,44.5,true),
-    SCORE_LOW        (0,231,26,0,231,26,true),
-    NEUTRAL          (0,195,180,0,195,180,false),
-    STOWED           (0, 215, 225, 0, 215, 225, false),
-    INTAKE_FRONT     (13.5,283,52,13.5,283,52,true),
-    INTAKE_FRONT_LOW (0,283,52,0,283,52,true),
-    HP_STATION_DOUBLE(23,203,62,19,203,60,true),
-    HP_STATION_SINGLE(40,70,180,40,70,180,false),
-    INTAKE_BACK      (34,56.4,310,28.7,56.4,316,false),
-    INTAKE_BACK_LOW  (26, 56.4, 316.0, 28.7, 56.4, 310.6, false),
-    PRETHROW         (0, 170, 180, 0, 170, 180, false);
+    SCORE_HIGH       (69,245.4,117.2,69,245.4,117.2,true),
+    SCORE_MID        (32.2,233.4,97.9,32.2,233.4,97.9,true),
+    SCORE_LOW        (0,231,77,0,231,77,true),
+    NEUTRAL          (0,195,195,0,195,195,false),
+    STOWED           (0, 215, 260, 0, 215, 260, false),
+    INTAKE_FRONT     (13.5,283,155,13.5,283,155,true),
+    INTAKE_FRONT_LOW (0,283,155,0,283,155,true),
+    HP_STATION_DOUBLE(23,203,85,19,203,83,true),
+    HP_STATION_SINGLE(40,70,70,40,70,70,false),
+    INTAKE_BACK      (34,56.4,186.4,28.7,56.4,192.4,false),
+    INTAKE_BACK_LOW  (26, 56.4, 192.4, 28.7, 56.4, 187, false),
+    PRETHROW         (0, 170, 170, 0, 170, 170, false);
 
     public final double cubeL;
     public final double cubeA;

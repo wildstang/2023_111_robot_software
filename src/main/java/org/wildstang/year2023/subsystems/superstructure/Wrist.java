@@ -27,9 +27,5 @@ public class Wrist {
     }
     public void setPosition(double position){
         motor.setPosition((position)%360);
-    }
-    // public void setFollow(double position, double speed){
-    //     motor.setSpeed(-speed + SuperConts.WRIST_P * (position - getPosition()));
-    // }
-    
+    }    
 }

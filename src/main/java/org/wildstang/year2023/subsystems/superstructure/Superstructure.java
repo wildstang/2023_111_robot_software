@@ -49,7 +49,6 @@ public class Superstructure implements Subsystem{
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
-        //if (rightStickB.getValue() && source == rightStickB) modMode = !modMode;
         if (Math.abs(leftStickY.getValue()) > 0.4) launching = Math.abs(swerve.getGyroAngle()-180.0)<90.0 ? -45.0 : 45.0;
         else launching = 0.0;
         if (source == dLeft && dLeft.getValue()){
@@ -60,14 +59,7 @@ public class Superstructure implements Subsystem{
             if (start.getValue()) wristMod += 3;
             else liftMod++;
         }
-        // if (start.getValue() && source == dLeft && dLeft.getValue()) {
-        //     if (modMode) liftMod--;
-        //     else wristMod -= 3;
-        // }
-        // if (start.getValue() && source == dRight && dRight.getValue()) {
-        //     if (modMode) liftMod++;
-        //     else wristMod += 3;
-        // }
+
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
@@ -103,24 +95,6 @@ public class Superstructure implements Subsystem{
                 if (lastPos != currentPos) timer.reset();
             }
         }
-
-        // if (source == A && A.getValue()){
-        //     currentPos = SuperPos.SCORE_LOW;
-        // }if (source == B && B.getValue()){
-        //     currentPos = SuperPos.SCORE_MID;
-        // }if (source == X && X.getValue()){
-        //     currentPos = SuperPos.NEUTRAL;
-        // }if (source == Y && Y.getValue()){
-        //     currentPos = SuperPos.SCORE_HIGH;
-        // }if (source == dUp && dUp.getValue()){
-        //     currentPos = SuperPos.HP_STATION_FRONT;
-        // }if (source == dRight && dRight.getValue()){
-        //     currentPos = SuperPos.INTAKE_BACK;
-        // }if (source == dLeft && dLeft.getValue()){
-        //     currentPos = SuperPos.INTAKE_FRONT;
-        // }if (source ==  dDown&& dDown.getValue()){
-        //     currentPos = SuperPos.INTAKE_BACK_LOW;
-        // }
         
         if (currentPos != lastPos){
             determineMotion();
@@ -204,39 +178,27 @@ public class Superstructure implements Subsystem{
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                if (currentPos == SuperPos.HP_STATION_DOUBLE){
-                    lift.setPosition(liftMod + currentPos.getL(gamepiece));
-                } else {
-                    lift.setPosition(liftMod + currentPos.getL(gamepiece));
-                }
+                lift.setPosition(liftMod + currentPos.getL(gamepiece));   
             }  
 
-            // if (swerveWait){
-            //     if (lift.getPosition() < SuperConts.LIFTSTAGE && !swerveWait){
-            //         arm.setPosition(currentPos.getA(gamepiece));
-            //         armWait = false;
-            //     } else {
-            //         arm.setPosition(arm.getPosition());
-            //     }
-            // } else {
-                if (armWait){
-                    if (lift.getPosition() > SuperConts.LIFTSTAGE){
-                        armWait = false;
-                        arm.setPosition(currentPos.getA(gamepiece));
-                    } else {
-                        arm.setPosition(arm.getPosition());
-                    }
-                } else {
+            if (armWait){
+                if (lift.getPosition() > SuperConts.LIFTSTAGE){
+                    armWait = false;
                     arm.setPosition(currentPos.getA(gamepiece));
+                } else {
+                    arm.setPosition(arm.getPosition());
                 }
-            //}
+            } else {
+                arm.setPosition(currentPos.getA(gamepiece));
+            }
+            
 
             if (wristWait || swerveWait){
                 if (arm.pastLift() && !armWait || !swerveWait){
                     wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
                     wristWait = false;
                 } else {
-                    wrist.setPosition((360-arm.getPosition())%360);
+                    wrist.setPosition(180.0);
                 }
             } else {
                 if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
@@ -300,7 +262,6 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
         SmartDashboard.putNumber("Lift Modifier", liftMod);
         SmartDashboard.putNumber("Wrist Modifier", wristMod);
-        //SmartDashboard.putString("Modifier Mode", modMode ? "Lift" : "Wrist");
     }
     public void goToPosition(SuperPos position){
         currentPos = position;
