@@ -72,7 +72,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private boolean isEndGame = false;
     
     private final double mToIn = 39.37;
-    private final double inToM = 1.0/mToIn;
 
     //private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
@@ -81,12 +80,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     private SwerveDriveOdometry odometry;
     private Pose2d robotPose;
-    private Timer autoTimer = new Timer();
 
     private AimHelper limelight;
     private LimeConsts LC;
-    private PIDController LLpidX;// = new PIDController(LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2], LC.AUTO_ALIGN_PID_X[3]);
-    private PIDController LLpidY;// = new PIDController(LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2], LC.AUTO_ALIGN_PID_Y[3]);
 
     public enum driveType {TELEOP, AUTO, CROSS, LL, BALANCE};
     public driveType driveState;
@@ -213,9 +209,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public void initInputs() {
         LC = new LimeConsts();
-        LLpidX = new PIDController(LC.AUTO_ALIGN_PID_X[0], LC.AUTO_ALIGN_PID_X[1], LC.AUTO_ALIGN_PID_X[2]);
-        LLpidY = new PIDController(LC.AUTO_ALIGN_PID_Y[0], LC.AUTO_ALIGN_PID_Y[1], LC.AUTO_ALIGN_PID_Y[2]);
-
 
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
@@ -278,15 +271,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
-        if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
-            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        // } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
-        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
-        //     autoTimer.reset();
-        }
-        robotPose = odometry.update(odoAngle(), odoPosition());
-        xAbsPos = odometry.getPoseMeters().getX();
-        yAbsPos = odometry.getPoseMeters().getY();
+        // if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
+        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
+        // // } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
+        // //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
+        // //     autoTimer.reset();
+        // }
+        // robotPose = odometry.update(odoAngle(), odoPosition());
+        // xAbsPos = odometry.getPoseMeters().getX();
+        // yAbsPos = odometry.getPoseMeters().getY();
 
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
@@ -329,40 +322,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 xSpeed*=0.4;
                 ySpeed*=0.4;
             } else {
-                if (limelight.TargetInView && startingLL){
-                    xSpeed = -LLpidX.calculate(limelight.getParallelDistance(), limelight.getParallelSetpoint(isStation) - 20.0*aimOffset);
-                    ySpeed = LLpidY.calculate(limelight.getNormalDistance(), isStation ? LC.STATION_VERTICAL_OFFSET - 10*vertOffset : LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET - 10*vertOffset);
-                    if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
-                    if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2;    
-                } else {
-                    startingLL = false;
-                    if (isStation){
-                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.STATION_VERTICAL_OFFSET) + 10*vertOffset);
-                    } else {
-                        ySpeed = 0.01 * -(robotPose.getX()*mToIn - (LC.DESIRED_APRILTAG_DISTANCE + LC.LIMELIGHT_DISTANCE_OFFSET) + 10*vertOffset);
-                    }
-                    if (!limelight.gamepiece){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn + 20.0*aimOffset);
-                    } else if (isStation){
-                        xSpeed = 0.01 * (robotPose.getY()*mToIn - (Math.signum(robotPose.getY()))*(LC.STATION_HORIZONTAL_OFFSET) + 20.0*aimOffset);
-                    } else if (Math.abs(robotPose.getY()*mToIn)<=1.5*LC.APRILTAG_HORIZONTAL_OFFSET){
-                        if (Math.signum(robotPose.getY())>0.0){
-                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (LC.HORIZONTAL_SCORE_LEFT) + 20.0*aimOffset);
-                        } else {
-                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (-LC.HORIZONTAL_SCORE_RIGHT) + 20.0*aimOffset);
-                        }
-                    } else {
-                        if (Math.signum(robotPose.getY())>0.0){
-                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (2.0*LC.HORIZONTAL_SCORE_LEFT) + 20.0*aimOffset);
-                        } else {
-                            xSpeed = 0.01 * (robotPose.getY()*mToIn - (-2.0*LC.HORIZONTAL_SCORE_RIGHT) + 20.0*aimOffset);
-                        }
-                    }
-                    //if (Math.abs(ySpeed)<0.05) ySpeed = 0.0;
-                    //if (Math.abs(xSpeed)<0.05) xSpeed = 0.0;
-                    if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
-                    if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2; 
+                if (limelight.TargetInView()){
+                    //limelight get x signal
+                    xSpeed = limelight.getScoreX(aimOffset);
+                    //limelight get y signal
+                    ySpeed = limelight.getScoreY(vertOffset);
                 }
+                if (Math.abs(xSpeed) > 0.2) xSpeed = Math.signum(xSpeed) * 0.2;
+                if (Math.abs(ySpeed) > 0.2) ySpeed = Math.signum(ySpeed) * 0.2; 
             }
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
@@ -380,10 +347,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
 
         }
-        SmartDashboard.putNumber("Align robotY", robotPose.getY());
-        SmartDashboard.putNumber("Align robotX", robotPose.getX());
-        SmartDashboard.putNumber("Align limeX", -limelight.target3D[2]*mToIn);
-        SmartDashboard.putNumber("Align limeY", limelight.target3D[0]*mToIn);
+        // SmartDashboard.putNumber("Align robotY", robotPose.getY());
+        // SmartDashboard.putNumber("Align robotX", robotPose.getX());
+        SmartDashboard.putNumber("Align limeleftX", -limelight.ltarget3D[2]*mToIn);
+        SmartDashboard.putNumber("Align limeleftY", limelight.ltarget3D[0]*mToIn);
+        SmartDashboard.putNumber("Align limerightX", -limelight.rtarget3D[2]*mToIn);
+        SmartDashboard.putNumber("Align limerightY", limelight.rtarget3D[0]*mToIn);
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
@@ -393,8 +362,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
-        SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
-        SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
+        // SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
+        // SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
     }
     
@@ -419,7 +388,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         isFieldCentric = true;
         isSnake = false;
         robotPose = new Pose2d();
-        autoTimer.reset();autoTimer.start();
     }
 
     @Override
@@ -454,7 +422,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDriveBrake(true);
         }
-        autoTimer.reset();autoTimer.start();
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */

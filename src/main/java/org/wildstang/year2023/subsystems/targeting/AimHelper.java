@@ -18,100 +18,89 @@ public class AimHelper implements Subsystem {
     
     private static final double mToIn = 39.3701;
 
-    private WsRemoteAnalogInput ty; // y angle
-    private WsRemoteAnalogInput tx; // x angle
-    private WsRemoteAnalogInput tv;
+    private WsRemoteAnalogInput ltv;
+    private WsRemoteAnalogInput rtv;
 
-    public double x;
-    public double y;
-    public double[] target3D;
-    public double tid;
-    private int tidInt;
+    public double[] ltarget3D;
+    public double[] rtarget3D;
+    public double ltid;
+    public double rtid;
+    public int ltidInt;
+    private int rtidInt;
     private double offsetX;
     private double offsetY;
 
-    public boolean TargetInView;
     public boolean gamepiece;
-    private double TargetAbsoluteDistance;
 
     private DigitalInput rightBumper, leftBumper;//, dup, ddown;
 
     public LimeConsts LC;
 
-    private int dataLifeSpan = 10;
-    private int dataLife = 0; 
-
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
     public void calcTargetCoords() { //update target coords.
-        if(tv.getValue() == 1) {
-            TargetInView = true;
-            x = tx.getValue();
-            y = ty.getValue();
-            target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
-            tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
-            dataLife = 0;
+        if(ltv.getValue() == 1) {
+            ltarget3D = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            ltid = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("tid").getDouble(0);
         }
-        else {
-            TargetInView = false;
-            // accounting for unreliable readings
-            dataLife ++;
-            if (dataLife <= dataLifeSpan){
-                return;
-            } else{
-                x = 0; //no target case
-                y = 0;
-                target3D = new double[] {0,0,0,0,0,0};
+        if (rtv.getValue() == 1){
+            rtarget3D = NetworkTableInstance.getDefault().getTable("limeright").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            rtid = NetworkTableInstance.getDefault().getTable("limeright").getEntry("tid").getDouble(0);
+        }
+    }
+
+    public double[] getAbsoluteLeftPosition(){
+        if (ltid >= 1.0 && ltid <= 8.0){
+            offsetX = LC.APRILTAG_ABS_OFFSET_X[ltidInt = -1 + (int) ltid];
+            offsetY = LC.APRILTAG_ABS_OFFSET_Y[ltidInt = -1 + (int) ltid];
+        }
+        
+        return new double[]{-ltarget3D[2]+offsetX, ltarget3D[0]+offsetY};
+    }
+    public double[] getAbsoluteRightPosition(){
+        if (rtid >= 1.0 && rtid <= 8.0){
+            offsetX = LC.APRILTAG_ABS_OFFSET_X[rtidInt = -1 + (int) rtid];
+            offsetY = LC.APRILTAG_ABS_OFFSET_Y[rtidInt = -1 + (int) rtid];
+        }
+        
+        return new double[]{-rtarget3D[2]+offsetX, rtarget3D[0]+offsetY};
+    }
+
+    public boolean TargetInView(){
+        return ltv.getValue()==1 || rtv.getValue()==1;
+    }
+
+    public double getScoreY(double offset){
+        if (rtv.getValue() == 0){
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + ltarget3D[2] - LC.VERTICAL_APRILTAG_DISTANCE);
+        } else if (ltv.getValue() == 0){
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + rtarget3D[2] - LC.VERTICAL_APRILTAG_DISTANCE);
+        } else {
+            return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (rtarget3D[2]+ltarget3D[2])/2 - LC.VERTICAL_APRILTAG_DISTANCE);
+        }
+    }
+
+    public double getScoreX(double offset){
+        if (rtv.getValue() == 0){
+            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0] - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0));
+        } else if (ltv.getValue() == 0){
+            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0] + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : 0.0));
+        } else {
+            if (gamepiece){
+                if (Math.abs(ltarget3D[0] + LC.HORIZONTAL_APRILTAG_DISTANCE) < Math.abs(rtarget3D[0] - LC.HORIZONTAL_APRILTAG_DISTANCE)){
+                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0] + LC.HORIZONTAL_APRILTAG_DISTANCE);
+                } else {
+                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0] - LC.HORIZONTAL_APRILTAG_DISTANCE);
+                }
+            } else {
+                if (Math.abs(ltarget3D[0]) < Math.abs(rtarget3D[0])){
+                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + ltarget3D[0]);
+                } else {
+                    return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + rtarget3D[0]);
+                }
             }
         }
     }
-    
-    /** 
-     * @return Get the shortest distance from robot to the target
-     */
-    public double getDistance() {
-        TargetAbsoluteDistance = LC.TARGET_HEIGHT / Math.tan(Math.toRadians(this.y + LC.CAMERA_ANGLE_OFFSET));//+36?
-        //return TargetDistance;
-        return TargetAbsoluteDistance;
-    }
-
-    /** 
-     * @return Get the x distance from robot to target (2023 game)
-     */
-    public double getNormalDistance() {
-        //TargetNormalDistance = getDistance()*Math.cos(Math.toRadians(this.x));
-        return get3DZ();
-        //return TargetNormalDistance;
-    }
-
-    /** 
-     * @return Get the y distance from robot to target (2023 game)
-     */
-    public double getParallelDistance() {
-        //TargetParallelDistance = getDistance()*Math.sin(Math.toRadians(this.x));
-        return get3DX();
-        //return TargetParallelDistance;
-    }
-    public double getParallelSetpoint(boolean isStation){
-        if (isStation) return LC.STATION_HORIZONTAL_OFFSET * Math.signum(get3DX());
-        if (gamepiece == LC.CONE) return LC.APRILTAG_HORIZONTAL_OFFSET * Math.signum(get3DX());
-        else return 0.0;
-    }
-
-    public double[] getAbsolutePosition(){
-        if (tid >= 1.0 && tid <= 8.0){
-            offsetX = LC.APRILTAG_ABS_OFFSET_X[tidInt = -1 + (int) tid];
-            offsetY = LC.APRILTAG_ABS_OFFSET_Y[tidInt = -1 + (int) tid];
-        }
-        
-        return new double[]{-target3D[2]+offsetX, target3D[0]+offsetY};
-    }
-
-    public double getRotPID() {
-        calcTargetCoords();
-        return (this.x) * -0.015;
-    }
-
 
     @Override
     public void inputUpdate(Input source) {
@@ -127,16 +116,13 @@ public class AimHelper implements Subsystem {
     @Override
     public void init() {
         LC = new LimeConsts();
-        x = 0;  //x and y angular offsets from limelight. Only updated when calcTargetCoords is called.
-        y = 0;
-        TargetInView = false; //is the target in view? only updated when calcTargetCoords is called.
-        TargetAbsoluteDistance = 0; //distance to target in feet. Only updated when calcTargetCoords is called.
 
-        ty = (WsRemoteAnalogInput) WSInputs.LL_TY.get();
-        tx = (WsRemoteAnalogInput) WSInputs.LL_TX.get();
-        tv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
-        target3D = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
-        tid = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0);
+        ltv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
+        rtv = (WsRemoteAnalogInput) WSInputs.LR_TV.get();
+        ltarget3D = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        rtarget3D = NetworkTableInstance.getDefault().getTable("limeright").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        ltid = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("tid").getDouble(0);
+        rtid = NetworkTableInstance.getDefault().getTable("limeright").getEntry("tid").getDouble(0);
 
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
@@ -153,19 +139,21 @@ public class AimHelper implements Subsystem {
     @Override
     public void update() {
         calcTargetCoords();
-        SmartDashboard.putNumber("limelight distance", getDistance());
-        SmartDashboard.putNumber("limelight tx", tx.getValue());
-        SmartDashboard.putNumber("limelight ty", ty.getValue());
-        SmartDashboard.putNumber("limelight 3DX", target3D[0]);
-        SmartDashboard.putNumber("limelight 3DY", get3DY());
-        SmartDashboard.putNumber("limelight 3DZ", target3D[2]);
-        SmartDashboard.putBoolean("limelight target in view", tv.getValue() == 1);
+        SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]);
+        SmartDashboard.putNumber("limeleft 3DY", ltarget3D[1]);
+        SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]);
+        SmartDashboard.putBoolean("limeleft target in view", ltv.getValue() == 1);
+        SmartDashboard.putNumber("limeright 3DX", rtarget3D[0]);
+        SmartDashboard.putNumber("limeright 3DY", rtarget3D[1]);
+        SmartDashboard.putNumber("limeright 3DZ", rtarget3D[2]);
+        SmartDashboard.putBoolean("limeright target in view", rtv.getValue() == 1);
     }
 
     @Override
     public void resetState() {
         gamepiece = LC.CONE;
-        tid = 1;
+        ltid = 1;
+        rtid = 1;
         offsetX = 0;
         offsetY = 0;
     }
@@ -173,14 +161,5 @@ public class AimHelper implements Subsystem {
     @Override
     public String getName() {
         return "Aim Helper";
-    }
-    public double get3DX(){
-        return target3D[0]*mToIn;
-    }
-    public double get3DY(){
-        return target3D[1]*mToIn;
-    }
-    public double get3DZ(){
-        return -target3D[2]*mToIn;
     }
 }
