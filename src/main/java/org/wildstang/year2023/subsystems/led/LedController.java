@@ -1,5 +1,6 @@
 package org.wildstang.year2023.subsystems.led;
 
+import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
@@ -12,6 +13,7 @@ public class LedController implements Subsystem {
 
     private DigitalInput rightShoulder;
     private DigitalInput leftShoulder, start, select;
+    private AnalogInput driverLeftTrigger;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
 
@@ -32,6 +34,11 @@ public class LedController implements Subsystem {
         if (rightShoulder.getValue()) cubeDisplay();
         if (leftShoulder.getValue()) coneDisplay();
         if (start.getValue() && select.getValue()) isRainbow = true;
+        if (Math.abs(driverLeftTrigger.getValue()) > 0.1 && source == driverLeftTrigger){
+            led.stop();
+        } else {
+            led.start();
+        }
     }
 
     @Override
@@ -41,6 +48,8 @@ public class LedController implements Subsystem {
         rightShoulder.addInputListener(this);
         leftShoulder = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftShoulder.addInputListener(this);
+        driverLeftTrigger = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
+        driverLeftTrigger.addInputListener(this);
         start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
         start.addInputListener(this);
         select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
