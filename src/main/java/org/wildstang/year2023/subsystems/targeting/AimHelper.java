@@ -40,12 +40,12 @@ public class AimHelper implements Subsystem {
 
     public void calcTargetCoords() { //update target coords.
         if(ltv.getValue() == 1) {
-            ltarget3D = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
-            ltid = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("tid").getDouble(0);
+            ltarget3D = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            ltid = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("tid").getDouble(0);
         }
         if (rtv.getValue() == 1){
-            rtarget3D = NetworkTableInstance.getDefault().getTable("limeright").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
-            rtid = NetworkTableInstance.getDefault().getTable("limeright").getEntry("tid").getDouble(0);
+            rtarget3D = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+            rtid = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("tid").getDouble(0);
         }
     }
 
@@ -89,9 +89,9 @@ public class AimHelper implements Subsystem {
 
     //get xSpeed value for autodrive
     public double getScoreX(double offset){
-        if (rtv.getValue() == 0){
+        if (rtv.getValue() != 1){
             return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
-        } else if (ltv.getValue() == 0){
+        } else if (ltv.getValue() != 1){
             return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getRightHorizontal());
         } else {
             if (Math.abs(getLeftHorizontal()) < Math.abs(getRightHorizontal())){
@@ -126,10 +126,10 @@ public class AimHelper implements Subsystem {
 
         ltv = (WsRemoteAnalogInput) WSInputs.LL_TV.get();
         rtv = (WsRemoteAnalogInput) WSInputs.LR_TV.get();
-        ltarget3D = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-        rtarget3D = NetworkTableInstance.getDefault().getTable("limeright").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-        ltid = NetworkTableInstance.getDefault().getTable("limeleft").getEntry("tid").getDouble(0);
-        rtid = NetworkTableInstance.getDefault().getTable("limeright").getEntry("tid").getDouble(0);
+        ltarget3D = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        rtarget3D = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+        ltid = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("tid").getDouble(0);
+        rtid = NetworkTableInstance.getDefault().getTable("limelight-right").getEntry("tid").getDouble(0);
 
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
