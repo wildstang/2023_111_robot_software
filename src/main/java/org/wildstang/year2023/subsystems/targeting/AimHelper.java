@@ -49,21 +49,22 @@ public class AimHelper implements Subsystem {
         }
     }
 
-    public double[] getAbsoluteLeftPosition(){
-        if (ltid >= 1.0 && ltid <= 8.0){
-            offsetX = LC.APRILTAG_ABS_OFFSET_X[ltidInt = -1 + (int) ltid];
-            offsetY = LC.APRILTAG_ABS_OFFSET_Y[ltidInt = -1 + (int) ltid];
+    public double[] getAbsolutePosition(boolean isBlue){
+        if (isBlue) {
+            if (ltid >= 1.0 && ltid <= 8.0){
+                offsetX = LC.APRILTAG_ABS_OFFSET_X[ltidInt = -1 + (int) ltid];
+                offsetY = LC.APRILTAG_ABS_OFFSET_Y[ltidInt = -1 + (int) ltid];
+            }
+            return new double[]{-ltarget3D[2]+offsetX, ltarget3D[0]+offsetY};
+        } else {
+            if (rtid >= 1.0 && rtid <= 8.0){
+                offsetX = LC.APRILTAG_ABS_OFFSET_X[rtidInt = -1 + (int) rtid];
+                offsetY = LC.APRILTAG_ABS_OFFSET_Y[rtidInt = -1 + (int) rtid];
+            }
+            
+            return new double[]{-rtarget3D[2]+offsetX, rtarget3D[0]+offsetY};
         }
         
-        return new double[]{-ltarget3D[2]+offsetX, ltarget3D[0]+offsetY};
-    }
-    public double[] getAbsoluteRightPosition(){
-        if (rtid >= 1.0 && rtid <= 8.0){
-            offsetX = LC.APRILTAG_ABS_OFFSET_X[rtidInt = -1 + (int) rtid];
-            offsetY = LC.APRILTAG_ABS_OFFSET_Y[rtidInt = -1 + (int) rtid];
-        }
-        
-        return new double[]{-rtarget3D[2]+offsetX, rtarget3D[0]+offsetY};
     }
 
     public boolean TargetInView(){

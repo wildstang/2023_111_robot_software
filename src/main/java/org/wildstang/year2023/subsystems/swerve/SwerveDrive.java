@@ -62,13 +62,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathTarget;
     private double aimOffset;
     private double vertOffset;
-    private boolean startingLL;
-    public double xAbsPos;
-    public double yAbsPos;
     private double pathXOffset = 0;
     private double pathYOffset = 0;
     private boolean autoOverride;
+    private boolean isBlue;
     private boolean isStation;
+    private boolean autoOdo = false;
     private boolean isEndGame = false;
     
     private final double mToIn = 39.37;
@@ -173,7 +172,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
             if (driveState == driveType.TELEOP){
                 driveState = driveType.LL;
-                startingLL = true;
                 autoOverride = false;
                 isStation = false;
             }
@@ -271,15 +269,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
-        // if (limelight.TargetInView && driveState != driveType.AUTO && (driveState != driveType.LL||startingLL)){
-        //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(-limelight.target3D[2], limelight.target3D[0]), odoAngle()));
-        // // } else if (limelight.TargetInView && driveState == driveType.AUTO && autoTimer.advanceIfElapsed(0.5)){
-        // //     odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition()[0], limelight.getAbsolutePosition()[1]), odoAngle()));
-        // //     autoTimer.reset();
-        // }
-        // robotPose = odometry.update(odoAngle(), odoPosition());
-        // xAbsPos = odometry.getPoseMeters().getX();
-        // yAbsPos = odometry.getPoseMeters().getY();
+        if (autoOdo && driveState == driveType.AUTO){
+            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
+                limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
+        }
+        robotPose = odometry.update(odoAngle(), odoPosition());
 
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
@@ -311,7 +305,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed,
+                 getGyroAngle(),2.0*(odometry.getPoseMeters().getY() - pathXOffset), 2.0*(pathYOffset - odometry.getPoseMeters().getX()));
             drive();        
         }
         if (driveState == driveType.LL) {
@@ -372,10 +367,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathTarget = 0.0;
         aimOffset = 0.0;
         vertOffset = 0.0;
-        startingLL = true;
         autoOverride = false;
         isStation = false;
         isEndGame = false;
+        autoOdo = false;
 
         isFieldCentric = true;
         isSnake = false;
@@ -479,5 +474,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public double getRotTarget(){
         return rotTarget;
+    }
+    public void setAutoOdo(boolean isOn, boolean isBlue){
+        autoOdo = isOn;
+        this.isBlue = isBlue;
     }
 }

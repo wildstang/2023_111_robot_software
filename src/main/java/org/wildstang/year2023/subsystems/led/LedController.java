@@ -70,6 +70,7 @@ public class LedController implements Subsystem {
         }
         led.setData(ledBuffer);
         isRainbow = false;
+        led.start();
     }
 
     public void coneDisplay(){
@@ -78,6 +79,7 @@ public class LedController implements Subsystem {
         }
         led.setData(ledBuffer);
         isRainbow = false;
+        led.start();
     }
 
     @Override
@@ -102,4 +104,7 @@ public class LedController implements Subsystem {
         initialHue = (initialHue + 3) % 180;
         led.setData(ledBuffer);
     } 
+    public void turnOff(){
+        led.stop();
+    }
 }

@@ -50,21 +50,21 @@ public class SwervePathFollowerStep extends AutoStep {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
 
-            m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
-            localRobotPose = m_drive.returnPose();
+            //m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
+            // localRobotPose = m_drive.returnPose();
             localAutoPose = pathData.sample(timer.get()).poseMeters;
-            yOffset = -(localRobotPose.getX() - localAutoPose.getX());
-            if (isBlue){
-                xOffset = localRobotPose.getY() - localAutoPose.getY();
-            } else {
-                xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
-            }
-            SmartDashboard.putNumber("auto align X", localAutoPose.getX());
-            SmartDashboard.putNumber("auto align robot Y", localAutoPose.getY());
+            // yOffset = -(localRobotPose.getX() - localAutoPose.getX());
+            // if (isBlue){
+            //     xOffset = localRobotPose.getY() - localAutoPose.getY();
+            // } else {
+            //     xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
+            // }
+            // SmartDashboard.putNumber("auto align X", localAutoPose.getX());
+            // SmartDashboard.putNumber("auto align robot Y", localAutoPose.getY());
             //xOffset = 0;
             //yOffset = 0;
 
-            m_drive.setAutoValues( getVelocity(),getHeading(), 2.0*xOffset, 2.0*yOffset);
+            m_drive.setAutoValues( getVelocity(),getHeading(), isBlue ? localAutoPose.getY() : 8.016 - localAutoPose.getY(), localAutoPose.getX());
             }
     }
 
