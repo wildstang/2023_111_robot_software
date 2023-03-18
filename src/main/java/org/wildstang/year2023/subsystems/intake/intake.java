@@ -112,4 +112,8 @@ public class intake implements Subsystem {
     public void intakeOff(){
         speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
     }
+    public boolean hasGrabbed(){
+        if (speed < 0.5) return false;
+        return intakeMotor.getController().getOutputCurrent() > 15.0;
+    }
 }
