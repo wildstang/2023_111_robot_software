@@ -2,9 +2,11 @@ package org.wildstang.year2023.subsystems.targeting;
 
 public class LimeConsts {
 
-    public double VERTICAL_APRILTAG_DISTANCE = 20.0; 
+    public double VERTICAL_APRILTAG_DISTANCE = 36.5; 
 
-    public double HORIZONTAL_APRILTAG_DISTANCE = 22.0; 
+    public double HORIZONTAL_APRILTAG_DISTANCE = 33.0; 
+
+    public double HORIZONTAL_LIMELIGHT_MOUNT = 6.4;
 
     public double VERT_AUTOAIM_P = 0.01;
 

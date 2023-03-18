@@ -136,8 +136,6 @@ public enum WSInputs implements Inputs {
     // -------------------------------
     // Networked sensors
     // -------------------------------
-    LL_TV("tv", new WsRemoteAnalogInputConfig("limelight-left")),
-    LR_TV("tv", new WsRemoteAnalogInputConfig("limelight-right")),
 
     
     // ********************************
