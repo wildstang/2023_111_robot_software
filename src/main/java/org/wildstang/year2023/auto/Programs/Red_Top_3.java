@@ -34,7 +34,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(1.78, 4.8, 180.0, color));
+        addStep(new StartOdometryStep(1.78, 4.96, 180.0, color));
         addStep(new AutoStepDelay(1200));
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
