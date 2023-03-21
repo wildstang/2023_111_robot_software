@@ -53,11 +53,11 @@ public class Superstructure implements Subsystem{
         else launching = 0.0;
         if (source == dLeft && dLeft.getValue()){
             if (start.getValue()) wristMod -= 3;
-            else liftMod--;
+            else if (select.getValue()) liftMod--;
         }
         if (source == dRight && dRight.getValue()){
             if (start.getValue()) wristMod += 3;
-            else liftMod++;
+            else if (select.getValue()) liftMod++;
         }
 
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
@@ -70,8 +70,8 @@ public class Superstructure implements Subsystem{
         if (source == dUp && dUp.getValue()) intaking = intake.UPRIGHT;
         if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
         if (source == X && X.getValue()) intaking = intake.FRONT;
-        if (source == dRight && dRight.getValue()) stationing = station.DOUBLE;
-        //if (source == dLeft && dLeft.getValue()) stationing = station.SINGLE;
+        if (source == dRight && dRight.getValue() && !start.getValue() && !select.getValue()) stationing = station.DOUBLE;
+        if (source == dLeft && dLeft.getValue() && !start.getValue() && !select.getValue()) stationing = station.SINGLE;
 
         if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
             if (Math.abs(driverLT.getValue()) > 0.25){
@@ -82,7 +82,7 @@ public class Superstructure implements Subsystem{
                 //swerveWait = true;
             } else if (driverLB.getValue()){
                 if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
-                //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
+                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
                 //swerveWait = true;
             } else if (driverRB.getValue()){

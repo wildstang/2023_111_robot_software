@@ -11,6 +11,7 @@ import org.wildstang.year2023.subsystems.intake.intake;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LedController implements Subsystem {
 
@@ -23,6 +24,8 @@ public class LedController implements Subsystem {
     private enum modes {CONE, CUBE, RAINBOW}
     private modes currentMode;
     private boolean isOn;
+    private boolean hasGrabbed;
+    private Timer timer = new Timer();
 
     private int port = 0;//port
     private int length = 60;//length
@@ -30,6 +33,17 @@ public class LedController implements Subsystem {
 
     @Override
     public void update(){
+        if (intake.hasGrabbed()){
+            if (!hasGrabbed) {
+                hasGrabbed = true;
+                timer.reset();
+                timer.start();
+            }
+        }
+        else {
+            hasGrabbed = false;
+        }
+
         if (!isOn) led.stop();
         else {
             if (intake.hasGrabbed()) grabbedDisplay();
@@ -38,7 +52,6 @@ public class LedController implements Subsystem {
             else if (currentMode == modes.CUBE) cubeDisplay();
             led.start();
         }
-        
     }
 
     @Override
@@ -92,10 +105,12 @@ public class LedController implements Subsystem {
     }
 
     public void grabbedDisplay(){
-        for (var i = 0; i < length; i++){
-            ledBuffer.setRGB(i, 0, 255, 0);
+        if (timer.hasElapsed(0.05)){
+            for (var i = 0; i < length; i++){
+                ledBuffer.setRGB(i, 0, 255, 255);
+            }
+            led.setData(ledBuffer);
         }
-        led.setData(ledBuffer);
     }
 
     @Override
