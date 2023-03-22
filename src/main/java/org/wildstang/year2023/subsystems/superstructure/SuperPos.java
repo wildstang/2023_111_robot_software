@@ -10,7 +10,7 @@ public enum SuperPos {
     INTAKE_FRONT     (13.5,283,155,13.5,283,155,true),
     //INTAKE_FRONT_LOW (0,283,155,0,283,155,true),
     HP_STATION_DOUBLE(25,203,85,21,203,83,true),
-    HP_STATION_SINGLE(34,80,100,34,80,100,false),
+    HP_STATION_SINGLE(0,90,90,0,90,90,false),
     INTAKE_BACK      (34,56.4,186.4,28.7,56.4,192.4,false),
     INTAKE_BACK_LOW  (26, 56.4, 192.4, 28.7, 56.4, 187, false),
     PRETHROW         (0, 170, 170, 0, 170, 170, false);

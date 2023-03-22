@@ -38,7 +38,7 @@ public class Superstructure implements Subsystem{
     private double liftMod, wristMod, launching;
     private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait;//, modMode;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, stationFlick, flicked;//, modMode;
 
 
     @Override
@@ -63,6 +63,12 @@ public class Superstructure implements Subsystem{
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
+        }
+        if (driverLB.getValue() && Math.abs(driverRT.getValue())>0.15){
+            stationFlick = true;
+        } else {
+            stationFlick = false;
+            flicked = false;
         }
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
@@ -201,7 +207,14 @@ public class Superstructure implements Subsystem{
                     wrist.setPosition(180.0);
                 }
             } else {
-                if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
+                if (currentPos == SuperPos.HP_STATION_DOUBLE && stationFlick){
+                    if (wrist.getPosition() > currentPos.getW(gamepiece) + wristMod + 20){
+                        flicked = true;
+                    }
+                    if (flicked) wrist.setPosition(currentPos.getW(gamepiece) + wristMod + 30.0);
+                    else wrist.setPosition(currentPos.getW(gamepiece) + wristMod - 30.0);
+                }
+                else if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
                     wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
                 } else {
                     wrist.setPosition(currentPos.getW(gamepiece) + wristMod + launching);
@@ -228,6 +241,8 @@ public class Superstructure implements Subsystem{
         wristMod = 0.0;
         //modMode = true;
         swerveWait = false;
+        stationFlick = false;
+        flicked = false;
     }
 
     @Override
