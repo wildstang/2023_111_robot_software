@@ -35,10 +35,11 @@ public class Superstructure implements Subsystem{
     public Lift lift;
     public Wrist wrist;
     private Timer timer = new Timer();
-    private double liftMod, wristMod, launching;
+    private double wristMod, launching;
+    private double[] liftMod = {0.0, 0.0, 0.0, 0.0};
     private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, stationFlick, flicked;//, modMode;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, stationFlick, flicked;
 
 
     @Override
@@ -53,11 +54,11 @@ public class Superstructure implements Subsystem{
         else launching = 0.0;
         if (source == dLeft && dLeft.getValue()){
             if (start.getValue()) wristMod -= 3;
-            else if (select.getValue()) liftMod--;
+            else if (select.getValue()) liftMod[currentPos.getLiftMod()]--;
         }
         if (source == dRight && dRight.getValue()){
             if (start.getValue()) wristMod += 3;
-            else if (select.getValue()) liftMod++;
+            else if (select.getValue()) liftMod[currentPos.getLiftMod()]++;
         }
 
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
@@ -178,13 +179,13 @@ public class Superstructure implements Subsystem{
         if (motion == modes.SIMPLE){
             if (liftWait || swerveWait){
                 if (arm.notScooping() && !swerveWait){
-                    lift.setPosition(liftMod + currentPos.getL(gamepiece));
+                    lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece));
                     liftWait = false;
                 } else {
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                lift.setPosition(liftMod + currentPos.getL(gamepiece));   
+                lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece));   
             }  
 
             if (armWait){
@@ -211,8 +212,8 @@ public class Superstructure implements Subsystem{
                     if (wrist.getPosition() > currentPos.getW(gamepiece) + wristMod + 20){
                         flicked = true;
                     }
-                    if (flicked) wrist.setPosition(currentPos.getW(gamepiece) + wristMod + 30.0);
-                    else wrist.setPosition(currentPos.getW(gamepiece) + wristMod - 30.0);
+                    if (!flicked) wrist.setPosition(currentPos.getW(gamepiece) + wristMod + 30.0);
+                    else wrist.setPosition(currentPos.getW(gamepiece) + wristMod - 20.0);
                 }
                 else if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
                     wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
@@ -237,9 +238,8 @@ public class Superstructure implements Subsystem{
         intaking = intake.UPRIGHT;
         stationing = station.DOUBLE;
         timer.reset(); timer.start();
-        liftMod = 0.0;
+        liftMod = new double[]{0.0, 0.0, 0.0, 0.0};
         wristMod = 0.0;
-        //modMode = true;
         swerveWait = false;
         stationFlick = false;
         flicked = false;
@@ -275,7 +275,7 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putString("Score Level", scoreString[scoring.ordinal()]);
         SmartDashboard.putString("Intake Level", intakeString[intaking.ordinal()]);
         SmartDashboard.putString("Station level", stationString[stationing.ordinal()]);
-        SmartDashboard.putNumber("Lift Modifier", liftMod);
+        SmartDashboard.putNumber("Lift Modifier", liftMod[currentPos.getLiftMod()]);
         SmartDashboard.putNumber("Wrist Modifier", wristMod);
     }
     public void goToPosition(SuperPos position){

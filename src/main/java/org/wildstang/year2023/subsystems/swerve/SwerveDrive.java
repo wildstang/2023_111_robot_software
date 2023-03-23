@@ -127,7 +127,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         else {
             isSnake = false;
         }
-        if ((source == faceUp && faceUp.getValue()) || leftBumper.getValue()){
+        if ((source == faceUp && faceUp.getValue())){
             rotTarget = 0.0;
             rotLocked = true;
         }
@@ -147,7 +147,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //get rotational joystick
         rotSpeed = rightStickX.getValue()*Math.abs(rightStickX.getValue());
         rotSpeed = swerveHelper.scaleDeadband(rotSpeed, DriveConstants.DEADBAND);
-        if (Math.abs(leftTrigger.getValue()) > 0.15 || leftBumper.getValue()) rotSpeed = 0;
+        if (Math.abs(leftTrigger.getValue()) > 0.15) rotSpeed = 0;
         //if the rotational joystick is being used, the robot should not be auto tracking heading
         if (rotSpeed != 0) {
             rotLocked = false;
@@ -155,7 +155,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
-        if (leftBumper.getValue()) thrustValue = 1 - DriveConstants.DRIVE_THRUST;
+        //if (leftBumper.getValue()) thrustValue = 1 - DriveConstants.DRIVE_THRUST;
         if (isEndGame) thrustValue = (1 - DriveConstants.DRIVE_THRUST) - Math.abs(rightTrigger.getValue()) * DriveConstants.DRIVE_BRAKE;
         xSpeed *= thrustValue;
         ySpeed *= thrustValue;
