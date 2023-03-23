@@ -24,7 +24,7 @@ public class Superstructure implements Subsystem{
     private enum station {DOUBLE, SINGLE}
     private String[] stationString = new String[]{"Double", "Single"};
 
-    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, rightStickB, driverLB, driverRB;
+    private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, rightStickB, driverLB, driverRB, driverA;
     private AnalogInput driverLT, driverRT, leftStickY;
     private modes motion;
     private score scoring;
@@ -39,7 +39,7 @@ public class Superstructure implements Subsystem{
     private double[] liftMod = {0.0, 0.0, 0.0, 0.0};
     private SwerveDrive swerve;
 
-    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, stationFlick, flicked;
+    private boolean gamepiece, wristWait, armWait, liftWait, swerveWait, stationFlick, flicked, prescore;
 
 
     @Override
@@ -71,6 +71,7 @@ public class Superstructure implements Subsystem{
             stationFlick = false;
             flicked = false;
         }
+        prescore = driverA.getValue();
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
         if (source == Y && Y.getValue()) scoring = score.HIGH;
@@ -78,7 +79,7 @@ public class Superstructure implements Subsystem{
         if (source == dDown && dDown.getValue()) intaking = intake.TIPPED;
         if (source == X && X.getValue()) intaking = intake.FRONT;
         if (source == dRight && dRight.getValue() && !start.getValue() && !select.getValue()) stationing = station.DOUBLE;
-        if (source == dLeft && dLeft.getValue() && !start.getValue() && !select.getValue()) stationing = station.SINGLE;
+        //if (source == dLeft && dLeft.getValue() && !start.getValue() && !select.getValue()) stationing = station.SINGLE;
 
         if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
             if (Math.abs(driverLT.getValue()) > 0.25){
@@ -89,7 +90,7 @@ public class Superstructure implements Subsystem{
                 //swerveWait = true;
             } else if (driverLB.getValue()){
                 if (stationing == station.DOUBLE) currentPos = SuperPos.HP_STATION_DOUBLE;
-                if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
+                //if (stationing == station.SINGLE) currentPos = SuperPos.HP_STATION_SINGLE;
                 if (lastPos != currentPos) timer.reset();
                 //swerveWait = true;
             } else if (driverRB.getValue()){
@@ -147,6 +148,8 @@ public class Superstructure implements Subsystem{
         driverLB.addInputListener(this);
         driverRB = (DigitalInput) WSInputs.DRIVER_RIGHT_SHOULDER.get();
         driverRB.addInputListener(this);
+        driverA = (DigitalInput) WSInputs.DRIVER_FACE_DOWN.get();
+        driverA.addInputListener(this);
 
         arm = new Arm((WsSparkMax) WSOutputs.ARM_ONE.get());
         lift = new Lift((WsSparkMax) WSOutputs.LIFT_DRIVER.get());
@@ -185,7 +188,7 @@ public class Superstructure implements Subsystem{
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece));   
+                lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece) - (prescore ? SuperConts.PRESCORE_LIFT : 0));   
             }  
 
             if (armWait){
@@ -196,7 +199,7 @@ public class Superstructure implements Subsystem{
                     arm.setPosition(arm.getPosition());
                 }
             } else {
-                arm.setPosition(currentPos.getA(gamepiece));
+                arm.setPosition(currentPos.getA(gamepiece) + (prescore ? SuperConts.PRESCORE_ARM : 0.0));
             }
             
 

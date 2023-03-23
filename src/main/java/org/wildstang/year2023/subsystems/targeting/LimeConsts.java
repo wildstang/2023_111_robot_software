@@ -4,7 +4,9 @@ public class LimeConsts {
 
     public double VERTICAL_APRILTAG_DISTANCE = 37.5; 
 
-    public double HORIZONTAL_APRILTAG_DISTANCE = 33.0; 
+    public double HORIZONTAL_APRILTAG_DISTANCE_LEFT = 33.0; 
+
+    public double HORIZONTAL_APRILTAG_DISTANCE_RIGHT = 33.0;
 
     public double HORIZONTAL_LIMELIGHT_MOUNT = 6.4;
 

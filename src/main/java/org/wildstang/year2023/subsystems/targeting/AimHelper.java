@@ -105,10 +105,10 @@ public class AimHelper implements Subsystem {
     }
 
     private double getLeftHorizontal(){
-        return ltarget3D[0]*mToIn + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : LC.HORIZONTAL_LIMELIGHT_MOUNT);
+        return ltarget3D[0]*mToIn + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE_LEFT : LC.HORIZONTAL_LIMELIGHT_MOUNT);
     }
     private double getRightHorizontal(){
-        return rtarget3D[0]*mToIn - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE : LC.HORIZONTAL_LIMELIGHT_MOUNT);
+        return rtarget3D[0]*mToIn - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE_RIGHT : LC.HORIZONTAL_LIMELIGHT_MOUNT);
     }
 
     @Override

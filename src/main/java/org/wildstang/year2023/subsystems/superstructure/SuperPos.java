@@ -13,6 +13,7 @@ public enum SuperPos {
     HP_STATION_SINGLE(0,90,90,0,90,90,0,false),
     INTAKE_BACK      (34,56.4,186.4,28.7,56.4,192.4,2,false),
     INTAKE_BACK_LOW  (26, 56.4, 192.4, 28.7, 56.4, 187, 3,false),
+    AUTO_CUBE        (0, 80, 210, 0, 80, 210, 0, false),
     PRETHROW         (0, 170, 170, 0, 170, 170, 0,false);
 
     public final double cubeL;

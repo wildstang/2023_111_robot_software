@@ -11,6 +11,8 @@ public final class SuperConts {
     public static final double ARM_THRESHOLD = 30.0;
     public static final double ARM_SLOW = 0.55;
     public static final double ANTISCOOP = 100.0;
+    public static final double PRESCORE_ARM = 4.0;
+    public static final double PRESCORE_LIFT = 3.0;
     
     public static final boolean WRIST_ENCODER_DIRECTION = false;
 

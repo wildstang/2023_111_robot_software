@@ -114,6 +114,6 @@ public class intake implements Subsystem {
     }
     public boolean hasGrabbed(){
         if (speed < 0.5) return false;
-        return intakeMotor.getController().getOutputCurrent() > 15.0;
+        return Math.abs(intakeMotor.getVelocity()) < 1.0;
     }
 }
