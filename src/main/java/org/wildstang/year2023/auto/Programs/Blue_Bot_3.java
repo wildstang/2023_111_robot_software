@@ -23,9 +23,9 @@ import org.wildstang.year2023.auto.Steps.AutoBalanceStep;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
-public class Red_Bot_3pE extends AutoProgram{
+public class Blue_Bot_3 extends AutoProgram{
 
-    private boolean color = false;//true for blue, false for red
+    private boolean color = true;//true for blue, false for red
     
     protected void defineSteps(){
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
@@ -40,16 +40,16 @@ public class Red_Bot_3pE extends AutoProgram{
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 A red", new PathConstraints(4, 3)),
-            swerve, color));
-        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
+        addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
         addStep(new IntakeOnStep());
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A", new PathConstraints(2.25, 3)),
+            swerve, color));
 
         //move and score first pickup piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
         AutoParallelStepGroup group4 = new AutoParallelStepGroup();
-        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 B red", new PathConstraints(4, 3)),
+        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B", new PathConstraints(2.25, 3)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1600));
@@ -62,32 +62,41 @@ public class Red_Bot_3pE extends AutoProgram{
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        addStep(new IntakeOffStep());
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 C", new PathConstraints(4, 3)),
+        AutoParallelStepGroup group6 = new AutoParallelStepGroup();
+        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 C", new PathConstraints(2.25, 3)),
             swerve, color));
-        // AutoParallelStepGroup group6 = new AutoParallelStepGroup();
-        // group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e or 3 C red", new PathConstraints(4, 3)),
-        //     swerve, color));
-        // AutoSerialStepGroup group6A = new AutoSerialStepGroup();
-        // group6A.addStep(new AutoStepDelay(200));
-        // group6A.addStep(new IntakeOffStep());
-        // group6A.addStep(new AutoStepDelay(1000));
-        // addStep(new PathHeadingStep(color ? 135 : 225, swerve));
-        // group6A.addStep(new IntakeOnStep());
-        // group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
-        // group6.addStep(group6A);
-        // addStep(group6);
+        AutoSerialStepGroup group6A = new AutoSerialStepGroup();
+        group6A.addStep(new AutoStepDelay(200));
+        group6A.addStep(new IntakeOffStep());
+        group6A.addStep(new AutoStepDelay(1000));
+        addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group6A.addStep(new IntakeOnStep());
+        group6A.addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
+        group6.addStep(group6A);
+        addStep(group6);
 
-        // //autobalance
-        // addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        // addStep(new IntakeOffStep());
-        // addStep(new PathHeadingStep(180, swerve));
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 2+1+e D red", new PathConstraints(4, 3)),
-        // swerve, color));
-        // addStep(new AutoBalanceStep());
+        //score second pickup piece
+        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        addStep(new IntakeOffStep());
+        addStep(new PathHeadingStep(180, swerve));
+        AutoParallelStepGroup group7 = new AutoParallelStepGroup();
+        group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 D", new PathConstraints(2.25, 3)),
+            swerve, color));
+        AutoSerialStepGroup group7A = new AutoSerialStepGroup();
+        group7A.addStep(new AutoStepDelay(1800));
+        group7A.addStep(new SuperstructureStep(SuperPos.SCORE_MID));
+        //group7A.addStep(new OdometryOnStep(true, color));
+        group7.addStep(group7A);
+        addStep(group7);
+
+        addStep(new OuttakeStep());
+        addStep(new AutoStepDelay(200));
+        //addStep(new OdometryOnStep(false, color));
+
+        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
     }
 
     public String toString(){
-        return "RED Bot_3pE";
+        return "BLUE Bot_3";
     }
-} 
+}
