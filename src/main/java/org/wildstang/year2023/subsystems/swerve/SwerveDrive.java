@@ -79,6 +79,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WSSwerveHelper swerveHelper = new WSSwerveHelper();
     private SwerveDriveOdometry odometry;
     private Pose2d robotPose;
+    private Timer autoTimer = new Timer();
 
     private AimHelper limelight;
     private LimeConsts LC;
@@ -162,13 +163,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         ySpeed *= thrustValue;
         rotSpeed *= thrustValue;
         
-
-        // if (Math.abs(leftTrigger.getValue()) > 0.15){
-        //     xSpeed /=2.0;
-        //     ySpeed /=2.0;
-        //     //rotTarget = 180.0;
-        //     //rotLocked = true;
-        // }
         //use the limelight for tracking
         if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
             if (driveState == driveType.TELEOP){
@@ -176,15 +170,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 autoOverride = false;
                 isStation = false;
             }
-        } /*else if (leftBumper.getValue() && driveState != driveType.CROSS){
-            if (driveState == driveType.TELEOP){
-                driveState = driveType.LL;
-                startingLL = true;
-                autoOverride = false;
-                isStation = true;
-            }
-        }*/
-        else {
+        } else {
             if (driveState == driveType.LL) {
                 driveState = driveType.TELEOP;
             }
@@ -464,11 +450,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public void setOdo(Pose2d starting){
         this.odometry.resetPosition(odoAngle(), odoPosition(), starting);
+        autoTimer.start();
     }
     public Pose2d returnPose(){
-        if (autoOdo){
+        if (autoOdo && limelight.TargetInView() && autoTimer.hasElapsed(0.1)){
             odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
                 limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
+            autoTimer.reset();
         }
         return odometry.getPoseMeters();
     }

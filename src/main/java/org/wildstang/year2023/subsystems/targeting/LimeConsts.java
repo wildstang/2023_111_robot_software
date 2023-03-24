@@ -18,8 +18,8 @@ public class LimeConsts {
 
     public double OFFSET_VERTICAL = -5;
 
-    public double[] APRILTAG_ABS_OFFSET_X = {1.0275, 1.0275, 1.0275, 0.362, 0.362, 1.0275, 1.0275, 1.0275}; 
-    public double[] APRILTAG_ABS_OFFSET_Y = {6.938,  5.268,  3.592,  1.266, 6.75,  4.425,  2.75,   1.072}; 
+    public double[] CUBES = {6.938,  5.268,  3.592,  4.425,  2.75,   1.072}; 
+    public double[] CONES = {7.503, 6.385, 5.827, 4.709, 4.150, 3.033, 4.989, 3.871, 3.307, 2.189, 1.631, 0.513};
     
     public final boolean CONE = true;
     public final boolean CUBE = false;
