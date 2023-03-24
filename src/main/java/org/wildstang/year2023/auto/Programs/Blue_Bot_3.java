@@ -40,7 +40,7 @@ public class Blue_Bot_3 extends AutoProgram{
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
+        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         addStep(new IntakeOnStep());
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A", new PathConstraints(2.25, 3)),
             swerve, color));
@@ -52,7 +52,7 @@ public class Blue_Bot_3 extends AutoProgram{
         group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B", new PathConstraints(2.25, 3)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
-        group4A.addStep(new AutoStepDelay(1600));
+        group4A.addStep(new AutoStepDelay(2000));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         group4.addStep(group4A);
         addStep(group4);
@@ -69,9 +69,9 @@ public class Blue_Bot_3 extends AutoProgram{
         group6A.addStep(new AutoStepDelay(200));
         group6A.addStep(new IntakeOffStep());
         group6A.addStep(new AutoStepDelay(1000));
-        addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group6A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
         group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
+        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group6.addStep(group6A);
         addStep(group6);
 
