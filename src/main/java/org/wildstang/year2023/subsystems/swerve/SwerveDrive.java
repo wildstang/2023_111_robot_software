@@ -135,7 +135,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotTarget = 270.0;
             rotLocked = true;
         }
-        if ((source == faceDown && faceDown.getValue()) || Math.abs(leftTrigger.getValue()) > 0.15){
+        if ((source == faceDown && faceDown.getValue() && !leftBumper.getValue()) || Math.abs(leftTrigger.getValue()) > 0.15){
             rotTarget = 180.0;
             rotLocked = true;
         }
@@ -148,6 +148,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rotSpeed = rightStickX.getValue()*Math.abs(rightStickX.getValue());
         rotSpeed = swerveHelper.scaleDeadband(rotSpeed, DriveConstants.DEADBAND);
         if (Math.abs(leftTrigger.getValue()) > 0.15) rotSpeed = 0;
+        rotSpeed *=1.5;
         //if the rotational joystick is being used, the robot should not be auto tracking heading
         if (rotSpeed != 0) {
             rotLocked = false;

@@ -65,7 +65,7 @@ public class Superstructure implements Subsystem{
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
         }
-        if (driverLB.getValue() && Math.abs(driverRT.getValue())>0.15){
+        if (driverLB.getValue() && (Math.abs(driverRT.getValue())>0.15 || driverA.getValue())){
             stationFlick = true;
         } else {
             stationFlick = false;
@@ -188,7 +188,9 @@ public class Superstructure implements Subsystem{
                     lift.setPosition(lift.getPosition());
                 }
             } else {
-                lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece) - (prescore ? SuperConts.PRESCORE_LIFT : 0));   
+                lift.setPosition(liftMod[currentPos.getLiftMod()] + currentPos.getL(gamepiece) + 
+                    (prescore && currentPos==SuperPos.SCORE_HIGH ? SuperConts.PRESCORE_LIFT : 0.0)
+                     + (flicked ? 6.0 : 0.0));   
             }  
 
             if (armWait){
@@ -199,7 +201,8 @@ public class Superstructure implements Subsystem{
                     arm.setPosition(arm.getPosition());
                 }
             } else {
-                arm.setPosition(currentPos.getA(gamepiece) + (prescore ? SuperConts.PRESCORE_ARM : 0.0));
+                arm.setPosition(currentPos.getA(gamepiece) + (prescore ? SuperConts.PRESCORE_ARM : 0.0)
+                    + (flicked ? 10.0 : 0.0));
             }
             
 
@@ -216,7 +219,7 @@ public class Superstructure implements Subsystem{
                         flicked = true;
                     }
                     if (!flicked) wrist.setPosition(currentPos.getW(gamepiece) + wristMod + 30.0);
-                    else wrist.setPosition(currentPos.getW(gamepiece) + wristMod - 20.0);
+                    else wrist.setPosition(currentPos.getW(gamepiece) + wristMod - 40.0);
                 }
                 else if ((currentPos != SuperPos.NEUTRAL && currentPos != SuperPos.PRETHROW) || launching == 0.0){
                     wrist.setPosition(currentPos.getW(gamepiece) + wristMod);
