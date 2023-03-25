@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class SwervePathFollowerStep extends AutoStep {
 
     private static final double mToIn = 39.3701;
+    private static final double latency = 0;//.47;
     private SwerveDriveTemplate m_drive;
     private PathPlannerTrajectory pathData;
     private boolean isBlue;
@@ -45,14 +46,15 @@ public class SwervePathFollowerStep extends AutoStep {
     public void update() {
         if (timer.get() >= pathData.getTotalTimeSeconds()) {
             m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
+            SmartDashboard.putNumber("auto final time", timer.get());
             setFinished();
         } else {
             SmartDashboard.putNumber("Auto Time", timer.get());
             //update values the robot is tracking to
 
             m_drive.setAutoValues(0, -pathData.getEndState().poseMeters.getRotation().getDegrees(),0,0);
-            localRobotPose = m_drive.returnPose();
-            localAutoPose = pathData.sample(timer.get()).poseMeters;
+            localRobotPose = m_drive.returnPose(getVelocity());
+            localAutoPose = pathData.sample(timer.get()-latency).poseMeters;
             yOffset = -(localRobotPose.getX() - localAutoPose.getX());
             if (isBlue){
                 xOffset = localRobotPose.getY() - localAutoPose.getY();
@@ -61,11 +63,20 @@ public class SwervePathFollowerStep extends AutoStep {
             }
             // SmartDashboard.putNumber("auto align X", localAutoPose.getX());
             // SmartDashboard.putNumber("auto align robot Y", localAutoPose.getY());
-            //xOffset = 0;
-            //yOffset = 0;
+            if (timer.get() <  latency){
+                xOffset = 0;
+                yOffset = 0;
+            }
+            if (timer.get()<1.6 && timer.get()>1.5){
+                SmartDashboard.putNumber("auto path", localAutoPose.getX());
+                //SmartDashboard.putNumber("auto pathy", localAutoPose.getY());
+                SmartDashboard.putNumber("auto robot", localRobotPose.getX());
+                //SmartDashboard.putNumber("auto roboty", 8.016-localRobotPose.getY());
+                //SmartDashboard.putNumber("auto offsetX", xOffset);
+                SmartDashboard.putNumber("auto offset", yOffset);
+            }
 
             m_drive.setAutoValues( getVelocity(),getHeading(), 2.0*xOffset,2.0*yOffset );
-            //m_drive.setAutoValues( getVelocity(),getHeading(), isBlue ? localAutoPose.getY() : 8.016 - localAutoPose.getY(), localAutoPose.getX());
             
             }
     }

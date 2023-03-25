@@ -11,6 +11,7 @@ import org.wildstang.year2023.robot.WSInputs;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +36,10 @@ public class AimHelper implements Subsystem {
     public double rtid;
     public double ltv;
     public double rtv;
+
+    public boolean valid;
+
+    public Timer timer = new Timer();
 
     public int lnumtargets;
     public int rnumtargets;
@@ -96,7 +101,9 @@ public class AimHelper implements Subsystem {
     }
 
     public boolean dataValid(boolean isBlue){
-        if (getAbsolutePosition(isBlue)[0] < 3.0) return true;
+        if (getAbsolutePosition(isBlue)[0] < 2.0) return true;
+        //return false;
+        if (!valid) return false;
         if (lnumtargets < 2 && rnumtargets < 2) return false;
         return true;
     }
@@ -124,17 +131,17 @@ public class AimHelper implements Subsystem {
     }
     private double getLeftVertical(){
         if (ltid > 4.5){
-            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6); 
+            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE); 
         } else {
-            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6);
+            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
         }
         //return ltarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
     private double getRightVertical(){
         if (rtid > 4.5){
-            return -rblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6); 
+            return -rblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE); 
         } else {
-            return -rred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6);
+            return -rred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
         }
         //return rtarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
@@ -142,11 +149,11 @@ public class AimHelper implements Subsystem {
     //get xSpeed value for autodrive
     public double getScoreX(double offset){
         if (rtv > 0.0 && ltv > 0.0){
-            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (getLeftHorizontal() + getRightHorizontal())/2.0);
+            return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + (getLeftHorizontal() + getRightHorizontal())/2.0);
         } else if (ltv > 0.0){
-            return (getLeftHorizontal()+offset*LC.OFFSET_VERTICAL) * LC.HORI_AUTOAIM_P;
+            return (getLeftHorizontal()+offset*LC.OFFSET_HORIZONTAL) * LC.HORI_AUTOAIM_P;
         } else {
-            return (getRightHorizontal()+offset*LC.OFFSET_VERTICAL) * LC.HORI_AUTOAIM_P;
+            return (getRightHorizontal()+offset*LC.OFFSET_HORIZONTAL) * LC.HORI_AUTOAIM_P;
         }
         // if (rtv < 1.0){
         //     return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
@@ -247,6 +254,8 @@ public class AimHelper implements Subsystem {
         lresult = LimelightHelpers.getLatestResults("limelight-left").targetingResults;
         rresult = LimelightHelpers.getLatestResults("limelight-right").targetingResults;
         calcTargetCoords();
+        if (lnumtargets < 2 && rnumtargets < 2) timer.reset();
+        valid = timer.hasElapsed(0.5);
         //SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]*mToIn);
         //SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeleft tiv", ltv > 0.0);
@@ -264,6 +273,7 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limeright blue X", rblue3D[0]*mToIn);
         SmartDashboard.putNumber("limeright blue Y", rblue3D[1]*mToIn);
         SmartDashboard.putBoolean("limelight target in view", TargetInView());
+        SmartDashboard.putBoolean("limelight valid data", dataValid(rtv > 1.0 ? rtid > 4.5 : ltid > 4.5));
     }
 
     @Override
@@ -275,6 +285,8 @@ public class AimHelper implements Subsystem {
         rtv = 0;
         lnumtargets = 0;
         rnumtargets = 0;
+        valid = false;
+        timer.reset();timer.start();
     }
 
     @Override
