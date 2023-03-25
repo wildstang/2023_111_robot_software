@@ -34,14 +34,15 @@ public class Blue_Top_3 extends AutoProgram{
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(1.78, 4.96, 180.0, color));
+        addStep(new StartOdometryStep(1.83, 4.99, 180.0, color));
         addStep(new AutoStepDelay(1200));
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
+        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         addStep(new IntakeOnStep());
+        addStep(new OdometryOnStep(true, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A", new PathConstraints(4, 3)),
             swerve, color));
 
@@ -54,13 +55,11 @@ public class Blue_Top_3 extends AutoProgram{
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1600));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
-        //group4A.addStep(new OdometryOnStep(true, color));
         group4.addStep(group4A);
         addStep(group4);
 
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
-        //addStep(new OdometryOnStep(false, color));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
@@ -73,7 +72,7 @@ public class Blue_Top_3 extends AutoProgram{
         group6A.addStep(new AutoStepDelay(1000));
         addStep(new PathHeadingStep(color ? 225 : 135, swerve));
         group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.AUTO_CUBE));
+        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group6.addStep(group6A);
         addStep(group6);
 
@@ -93,7 +92,6 @@ public class Blue_Top_3 extends AutoProgram{
 
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(200));
-        //addStep(new OdometryOnStep(false, color));
 
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+1", new PathConstraints(4, 3)), swerve, color));

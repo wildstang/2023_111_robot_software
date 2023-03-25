@@ -10,6 +10,7 @@ import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
+import org.wildstang.year2023.auto.Steps.OdometryOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
@@ -34,16 +35,23 @@ public class Red_Bot_3 extends AutoProgram{
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(1.78, .4, 180.0, color));
+        addStep(new StartOdometryStep(1.83, .51, 180.0, color));
         addStep(new AutoStepDelay(1200));
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOnStep());
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A red", new PathConstraints(2.25, 3)),
+        addStep(new OdometryOnStep(true, color));
+        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A red", new PathConstraints(2.25, 3)),
             swerve, color));
+        AutoSerialStepGroup group2A = new AutoSerialStepGroup();
+        group2A.addStep(new AutoStepDelay(1500));
+        group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        group2.addStep(group2A);
+        addStep(group2);
 
         //move and score first pickup piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));

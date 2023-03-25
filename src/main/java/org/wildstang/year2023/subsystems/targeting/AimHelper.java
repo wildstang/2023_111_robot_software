@@ -98,17 +98,17 @@ public class AimHelper implements Subsystem {
     }
     private double getLeftVertical(){
         if (ltid > 4.5){
-            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5); 
+            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6); 
         } else {
-            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5);
+            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6);
         }
         //return ltarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
     private double getRightVertical(){
         if (rtid > 4.5){
-            return -rblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5); 
+            return -rblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6); 
         } else {
-            return -rred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5);
+            return -rred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + 40.5-6);
         }
         //return rtarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
@@ -223,18 +223,18 @@ public class AimHelper implements Subsystem {
         //SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeleft tiv", ltv > 0.0);
         SmartDashboard.putNumber("limeleft tid", ltid);
-        SmartDashboard.putNumber("limeleft red X", lred3D[0]);
-        SmartDashboard.putNumber("limeleft red Y", lred3D[1]);
-        SmartDashboard.putNumber("limeleft blue X", lblue3D[0]);
-        SmartDashboard.putNumber("limeleft blue Y", lblue3D[1]);
+        SmartDashboard.putNumber("limeleft red X", lred3D[0]*mToIn);
+        SmartDashboard.putNumber("limeleft red Y", lred3D[1]*mToIn);
+        SmartDashboard.putNumber("limeleft blue X", lblue3D[0]*mToIn);
+        SmartDashboard.putNumber("limeleft blue Y", lblue3D[1]*mToIn);
         //SmartDashboard.putNumber("limeright 3DX", rtarget3D[0]*mToIn);
         //SmartDashboard.putNumber("limeright 3DZ", rtarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeright tiv", rtv > 0.0);
         SmartDashboard.putNumber("limeright tid", rtid);
-        SmartDashboard.putNumber("limeright red X", rred3D[0]);
-        SmartDashboard.putNumber("limeright red Y", rred3D[1]);
-        SmartDashboard.putNumber("limeright blue X", rblue3D[0]);
-        SmartDashboard.putNumber("limeright blue Y", rblue3D[1]);
+        SmartDashboard.putNumber("limeright red X", rred3D[0]*mToIn);
+        SmartDashboard.putNumber("limeright red Y", rred3D[1]*mToIn);
+        SmartDashboard.putNumber("limeright blue X", rblue3D[0]*mToIn);
+        SmartDashboard.putNumber("limeright blue Y", rblue3D[1]*mToIn);
     }
 
     @Override
