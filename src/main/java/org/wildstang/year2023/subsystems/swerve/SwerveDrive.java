@@ -181,7 +181,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
         vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
-        
+        if (leftBumper.getValue()){
+            xSpeed*=0.5;
+            ySpeed*=0.5;
+        }
     }
  
     @Override
