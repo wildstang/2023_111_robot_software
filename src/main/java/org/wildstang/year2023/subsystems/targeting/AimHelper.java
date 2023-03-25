@@ -22,6 +22,9 @@ public class AimHelper implements Subsystem {
     public NetworkTable limeleft = NetworkTableInstance.getDefault().getTable("limelight-left");
     public NetworkTable limeright = NetworkTableInstance.getDefault().getTable("limelight-right");
 
+    public LimelightHelpers.Results lresult;
+    public LimelightHelpers.Results rresult;
+
     public double[] ltarget3D;
     public double[] rtarget3D;
     public double[] lblue3D;
@@ -32,6 +35,9 @@ public class AimHelper implements Subsystem {
     public double rtid;
     public double ltv;
     public double rtv;
+
+    public int lnumtargets;
+    public int rnumtargets;
 
     public boolean gamepiece;
 
@@ -49,30 +55,50 @@ public class AimHelper implements Subsystem {
             lblue3D = limeleft.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
             lred3D = limeleft.getEntry("botpose_wpired").getDoubleArray(new double[7]);
             ltid = limeleft.getEntry("tid").getDouble(0);
+            lnumtargets = lresult.targets_Fiducials.length;
         }
         if (rtv > 0.0){
             rtarget3D = limeright.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-            rblue3D = limeleft.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
-            rred3D = limeleft.getEntry("botpose_wpired").getDoubleArray(new double[7]);
+            rblue3D = limeright.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
+            rred3D = limeright.getEntry("botpose_wpired").getDoubleArray(new double[7]);
             rtid = limeright.getEntry("tid").getDouble(0);
+            rnumtargets = rresult.targets_Fiducials.length;
         }
     }
 
     public double[] getAbsolutePosition(boolean isBlue){
         calcTargetCoords();
         if (isBlue){
-            if (ltv > 0.0){
+            if (ltv > 0.0 && rtv < 1.0){
                 return new double[]{lblue3D[0], lblue3D[1]};
-            } else {
+            } else if (ltv < 1.0 && rtv > 0.0){
                 return new double[]{rblue3D[0], rblue3D[1]};
-            } 
-        } else {
-            if (rtv > 0.0){
-                return new double[]{rred3D[0], rred3D[1]};
             } else {
+                if (rnumtargets > lnumtargets){
+                    return new double[]{rblue3D[0], rblue3D[1]};
+                } else {
+                    return new double[]{lblue3D[0], lblue3D[1]};
+                }
+            }
+        } else {
+            if (rtv > 0.0 && ltv < 1.0){
+                return new double[]{rred3D[0], rred3D[1]};
+            } else if (ltv > 0.0 && rtv < 1.0) {
                 return new double[]{lred3D[0], lred3D[1]};
+            } else {
+                if (lnumtargets > rnumtargets){
+                    return new double[]{lred3D[0], lred3D[1]};
+                } else {
+                    return new double[]{rred3D[0], rred3D[1]};
+                }
             }
         }        
+    }
+
+    public boolean dataValid(boolean isBlue){
+        if (getAbsolutePosition(isBlue)[0] < 3.0) return true;
+        if (lnumtargets < 2 && rnumtargets < 2) return false;
+        return true;
     }
 
     public boolean TargetInView(){
@@ -218,6 +244,8 @@ public class AimHelper implements Subsystem {
 
     @Override
     public void update() {
+        lresult = LimelightHelpers.getLatestResults("limelight-left").targetingResults;
+        rresult = LimelightHelpers.getLatestResults("limelight-right").targetingResults;
         calcTargetCoords();
         //SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]*mToIn);
         //SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]*mToIn);
@@ -235,6 +263,7 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limeright red Y", rred3D[1]*mToIn);
         SmartDashboard.putNumber("limeright blue X", rblue3D[0]*mToIn);
         SmartDashboard.putNumber("limeright blue Y", rblue3D[1]*mToIn);
+        SmartDashboard.putBoolean("limelight target in view", TargetInView());
     }
 
     @Override
@@ -244,6 +273,8 @@ public class AimHelper implements Subsystem {
         rtid = 1;
         ltv = 0;
         rtv = 0;
+        lnumtargets = 0;
+        rnumtargets = 0;
     }
 
     @Override

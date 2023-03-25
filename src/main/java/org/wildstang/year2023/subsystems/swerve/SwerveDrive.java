@@ -454,9 +454,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public Pose2d returnPose(){
         if (autoOdo && limelight.TargetInView() && autoTimer.hasElapsed(0.1)){
-            odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
-                limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
-            autoTimer.reset();
+            if (limelight.dataValid(isBlue)){
+                odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
+                    limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
+                autoTimer.reset();
+            }
+            
         }
         return odometry.getPoseMeters();
     }
