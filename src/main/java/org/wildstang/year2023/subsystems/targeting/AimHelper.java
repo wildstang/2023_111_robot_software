@@ -101,11 +101,11 @@ public class AimHelper implements Subsystem {
     }
 
     public boolean dataValid(boolean isBlue){
-        if (getAbsolutePosition(isBlue)[0] < 2.0) return true;
-        //return false;
-        if (!valid) return false;
-        if (lnumtargets < 2 && rnumtargets < 2) return false;
-        return true;
+        if (getAbsolutePosition(isBlue)[0] < 2.5) return true;
+        return false;
+        // if (!valid) return false;
+        // if (lnumtargets < 2 && rnumtargets < 2) return false;
+        // return true;
     }
 
     public boolean TargetInView(){

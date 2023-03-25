@@ -48,7 +48,7 @@ public class Red_Bot_3 extends AutoProgram{
         group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A red", new PathConstraints(2.25, 3)),
             swerve, color));
         AutoSerialStepGroup group2A = new AutoSerialStepGroup();
-        group2A.addStep(new AutoStepDelay(1500));
+        group2A.addStep(new AutoStepDelay(1000));
         group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group2.addStep(group2A);
         addStep(group2);
