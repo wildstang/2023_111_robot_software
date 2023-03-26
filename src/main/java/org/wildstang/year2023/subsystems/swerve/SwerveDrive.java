@@ -289,9 +289,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //get controller generated rotation value
             rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
+            if (autoOdo){
+                //pathX += 
+                xSpeed = limelight.getScoreX(aimOffset);
+                ySpeed = limelight.getScoreY(vertOffset);
+                if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
+                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
+            }
             
             //update where the robot is, to determine error in path
-            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset, pathYOffset);
+            this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset+xSpeed, pathYOffset+ySpeed);
             drive();        
         }
         if (driveState == driveType.LL) {
@@ -456,14 +463,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
         autoTimer.start();
     }
     public Pose2d returnPose(double returnVelocity){
-        if (autoOdo && limelight.TargetInView() && autoTimer.hasElapsed(0.1)){
-            if (limelight.dataValid(isBlue) && swerveHelper.getAutoPower(returnVelocity)<0.33){
-                odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
-                    limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
-                autoTimer.reset();
-            }
+        // if (autoOdo && limelight.TargetInView() && autoTimer.hasElapsed(0.1)){
+        //     if (limelight.dataValid(isBlue) && swerveHelper.getAutoPower(returnVelocity)<0.33){
+        //         odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
+        //             limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
+        //         autoTimer.reset();
+        //     }
             
-        }
+        // }
         return odometry.getPoseMeters();
     }
     public double getRotTarget(){
