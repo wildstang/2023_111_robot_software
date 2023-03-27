@@ -288,6 +288,9 @@ public class AimHelper implements Subsystem {
         valid = false;
         timer.reset();timer.start();
     }
+    public void setGamePiece(boolean newPiece){
+        gamepiece = newPiece;
+    }
 
     @Override
     public String getName() {
