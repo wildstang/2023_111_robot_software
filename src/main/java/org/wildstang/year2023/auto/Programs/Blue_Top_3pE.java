@@ -44,7 +44,6 @@ public class Blue_Top_3pE extends AutoProgram{
         //grab first game piece
         addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         addStep(new IntakeOnStep());
-        addStep(new OdometryOnStep(true, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A", new PathConstraints(4, 3)),
             swerve, color));
 
@@ -57,13 +56,14 @@ public class Blue_Top_3pE extends AutoProgram{
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1600));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
-        //group4A.addStep(new OdometryOnStep(true, color));
+        group4A.addStep(new OdometryOnStep(true, color));
         group4.addStep(group4A);
         addStep(group4);
 
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
-        //addStep(new OdometryOnStep(false, color));
+        addStep(new OdometryOnStep(false, color));
+        addStep(new StartOdometryStep(1.83, 4.4,  180.0, color));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
@@ -84,7 +84,6 @@ public class Blue_Top_3pE extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.PRETHROW));
         addStep(new IntakeOffStep());
         addStep(new PathHeadingStep(180, swerve));
-        addStep(new OdometryOnStep(false, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(2.8, 2.25)), swerve, color));
         //changed stuff below
         addStep(new SuperLaunchingStep(true));
