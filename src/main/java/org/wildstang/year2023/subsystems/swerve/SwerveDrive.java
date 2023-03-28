@@ -295,6 +295,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 ySpeed = limelight.getScoreY(vertOffset);
                 if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
                 if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
+                pathXOffset = 0;
+                pathYOffset = 0;
             }
             
             //update where the robot is, to determine error in path
