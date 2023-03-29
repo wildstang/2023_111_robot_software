@@ -1,37 +1,69 @@
 package org.wildstang.year2023.subsystems.led;
 
+import org.wildstang.framework.core.Core;
+import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.year2023.robot.WSInputs;
+import org.wildstang.year2023.robot.WSSubsystems;
+import org.wildstang.year2023.subsystems.intake.intake;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LedController implements Subsystem {
 
     private DigitalInput rightShoulder;
     private DigitalInput leftShoulder, start, select;
+    private AnalogInput driverLeftTrigger;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
+    private intake intake;
+    private enum modes {CONE, CUBE, RAINBOW}
+    private modes currentMode;
+    private boolean isOn;
+    private boolean hasGrabbed;
+    private Timer timer = new Timer();
 
     private int port = 0;//port
     private int length = 60;//length
     private int initialHue = 0;
-    private boolean isRainbow;
 
     @Override
     public void update(){
-        if (isRainbow){
-            rainbow();
+        if (intake.hasGrabbed()){
+            if (!hasGrabbed) {
+                hasGrabbed = true;
+                timer.reset();
+                timer.start();
+            }
+        }
+        else {
+            hasGrabbed = false;
+        }
+
+        if (!isOn) led.stop();
+        else {
+            if (intake.hasGrabbed()) grabbedDisplay();
+            else if (currentMode == modes.RAINBOW) rainbow();
+            else if (currentMode == modes.CONE) coneDisplay();
+            else if (currentMode == modes.CUBE) cubeDisplay();
+            led.start();
         }
     }
 
     @Override
     public void inputUpdate(Input source) {
-        if (rightShoulder.getValue()) cubeDisplay();
-        if (leftShoulder.getValue()) coneDisplay();
-        if (start.getValue() && select.getValue()) isRainbow = true;
+        if (rightShoulder.getValue()) currentMode = modes.CUBE;
+        if (leftShoulder.getValue()) currentMode = modes.CONE;
+        if (start.getValue() && select.getValue()) currentMode = modes.RAINBOW;
+        if (Math.abs(driverLeftTrigger.getValue()) > 0.1 && source == driverLeftTrigger){
+            isOn = false;
+        } else {
+            isOn = true;
+        }
     }
 
     @Override
@@ -41,6 +73,8 @@ public class LedController implements Subsystem {
         rightShoulder.addInputListener(this);
         leftShoulder = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftShoulder.addInputListener(this);
+        driverLeftTrigger = (AnalogInput) WSInputs.DRIVER_LEFT_TRIGGER.get();
+        driverLeftTrigger.addInputListener(this);
         start = (DigitalInput) WSInputs.MANIPULATOR_START.get();
         start.addInputListener(this);
         select = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
@@ -52,6 +86,7 @@ public class LedController implements Subsystem {
         led.setLength(ledBuffer.getLength());
         led.setData(ledBuffer);
         led.start();
+        intake = (intake) Core.getSubsystemManager().getSubsystem(WSSubsystems.INTAKE);
         resetState();
     }
 
@@ -60,7 +95,6 @@ public class LedController implements Subsystem {
             ledBuffer.setRGB(i, 255, 0, 255);
         }
         led.setData(ledBuffer);
-        isRainbow = false;
     }
 
     public void coneDisplay(){
@@ -68,7 +102,15 @@ public class LedController implements Subsystem {
             ledBuffer.setRGB(i, 255, 255, 0);
         }
         led.setData(ledBuffer);
-        isRainbow = false;
+    }
+
+    public void grabbedDisplay(){
+        if (timer.hasElapsed(0.05)){
+            for (var i = 0; i < length; i++){
+                ledBuffer.setRGB(i, 0, 255, 255);
+            }
+            led.setData(ledBuffer);
+        }
     }
 
     @Override
@@ -78,7 +120,8 @@ public class LedController implements Subsystem {
     @Override
     public void resetState() {
         initialHue = 0;
-        isRainbow = true;
+        isOn = true;
+        currentMode = modes.RAINBOW;
     }
 
     @Override
@@ -93,4 +136,7 @@ public class LedController implements Subsystem {
         initialHue = (initialHue + 3) % 180;
         led.setData(ledBuffer);
     } 
+    public void turnOff(){
+        isOn = false;
+    }
 }

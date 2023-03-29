@@ -11,6 +11,7 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.AutoBalanceStep;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
+import org.wildstang.year2023.auto.Steps.OdometryOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
@@ -35,13 +36,13 @@ public class Red_Top_3pE extends AutoProgram{
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(1.78, 4.8, 180.0, color));
+        addStep(new StartOdometryStep(1.83, 4.99, 180.0, color));
         addStep(new AutoStepDelay(1200));
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
-        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
+        addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         addStep(new IntakeOnStep());
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e or 3+1 A red", new PathConstraints(4, 3)),
             swerve, color));
@@ -55,11 +56,14 @@ public class Red_Top_3pE extends AutoProgram{
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1600));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        group4A.addStep(new OdometryOnStep(true, color));
         group4.addStep(group4A);
         addStep(group4);
 
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
+        addStep(new OdometryOnStep(false, color));
+        addStep(new StartOdometryStep(1.83, 4.44, 180.0, color));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
@@ -72,7 +76,7 @@ public class Red_Top_3pE extends AutoProgram{
         group6A.addStep(new AutoStepDelay(1000));
         addStep(new PathHeadingStep(color ? 225 : 135, swerve));
         group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK));
+        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group6.addStep(group6A);
         addStep(group6);
 
