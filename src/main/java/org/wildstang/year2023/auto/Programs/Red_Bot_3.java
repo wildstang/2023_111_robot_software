@@ -43,13 +43,15 @@ public class Red_Bot_3 extends AutoProgram{
         //grab first game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOnStep());
-        addStep(new OdometryOnStep(true, color));
+        addStep(new AutoStepDelay(500));
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A red", new PathConstraints(2.25, 3)),
+        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group2A = new AutoSerialStepGroup();
-        group2A.addStep(new AutoStepDelay(1000));
+        group2A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group2A.addStep(new AutoStepDelay(2000));
         group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        group2A.addStep(new PathHeadingStep(180.0, swerve));
         group2.addStep(group2A);
         addStep(group2);
 
@@ -57,51 +59,36 @@ public class Red_Bot_3 extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new IntakeOffStep());
         AutoParallelStepGroup group4 = new AutoParallelStepGroup();
-        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B red", new PathConstraints(2.25, 3)),
+        group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
+        group4A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
         group4A.addStep(new AutoStepDelay(2000));
-        group4A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        group4A.addStep(new PathHeadingStep(180.0, swerve));
+        group4A.addStep(new AutoStepDelay(1000));
+        group4A.addStep(new OdometryOnStep(true, color));
         group4.addStep(group4A);
         addStep(group4);
 
+        addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        addStep(new AutoStepDelay(1200));
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(300));
+        addStep(new OdometryOnStep(false, color));
+        addStep(new StartOdometryStep(1.83, 1.07, 180.0, color));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         AutoParallelStepGroup group6 = new AutoParallelStepGroup();
-        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 C red", new PathConstraints(2.25, 3)),
+        group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 C", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
-        group6A.addStep(new AutoStepDelay(200));
-        group6A.addStep(new IntakeOffStep());
-        group6A.addStep(new AutoStepDelay(1000));
         group6A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
-        group6A.addStep(new IntakeOnStep());
-        group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        group6A.addStep(new AutoStepDelay(2000));
+        group6A.addStep(new PathHeadingStep(color ? 90.0 : 270.0, swerve));
         group6.addStep(group6A);
         addStep(group6);
 
-        //score second pickup piece
-        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        addStep(new IntakeOffStep());
-        addStep(new PathHeadingStep(180, swerve));
-        AutoParallelStepGroup group7 = new AutoParallelStepGroup();
-        group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 D red", new PathConstraints(2.25, 3)),
-            swerve, color));
-        AutoSerialStepGroup group7A = new AutoSerialStepGroup();
-        group7A.addStep(new AutoStepDelay(1800));
-        group7A.addStep(new SuperstructureStep(SuperPos.SCORE_MID));
-        //group7A.addStep(new OdometryOnStep(true, color));
-        group7.addStep(group7A);
-        addStep(group7);
-        
-        addStep(new OuttakeStep());
-        addStep(new AutoStepDelay(200));
-        //addStep(new OdometryOnStep(false, color));
-
-        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
     }
 
     public String toString(){
