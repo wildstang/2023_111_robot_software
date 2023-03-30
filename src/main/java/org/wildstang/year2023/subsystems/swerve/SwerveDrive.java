@@ -325,8 +325,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }   
         if (driveState == driveType.BALANCE){
-            if (Math.abs(gyro.getRoll()) > 7.0){
-                ySpeed = -0.0075 * gyro.getRoll();
+            if (Math.abs(gyro.getPitch()) > 7.0){
+                ySpeed = -0.0075 * gyro.getPitch();
                 if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3;
             } else {
                 ySpeed = 0.0;
@@ -351,6 +351,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         // SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
         // SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
+        SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
     }
     
     @Override

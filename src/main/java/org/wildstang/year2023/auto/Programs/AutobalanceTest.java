@@ -31,9 +31,9 @@ public class AutobalanceTest extends AutoProgram{
         
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(6.83, 3.77, 180.0, true));
+        //addStep(new StartOdometryStep(6.83, 3.77, 180.0, true));
         
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(2.8, 2.25)), swerve, true));
+        //addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Top 3+e", new PathConstraints(2.8, 2.25)), swerve, true));
         addStep(new AutoBalanceStep());
 
         //or
