@@ -48,7 +48,7 @@ public class Red_Bot_3 extends AutoProgram{
         group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group2A = new AutoSerialStepGroup();
-        group2A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group2A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group2A.addStep(new AutoStepDelay(2000));
         group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         group2A.addStep(new PathHeadingStep(180.0, swerve));
@@ -62,7 +62,7 @@ public class Red_Bot_3 extends AutoProgram{
         group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
-        group4A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group4A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group4A.addStep(new AutoStepDelay(2000));
         group4A.addStep(new PathHeadingStep(180.0, swerve));
         group4A.addStep(new AutoStepDelay(1000));
@@ -83,7 +83,7 @@ public class Red_Bot_3 extends AutoProgram{
         group6.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 C", new PathConstraints(2.0, 2.25)),
             swerve, color));
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
-        group6A.addStep(new PathHeadingStep(color ? 135 : 225, swerve));
+        group6A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group6A.addStep(new AutoStepDelay(2000));
         group6A.addStep(new PathHeadingStep(color ? 90.0 : 270.0, swerve));
         group6.addStep(group6A);

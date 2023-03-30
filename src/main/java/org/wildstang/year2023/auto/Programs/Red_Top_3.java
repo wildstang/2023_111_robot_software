@@ -62,7 +62,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(new OuttakeStep());
         addStep(new AutoStepDelay(400));
         addStep(new OdometryOnStep(false, color));
-        addStep(new StartOdometryStep(1.83, 4.4, 180.0, color));
+        addStep(new StartOdometryStep(1.83, 4.43, 180.0, color));
 
         //grab second game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));

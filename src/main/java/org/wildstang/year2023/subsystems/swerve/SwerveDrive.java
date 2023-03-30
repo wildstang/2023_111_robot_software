@@ -106,7 +106,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             for (int i = 0; i < modules.length; i++) {
-                modules[i].setDriveBrake(false);
+                //modules[i].setDriveBrake(false);
             }
             driveState = driveType.TELEOP;
         }

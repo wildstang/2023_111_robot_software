@@ -36,7 +36,7 @@ public class SwerveModule {
         this.absEncoder.setInverted(true);
         this.absEncoder.setPositionConversionFactor(360.0);
         this.absEncoder.setVelocityConversionFactor(360.0/60.0);
-        this.driveMotor.setCoast();
+        this.driveMotor.setBrake();
         this.angleMotor.setBrake();
 
         chassisOffset = offset;
@@ -82,7 +82,8 @@ public class SwerveModule {
             driveMotor.setBrake();
         }
         else {
-            driveMotor.setCoast();
+            //driveMotor.setCoast();
+            driveMotor.setBrake();
         }
     }
 

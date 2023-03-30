@@ -40,48 +40,49 @@ public class Red_Middle extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new AutoStepDelay(500));
 
-        //cross and grab first piece
-        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle A", new PathConstraints(1.75, 2.25)),
-            swerve, color));
-        AutoSerialStepGroup group1A = new AutoSerialStepGroup();
-        group1A.addStep(new AutoStepDelay(3000));
-        group1A.addStep(new IntakeOnStep());
-        group1A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
-        group1.addStep(group1A);
-        addStep(group1);
+        // //cross and grab first piece
+        // AutoParallelStepGroup group1 = new AutoParallelStepGroup();
+        // group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle A", new PathConstraints(1.75, 2.25)),
+        //     swerve, color));
+        // AutoSerialStepGroup group1A = new AutoSerialStepGroup();
+        // group1A.addStep(new AutoStepDelay(3000));
+        // group1A.addStep(new IntakeOnStep());
+        // group1A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
+        // group1.addStep(group1A);
+        // addStep(group1);
 
-        //return and score
-        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B", new PathConstraints(1.75, 2.25)),
-            swerve, color));
-        AutoSerialStepGroup group2A = new AutoSerialStepGroup();
-        group2A.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        group2A.addStep(new IntakeOffStep());
-        group2A.addStep(new AutoStepDelay(3000));
-        group2A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
-        group2A.addStep(new OdometryOnStep(true, color));
-        group2.addStep(group2A);
-        addStep(group2);
+        // //return and score
+        // AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+        // group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B", new PathConstraints(1.75, 2.25)),
+        //     swerve, color));
+        // AutoSerialStepGroup group2A = new AutoSerialStepGroup();
+        // group2A.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
+        // group2A.addStep(new IntakeOffStep());
+        // group2A.addStep(new AutoStepDelay(3000));
+        // group2A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        // group2A.addStep(new OdometryOnStep(true, color));
+        // group2.addStep(group2A);
+        // addStep(group2);
         
-        addStep(new OuttakeStep());
-        addStep(new AutoStepDelay(200));
-        addStep(new OdometryOnStep(false, color));
-        addStep(new StartOdometryStep(1.83, 2.75, 180.0, color));
+        // addStep(new OuttakeStep());
+        // addStep(new AutoStepDelay(200));
+        // addStep(new OdometryOnStep(false, color));
+        // addStep(new StartOdometryStep(1.83, 2.75, 180.0, color));
         
 
-        //move and balance
-        addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle C", new PathConstraints(1.75, 2.25)),
-            swerve, color));
-        addStep(new AutoBalanceStep());
-
-        // //alt
+        // //move and balance
         // addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        // addStep(new IntakeOffStep());
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B alt", new PathConstraints(1.75, 2.25)),
+        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle C", new PathConstraints(1.75, 2.25)),
         //     swerve, color));
         // addStep(new AutoBalanceStep());
+
+        //alt
+        addStep(new IntakeOffStep());
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle A alt", new PathConstraints(1.75, 2.25)),
+            swerve, color));
+            addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Middle B alt", new PathConstraints(1.75, 2.25)),
+                swerve, color));
+        addStep(new AutoBalanceStep());
 
     }
 
