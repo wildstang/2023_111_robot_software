@@ -295,7 +295,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 ySpeed = limelight.getScoreY(vertOffset);
                 if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
                 if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
-                if (Math.abs(pathVel * DriveConstants.DRIVE_F_V) > Math.abs(ySpeed)){
+                if (Math.abs(pathVel * DriveConstants.DRIVE_F_V) > Math.abs(ySpeed*0.5)){
                     ySpeed = 0.0;
                 } else {
                     pathVel = 0.0;
