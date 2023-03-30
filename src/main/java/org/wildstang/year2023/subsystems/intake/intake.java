@@ -136,8 +136,12 @@ public class intake implements Subsystem {
         speed = ingestSpeed;
         isHolding = true;
     }
-    public void intakeExpel(){
-        speed = expelSpeedCone;
+    public void intakeExpel(boolean gamePieceType){
+        if (gamePieceType == SuperConts.CONE){
+            speed = expelSpeedCone;
+        } else {
+            speed = expelSpeedCube;
+        }
         isHolding = false;
     }
     public void intakeOff(){

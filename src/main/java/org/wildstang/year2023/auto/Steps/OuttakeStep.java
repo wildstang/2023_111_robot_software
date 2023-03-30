@@ -6,12 +6,18 @@ import org.wildstang.year2023.robot.WSSubsystems;
 import org.wildstang.year2023.subsystems.intake.intake;
 
 public class OuttakeStep extends AutoStep{
+    private boolean gamePiece; //true is cone
 
     private intake intakeSub;
-    public OuttakeStep(){
+
+    /**runs the intake backwards 
+     * @param gamePieceType the game piece, where true is cone and false is cube
+    */
+    public OuttakeStep(Boolean gamePieceType){
+        gamePiece = gamePieceType;
     }
     public void update(){
-        intakeSub.intakeExpel();
+        intakeSub.intakeExpel(gamePiece);
         this.setFinished();
 
     }

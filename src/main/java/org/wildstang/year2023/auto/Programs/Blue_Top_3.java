@@ -36,7 +36,7 @@ public class Blue_Top_3 extends AutoProgram{
         addStep(new PathHeadingStep(180.0, swerve));
         addStep(new StartOdometryStep(1.83, 4.99, 180.0, color));
         addStep(new AutoStepDelay(1200));
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
@@ -58,7 +58,7 @@ public class Blue_Top_3 extends AutoProgram{
         group4.addStep(group4A);
         addStep(group4);
 
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(300));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 4.4, 180.0, color));
@@ -92,7 +92,7 @@ public class Blue_Top_3 extends AutoProgram{
         group7.addStep(group7A);
         addStep(group7);
 
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(200));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 4.4, 180.0, color));
