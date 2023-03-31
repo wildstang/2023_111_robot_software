@@ -90,7 +90,7 @@ public class Red_Top_3pE extends AutoProgram{
         AutoParallelStepGroup balance = new AutoParallelStepGroup();
         balance.addStep(new AutoBalanceStep());
         AutoSerialStepGroup throwing = new AutoSerialStepGroup();
-        throwing.addStep(new AutoStepDelay(200));
+        throwing.addStep(new AutoStepDelay(400));
         throwing.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         throwing.addStep(new OuttakeStep(true));
         throwing.addStep(new AutoStepDelay(200));
