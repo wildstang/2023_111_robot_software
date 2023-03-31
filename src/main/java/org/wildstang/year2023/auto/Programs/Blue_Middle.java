@@ -35,7 +35,7 @@ public class Blue_Middle extends AutoProgram{
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new StartOdometryStep(1.83, 2.19, 180.0, color));
         addStep(new AutoStepDelay(1200));
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(300));
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
         addStep(new AutoStepDelay(500));

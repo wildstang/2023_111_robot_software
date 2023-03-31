@@ -37,7 +37,7 @@ public class Blue_Bot_3 extends AutoProgram{
         addStep(new PathHeadingStep(180.0, swerve));
         addStep(new StartOdometryStep(1.83, .51, 180.0, color));
         addStep(new AutoStepDelay(1200));
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(300));
         
         //grab first game piece
@@ -72,7 +72,7 @@ public class Blue_Bot_3 extends AutoProgram{
 
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new AutoStepDelay(1200));
-        addStep(new OuttakeStep());
+        addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(300));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 1.07, 180.0, color));

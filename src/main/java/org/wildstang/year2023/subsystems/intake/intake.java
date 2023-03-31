@@ -14,10 +14,16 @@ import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import org.wildstang.year2023.robot.WSOutputs;
 import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
+
 /**
  * Sample Subsystem that controls a motor with a joystick.
  * @author Liam
+ * @author James
  */
+
 public class intake implements Subsystem {
     // inputs
 
@@ -33,13 +39,35 @@ public class intake implements Subsystem {
     private static final double expelSpeedCube = -0.3;
     private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
+    private static final double motorVelocityDeadband = .1;
 
     private double speed, in, out;
 
     private boolean isHolding, gamepiece;
+
+    private class HapticFeedback{
+        //just for testing, would likely fit better in roborio inputs
+        // private final XboxController m_hid1 = new XboxController(1 /* Manipulator */);
+        private final XboxController m_hid2 = new XboxController(0 /* Driver */);
+    
+        private void WhenAutoPickupFinished(){
+            //if manipulator trigger down and velocity is deadband
+            if (hasGrabbed()){
+                // m_hid1.setRumble(RumbleType.kRightRumble, .5);
+                // m_hid1.setRumble(RumbleType.kLeftRumble, .5);
+                m_hid2.setRumble(RumbleType.kRightRumble, .5);
+                m_hid2.setRumble(RumbleType.kLeftRumble, .5);
+            } else {
+                // m_hid1.setRumble(RumbleType.kRightRumble, 0);
+                // m_hid1.setRumble(RumbleType.kLeftRumble, 0);
+                m_hid2.setRumble(RumbleType.kRightRumble, 0);
+                m_hid2.setRumble(RumbleType.kLeftRumble, 0);
+            }
+        }
+    }
+
     @Override
     public void init() {
-
         intakeMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.INTAKE_MOTOR);
         intakeMotor.setCurrentLimit(30, 30, 0);
         ingest = (AnalogInput) Core.getInputManager().getInput(WSInputs.MANIPULATOR_LEFT_TRIGGER);
@@ -58,6 +86,9 @@ public class intake implements Subsystem {
         operatorLB.addInputListener(this);
         operatorRB = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
         operatorRB.addInputListener(this);
+
+        new HapticFeedback().WhenAutoPickupFinished();
+
         resetState();
     }
 
@@ -105,8 +136,12 @@ public class intake implements Subsystem {
         speed = ingestSpeed;
         isHolding = true;
     }
-    public void intakeExpel(){
-        speed = expelSpeedCone;
+    public void intakeExpel(boolean gamePieceType){
+        if (gamePieceType == SuperConts.CONE){
+            speed = expelSpeedCone;
+        } else {
+            speed = expelSpeedCube;
+        }
         isHolding = false;
     }
     public void intakeOff(){
