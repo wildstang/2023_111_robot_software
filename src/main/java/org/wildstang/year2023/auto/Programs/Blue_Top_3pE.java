@@ -60,7 +60,7 @@ public class Blue_Top_3pE extends AutoProgram{
         group4.addStep(group4A);
         addStep(group4);
 
-        addStep(new OuttakeStep(true));
+        addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(300));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 4.4,  180.0, color));
@@ -92,7 +92,7 @@ public class Blue_Top_3pE extends AutoProgram{
         AutoSerialStepGroup throwing = new AutoSerialStepGroup();
         throwing.addStep(new AutoStepDelay(200));
         throwing.addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        throwing.addStep(new OuttakeStep(false));
+        throwing.addStep(new OuttakeStep(true));
         throwing.addStep(new AutoStepDelay(200));
         throwing.addStep(new IntakeOffStep());
         throwing.addStep(new SuperLaunchingStep(false));

@@ -59,7 +59,7 @@ public class Red_Top_3 extends AutoProgram{
         addStep(group4);
 
         addStep(new AutoStepDelay(200));
-        addStep(new OuttakeStep(true));
+        addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(400));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 4.43, 180.0, color));
@@ -93,7 +93,7 @@ public class Red_Top_3 extends AutoProgram{
         group7.addStep(group7A);
         addStep(group7);
 
-        addStep(new OuttakeStep(true));
+        addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(200));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 4.4, 180.0, color));

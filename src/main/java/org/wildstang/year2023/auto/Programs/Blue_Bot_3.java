@@ -72,7 +72,7 @@ public class Blue_Bot_3 extends AutoProgram{
 
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new AutoStepDelay(1200));
-        addStep(new OuttakeStep(true));
+        addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(300));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 1.07, 180.0, color));
