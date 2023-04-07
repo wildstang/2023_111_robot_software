@@ -20,6 +20,12 @@ public class LimeConsts {
 
     public double[] CUBES = {6.938,  5.268,  3.592,  4.425,  2.75,   1.072}; 
     public double[] CONES = {7.503, 6.385, 5.827, 4.709, 4.150, 3.033, 4.989, 3.871, 3.307, 2.189, 1.631, 0.513};
+
+    public double STATION_VERTICAL = 20.0;//inches
+
+    public double RED_STATION_X = 1.266;
+    public double BLUE_STATION_X = 6.75;
+    public double STATION_HORIZONTAL = 20.0;//inches
     
     public final boolean CONE = true;
     public final boolean CUBE = false;

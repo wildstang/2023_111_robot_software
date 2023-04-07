@@ -37,10 +37,6 @@ public class AimHelper implements Subsystem {
     public double ltv;
     public double rtv;
 
-    public boolean valid;
-
-    public Timer timer = new Timer();
-
     public int lnumtargets;
     public int rnumtargets;
 
@@ -71,43 +67,6 @@ public class AimHelper implements Subsystem {
         }
     }
 
-    public double[] getAbsolutePosition(boolean isBlue){
-        calcTargetCoords();
-        if (isBlue){
-            if (ltv > 0.0 && rtv < 1.0){
-                return new double[]{lblue3D[0], lblue3D[1]};
-            } else if (ltv < 1.0 && rtv > 0.0){
-                return new double[]{rblue3D[0], rblue3D[1]};
-            } else {
-                if (rnumtargets > lnumtargets){
-                    return new double[]{rblue3D[0], rblue3D[1]};
-                } else {
-                    return new double[]{lblue3D[0], lblue3D[1]};
-                }
-            }
-        } else {
-            if (rtv > 0.0 && ltv < 1.0){
-                return new double[]{rred3D[0], rred3D[1]};
-            } else if (ltv > 0.0 && rtv < 1.0) {
-                return new double[]{lred3D[0], lred3D[1]};
-            } else {
-                if (lnumtargets > rnumtargets){
-                    return new double[]{lred3D[0], lred3D[1]};
-                } else {
-                    return new double[]{rred3D[0], rred3D[1]};
-                }
-            }
-        }        
-    }
-
-    public boolean dataValid(boolean isBlue){
-        if (getAbsolutePosition(isBlue)[0] < 2.5) return true;
-        return false;
-        // if (!valid) return false;
-        // if (lnumtargets < 2 && rnumtargets < 2) return false;
-        // return true;
-    }
-
     public boolean TargetInView(){
         return ltv > 0.0 || rtv > 0.0;
     }
@@ -121,13 +80,32 @@ public class AimHelper implements Subsystem {
         } else {
             return (getRightVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
         }
-        // if (rtv < 1.0){
-        //     return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + getLeftVertical());
-        // } else if (ltv < 1.0){
-        //     return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + getRightVertical());
-        // } else {
-        //     return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (getLeftVertical() + getRightVertical())/2.0);
-        // }
+    }
+    public double getStationY(){
+        if (ltv > 0.0){
+            return (ltid > 4.5 ? -lblue3D[0]*mToIn + LC.STATION_VERTICAL : -lred3D[0]*mToIn + LC.STATION_VERTICAL) * LC.VERT_AUTOAIM_P;
+        } else {
+            return (rtid > 4.5 ? -rblue3D[0]*mToIn + LC.STATION_VERTICAL : -rred3D[0]*mToIn + LC.STATION_VERTICAL) * LC.VERT_AUTOAIM_P;
+        }
+    }
+    public double getStationX(){
+        if (ltv > 0.0){
+            if (ltid > 4.5){
+                return LC.HORI_AUTOAIM_P * (lblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+                    LC.STATION_HORIZONTAL*Math.signum(lblue3D[1]-LC.BLUE_STATION_X));
+            } else {
+                return LC.HORI_AUTOAIM_P * (lred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(lred3D[1]-LC.RED_STATION_X));
+            }
+        } else {
+            if (rtid > 4.5){
+                return LC.HORI_AUTOAIM_P * (rblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(rblue3D[1]-LC.BLUE_STATION_X));
+            } else {
+                return LC.HORI_AUTOAIM_P * (rred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(rred3D[1]-LC.RED_STATION_X));
+            }
+        }
     }
     private double getLeftVertical(){
         if (ltid > 4.5){
@@ -135,7 +113,6 @@ public class AimHelper implements Subsystem {
         } else {
             return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
         }
-        //return ltarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
     private double getRightVertical(){
         if (rtid > 4.5){
@@ -143,7 +120,6 @@ public class AimHelper implements Subsystem {
         } else {
             return -rred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
         }
-        //return rtarget3D[2]*mToIn + LC.VERTICAL_APRILTAG_DISTANCE;
     }
 
     //get xSpeed value for autodrive
@@ -155,17 +131,6 @@ public class AimHelper implements Subsystem {
         } else {
             return (getRightHorizontal()+offset*LC.OFFSET_HORIZONTAL) * LC.HORI_AUTOAIM_P;
         }
-        // if (rtv < 1.0){
-        //     return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
-        // } else if (ltv < 1.0){
-        //     return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getRightHorizontal());
-        // } else {
-        //     if (Math.abs(getLeftHorizontal()) < Math.abs(getRightHorizontal())){
-        //         return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getLeftHorizontal());
-        //     } else {
-        //         return LC.HORI_AUTOAIM_P * (offset*LC.OFFSET_HORIZONTAL + getRightHorizontal());
-        //     }
-        // }
     }
 
     private double getLeftHorizontal(){
@@ -176,7 +141,6 @@ public class AimHelper implements Subsystem {
             if (gamepiece) return getCone(lred3D[1]*mToIn, false);
             else return getCube(lred3D[1]*mToIn, false);
         }
-        //return ltarget3D[0]*mToIn + (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE_LEFT : LC.HORIZONTAL_LIMELIGHT_MOUNT);
     }
     private double getRightHorizontal(){
         if (rtid > 4.5){
@@ -186,7 +150,6 @@ public class AimHelper implements Subsystem {
             if (gamepiece) return getCone(rred3D[1]*mToIn, false);
             else return getCube(rred3D[1]*mToIn, false);
         }
-        //return rtarget3D[0]*mToIn - (gamepiece ? LC.HORIZONTAL_APRILTAG_DISTANCE_RIGHT : LC.HORIZONTAL_LIMELIGHT_MOUNT);
     }
     private double getCone(double target, boolean color){
         int i = color ? 6 : 0;
@@ -254,18 +217,12 @@ public class AimHelper implements Subsystem {
         lresult = LimelightHelpers.getLatestResults("limelight-left").targetingResults;
         rresult = LimelightHelpers.getLatestResults("limelight-right").targetingResults;
         calcTargetCoords();
-        if (lnumtargets < 2 && rnumtargets < 2) timer.reset();
-        valid = timer.hasElapsed(0.5);
-        //SmartDashboard.putNumber("limeleft 3DX", ltarget3D[0]*mToIn);
-        //SmartDashboard.putNumber("limeleft 3DZ", ltarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeleft tiv", ltv > 0.0);
         SmartDashboard.putNumber("limeleft tid", ltid);
         SmartDashboard.putNumber("limeleft red X", lred3D[0]*mToIn);
         SmartDashboard.putNumber("limeleft red Y", lred3D[1]*mToIn);
         SmartDashboard.putNumber("limeleft blue X", lblue3D[0]*mToIn);
         SmartDashboard.putNumber("limeleft blue Y", lblue3D[1]*mToIn);
-        //SmartDashboard.putNumber("limeright 3DX", rtarget3D[0]*mToIn);
-        //SmartDashboard.putNumber("limeright 3DZ", rtarget3D[2]*mToIn);
         SmartDashboard.putBoolean("limeright tiv", rtv > 0.0);
         SmartDashboard.putNumber("limeright tid", rtid);
         SmartDashboard.putNumber("limeright red X", rred3D[0]*mToIn);
@@ -273,7 +230,6 @@ public class AimHelper implements Subsystem {
         SmartDashboard.putNumber("limeright blue X", rblue3D[0]*mToIn);
         SmartDashboard.putNumber("limeright blue Y", rblue3D[1]*mToIn);
         SmartDashboard.putBoolean("limelight target in view", TargetInView());
-        SmartDashboard.putBoolean("limelight valid data", dataValid(rtv > 1.0 ? rtid > 4.5 : ltid > 4.5));
     }
 
     @Override
@@ -285,8 +241,6 @@ public class AimHelper implements Subsystem {
         rtv = 0;
         lnumtargets = 0;
         rnumtargets = 0;
-        valid = false;
-        timer.reset();timer.start();
     }
     public void setGamePiece(boolean newPiece){
         gamepiece = newPiece;

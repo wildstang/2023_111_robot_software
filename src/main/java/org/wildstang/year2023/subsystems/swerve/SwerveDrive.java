@@ -84,7 +84,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AimHelper limelight;
     private LimeConsts LC;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL, BALANCE};
+    public enum driveType {TELEOP, AUTO, CROSS, LL, BALANCE, STATION};
     public driveType driveState;
 
     @Override
@@ -182,8 +182,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
         if (leftBumper.getValue()){
-            xSpeed*=0.5;
-            ySpeed*=0.5;
+            driveState = driveType.STATION;
+        } else {
+            if (driveState == driveType.STATION) driveState = driveType.TELEOP;
         }
     }
  
@@ -336,6 +337,17 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             drive();
 
+        }
+        if (driveState == driveType.STATION){
+            if (rotLocked){
+                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+            }
+            xSpeed = limelight.getStationX();
+            ySpeed = limelight.getStationY();
+            if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
+            if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
+            drive();
         }
         // SmartDashboard.putNumber("Align robotY", robotPose.getY());
         // SmartDashboard.putNumber("Align robotX", robotPose.getX());

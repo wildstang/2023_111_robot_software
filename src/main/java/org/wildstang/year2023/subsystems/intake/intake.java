@@ -45,26 +45,26 @@ public class intake implements Subsystem {
 
     private boolean isHolding, gamepiece;
 
-    private class HapticFeedback{
-        //just for testing, would likely fit better in roborio inputs
-        // private final XboxController m_hid1 = new XboxController(1 /* Manipulator */);
-        private final XboxController m_hid2 = new XboxController(0 /* Driver */);
+    // private class HapticFeedback{
+    //     //just for testing, would likely fit better in roborio inputs
+    //     // private final XboxController m_hid1 = new XboxController(1 /* Manipulator */);
+    //     private final XboxController m_hid2 = new XboxController(0 /* Driver */);
     
-        private void WhenAutoPickupFinished(){
-            //if manipulator trigger down and velocity is deadband
-            if (hasGrabbed()){
-                // m_hid1.setRumble(RumbleType.kRightRumble, .5);
-                // m_hid1.setRumble(RumbleType.kLeftRumble, .5);
-                m_hid2.setRumble(RumbleType.kRightRumble, .5);
-                m_hid2.setRumble(RumbleType.kLeftRumble, .5);
-            } else {
-                // m_hid1.setRumble(RumbleType.kRightRumble, 0);
-                // m_hid1.setRumble(RumbleType.kLeftRumble, 0);
-                m_hid2.setRumble(RumbleType.kRightRumble, 0);
-                m_hid2.setRumble(RumbleType.kLeftRumble, 0);
-            }
-        }
-    }
+    //     private void WhenAutoPickupFinished(){
+    //         //if manipulator trigger down and velocity is deadband
+    //         if (hasGrabbed()){
+    //             // m_hid1.setRumble(RumbleType.kRightRumble, .5);
+    //             // m_hid1.setRumble(RumbleType.kLeftRumble, .5);
+    //             m_hid2.setRumble(RumbleType.kRightRumble, .5);
+    //             m_hid2.setRumble(RumbleType.kLeftRumble, .5);
+    //         } else {
+    //             // m_hid1.setRumble(RumbleType.kRightRumble, 0);
+    //             // m_hid1.setRumble(RumbleType.kLeftRumble, 0);
+    //             m_hid2.setRumble(RumbleType.kRightRumble, 0);
+    //             m_hid2.setRumble(RumbleType.kLeftRumble, 0);
+    //         }
+    //     }
+    // }
 
     @Override
     public void init() {
@@ -87,7 +87,7 @@ public class intake implements Subsystem {
         operatorRB = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
         operatorRB.addInputListener(this);
 
-        new HapticFeedback().WhenAutoPickupFinished();
+        //new HapticFeedback().WhenAutoPickupFinished();
 
         resetState();
     }
