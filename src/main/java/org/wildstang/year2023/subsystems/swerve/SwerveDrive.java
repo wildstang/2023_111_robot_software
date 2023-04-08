@@ -128,7 +128,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         else {
             isSnake = false;
         }
-        if ((source == faceUp && faceUp.getValue())){
+        if ((source == faceUp && faceUp.getValue()) || leftBumper.getValue()){
             rotTarget = 0.0;
             rotLocked = true;
         }
