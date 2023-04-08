@@ -102,9 +102,9 @@ public class Blue_Bot_3 extends AutoProgram{
         //group7A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group7A.addStep(new AutoStepDelay(1500));
         //group7A.addStep(new PathHeadingStep(180.0, swerve));
-        group7A.addStep(new AutoStepDelay(500));
+        group7A.addStep(new AutoStepDelay(700));
         group7A.addStep(new OdometryOnStep(true, color));
-        group7A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
+        group7A.addStep(new SuperstructureStep(SuperPos.AUTO_HIGH));
         group7.addStep(group7A);
         addStep(group7);
 
