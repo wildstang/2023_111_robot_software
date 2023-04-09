@@ -5,7 +5,7 @@ public enum SuperPos {
     SCORE_HIGH       (69,245.4,117.2,69,245.4,117.2,0,true),
     SCORE_MID        (32.2,233.4,97.9,32.2,233.4,97.9,0,true),
     SCORE_LOW        (0,231,77,0,231,77,0,true),
-    AUTO_HIGH        (32.2, 233.4, 180, 32.2, 233.4, 180, 0, true),
+    AUTO_HIGH        (45, 220, 180, 45, 220, 180, 0, true),
     NEUTRAL          (0,195,195,0,195,195,0,false),
     STOWED           (0, 215, 260, 0, 215, 260, 0,false),
     INTAKE_FRONT     (13.5,283,155,13.5,283,155,0,true),
