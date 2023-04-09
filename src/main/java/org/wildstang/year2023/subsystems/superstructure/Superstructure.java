@@ -26,7 +26,7 @@ public class Superstructure implements Subsystem{
 
     private DigitalInput leftBumper, rightBumper, A, X, Y, B, dUp, dDown, dLeft, dRight, select, start, rightStickB, driverLB, driverRB, driverA;
     private AnalogInput driverLT, driverRT, leftStickY;
-    private modes motion;
+    private modes motion = modes.WAITING;
     private score scoring;
     private intake intaking;
     private station stationing;
@@ -222,9 +222,13 @@ public class Superstructure implements Subsystem{
         wristWait = false;
         armWait = false;
         liftWait = false;
-        motion = modes.WAITING;
         currentPos = SuperPos.NEUTRAL;
         lastPos = SuperPos.NEUTRAL;
+        if (motion == modes.WAITING){
+            lift.setPosition(lift.getPosition());
+            arm.setPosition(arm.getPosition());
+            wrist.setPosition(wrist.getPosition());
+        }
         scoring = score.HIGH;
         intaking = intake.UPRIGHT;
         stationing = station.DOUBLE;
@@ -232,9 +236,6 @@ public class Superstructure implements Subsystem{
         liftMod = new double[]{0.0, 0.0, 0.0, 0.0};
         wristMod = 0.0;
         swerveWait = false;
-        lift.setPosition(lift.getPosition());
-        arm.setPosition(arm.getPosition());
-        wrist.setPosition(wrist.getPosition());
     }
 
     @Override
