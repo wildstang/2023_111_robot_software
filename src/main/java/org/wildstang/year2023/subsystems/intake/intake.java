@@ -30,20 +30,21 @@ public class intake implements Subsystem {
     // outputs
     private WsSparkMax intakeMotor;
     private AnalogInput ingest, expel, driverLT, driverRT;
-    private DigitalInput driverLB, driverRB, operatorLB, operatorRB;
+    private DigitalInput driverLB, driverRB, operatorLB, operatorRB, high, mid, low;
     
 
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeedCone = -1;
-    private static final double expelSpeedCube = -0.3;
+    private static final double expelSpeedCube = -0.15;
+    private static final double expelSpeedLow = -0.5;
     private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
     private static final double motorVelocityDeadband = .1;
 
     private double speed, in, out;
 
-    private boolean isHolding, gamepiece;
+    private boolean isHolding, gamepiece, isLow;
 
     // private class HapticFeedback{
     //     //just for testing, would likely fit better in roborio inputs
@@ -86,6 +87,12 @@ public class intake implements Subsystem {
         operatorLB.addInputListener(this);
         operatorRB = (DigitalInput) WSInputs.MANIPULATOR_RIGHT_SHOULDER.get();
         operatorRB.addInputListener(this);
+        high = (DigitalInput) WSInputs.MANIPULATOR_FACE_UP.get();
+        high.addInputListener(this);
+        mid = (DigitalInput) WSInputs.MANIPULATOR_FACE_RIGHT.get();
+        mid.addInputListener(this);
+        low = (DigitalInput) WSInputs.MANIPULATOR_FACE_DOWN.get();
+        low.addInputListener(this);
 
         //new HapticFeedback().WhenAutoPickupFinished();
 
@@ -96,6 +103,7 @@ public class intake implements Subsystem {
     public void resetState() {
         speed = 0;
         isHolding = false;
+        isLow = false;
         gamepiece = SuperConts.CONE;
     }
 
@@ -108,6 +116,8 @@ public class intake implements Subsystem {
     public void inputUpdate(Input source) {
         in = Math.abs(ingest.getValue());
         out = Math.abs(expel.getValue());
+        if (source == low && low.getValue()) isLow = true;
+        if ((source == mid && mid.getValue()) || (source == high && high.getValue())) isLow = false;
         if (operatorLB.getValue()) gamepiece = SuperConts.CONE;
         if (operatorRB.getValue()) gamepiece = SuperConts.CUBE;
         if (out > deadband && out > in){
@@ -117,7 +127,7 @@ public class intake implements Subsystem {
             speed = ingestSpeed;
             isHolding = true;
         } else if (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband) {
-            speed = gamepiece ? expelSpeedCone : expelSpeedCube;
+            speed = gamepiece ? (!isLow ? expelSpeedCone : expelSpeedLow) : expelSpeedCube;
             isHolding = false;
         } else {
             speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
