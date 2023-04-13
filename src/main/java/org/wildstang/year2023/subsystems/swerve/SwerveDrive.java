@@ -117,6 +117,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //reset gyro
         if (source == select && select.getValue()) {
             gyro.setYaw(0.0);
+            if (rotLocked) rotTarget = 0.0;
         }
 
         //determine snake or pid locks

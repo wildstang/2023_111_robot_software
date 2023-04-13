@@ -58,6 +58,7 @@ public class Blue_Top_3 extends AutoProgram{
         group4.addStep(group4A);
         addStep(group4);
 
+        addStep(new AutoStepDelay(300));
         addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(300));
         addStep(new OdometryOnStep(false, color));
@@ -92,6 +93,7 @@ public class Blue_Top_3 extends AutoProgram{
         group7.addStep(group7A);
         addStep(group7);
 
+        addStep(new AutoStepDelay(300));
         addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(200));
         addStep(new OdometryOnStep(false, color));

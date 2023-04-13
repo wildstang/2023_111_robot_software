@@ -40,9 +40,9 @@ public class AimHelper implements Subsystem {
     public int lnumtargets;
     public int rnumtargets;
 
-    public boolean gamepiece;
+    public boolean gamepiece, isLow;
 
-    private DigitalInput rightBumper, leftBumper;//, dup, ddown;
+    private DigitalInput rightBumper, leftBumper, high, mid, low;//, dup, ddown;
 
     public LimeConsts LC;
 
@@ -109,9 +109,9 @@ public class AimHelper implements Subsystem {
     }
     private double getLeftVertical(){
         if (ltid > 4.5){
-            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE); 
+            return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0)); 
         } else {
-            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
+            return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0));
         }
     }
     private double getRightVertical(){
@@ -183,6 +183,8 @@ public class AimHelper implements Subsystem {
         if (leftBumper.getValue()){
             gamepiece = LC.CONE;
         }
+        if (source == low && low.getValue()) isLow = true;
+        if ((source == mid && mid.getValue()) || (source == high && high.getValue())) isLow = false;
     }
 
     @Override
@@ -204,6 +206,12 @@ public class AimHelper implements Subsystem {
         rightBumper.addInputListener(this);
         leftBumper = (DigitalInput) WSInputs.MANIPULATOR_LEFT_SHOULDER.get();
         leftBumper.addInputListener(this);
+        high = (DigitalInput) WSInputs.MANIPULATOR_FACE_UP.get();
+        high.addInputListener(this);
+        mid = (DigitalInput) WSInputs.MANIPULATOR_FACE_RIGHT.get();
+        mid.addInputListener(this);
+        low = (DigitalInput) WSInputs.MANIPULATOR_FACE_DOWN.get();
+        low.addInputListener(this);
 
         resetState();
     }
@@ -235,6 +243,7 @@ public class AimHelper implements Subsystem {
     @Override
     public void resetState() {
         gamepiece = LC.CONE;
+        isLow = false;
         ltid = 1;
         rtid = 1;
         ltv = 0;
