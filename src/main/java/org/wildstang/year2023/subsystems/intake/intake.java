@@ -36,8 +36,8 @@ public class intake implements Subsystem {
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeedCone = -1;
-    private static final double expelSpeedCube = -0.15;
-    private static final double expelSpeedLow = -0.5;
+    private static final double expelSpeedCube = -0.25;
+    private static final double expelSpeedLow = -0.75;
     private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
     private static final double motorVelocityDeadband = .1;
