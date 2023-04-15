@@ -130,19 +130,23 @@ public class SwerveDrive extends SwerveDriveTemplate {
             isSnake = false;
         }
         if ((source == faceUp && faceUp.getValue()) || leftBumper.getValue()){
-            rotTarget = 0.0;
+            if (faceLeft.getValue() || faceRight.getValue()){ rotTarget = getClosestRotation();
+            } else  rotTarget = 0.0;
             rotLocked = true;
         }
         if (source == faceLeft && faceLeft.getValue()){
-            rotTarget = 270.0;
+            if (faceUp.getValue() || faceDown.getValue()){ rotTarget = getClosestRotation();
+            } else rotTarget = 270.0;
             rotLocked = true;
         }
         if ((source == faceDown && faceDown.getValue() && !leftBumper.getValue()) || Math.abs(leftTrigger.getValue()) > 0.15){
-            rotTarget = 180.0;
+            if (faceLeft.getValue() || faceRight.getValue()){ rotTarget = getClosestRotation();
+            } else rotTarget = 180.0;
             rotLocked = true;
         }
         if (source == faceRight && faceRight.getValue()){
-            rotTarget = 90.0;
+            if (faceUp.getValue() || faceDown.getValue()){ rotTarget = getClosestRotation();
+            } else rotTarget = 90.0;
             rotLocked = true;
         }
 
@@ -500,5 +504,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void setAutoOdo(boolean isOn, boolean isBlue){
         autoOdo = isOn;
         this.isBlue = isBlue;
+    }
+    private double getClosestRotation(){
+        if (getGyroAngle() < 90.0) return 45.0;
+        if (getGyroAngle() < 180.0) return 135.0;
+        if (getGyroAngle() < 270.0) return 225.0;
+        return 315.0;
     }
 }

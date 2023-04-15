@@ -16,6 +16,7 @@ import org.wildstang.year2023.subsystems.superstructure.SuperConts;
 
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
 /**
@@ -31,13 +32,15 @@ public class intake implements Subsystem {
     private WsSparkMax intakeMotor;
     private AnalogInput ingest, expel, driverLT, driverRT;
     private DigitalInput driverLB, driverRB, operatorLB, operatorRB, high, mid, low;
+
+    private Timer timer = new Timer();
     
 
     // states
     private static final double ingestSpeed = 1;
     private static final double expelSpeedCone = -1;
     private static final double expelSpeedCube = -0.25;
-    private static final double expelSpeedLow = -0.75;
+    private static final double expelSpeedLow = -0.22;
     private static final double holdingSpeed = 0.2;
     private static final double deadband = 0.1;
     private static final double motorVelocityDeadband = .1;
@@ -97,6 +100,7 @@ public class intake implements Subsystem {
         //new HapticFeedback().WhenAutoPickupFinished();
 
         resetState();
+        timer.start();
     }
 
     @Override
@@ -109,6 +113,7 @@ public class intake implements Subsystem {
 
     @Override
     public void update() {
+        if (timer.hasElapsed(0.1) && speed == expelSpeedLow) speed = expelSpeedCone;
         intakeMotor.setValue(speed);
     }
 
@@ -127,8 +132,9 @@ public class intake implements Subsystem {
             speed = ingestSpeed;
             isHolding = true;
         } else if (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband) {
-            speed = gamepiece ? (!isLow ? expelSpeedCone : expelSpeedLow) : expelSpeedCube;
+            speed = gamepiece ? (!isLow ? expelSpeedCone : expelSpeedLow) : (!isLow ? expelSpeedCube : expelSpeedLow);
             isHolding = false;
+            timer.reset();
         } else {
             speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
         }
