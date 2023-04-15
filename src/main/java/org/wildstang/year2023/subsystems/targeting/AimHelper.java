@@ -81,29 +81,31 @@ public class AimHelper implements Subsystem {
             return (getRightVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
         }
     }
-    public double getStationY(){
+    public double getStationY(double offset){
         if (ltv > 0.0){
-            return (ltid > 4.5 ? -lblue3D[0]*mToIn + LC.STATION_VERTICAL : -lred3D[0]*mToIn + LC.STATION_VERTICAL) * -LC.VERT_AUTOAIM_P;
+            return (offset*LC.STATION_OFFSETS + (ltid > 4.5 ? -lblue3D[0]*mToIn + LC.STATION_VERTICAL 
+                : -lred3D[0]*mToIn + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         } else {
-            return (rtid > 4.5 ? -rblue3D[0]*mToIn + LC.STATION_VERTICAL : -rred3D[0]*mToIn + LC.STATION_VERTICAL) * -LC.VERT_AUTOAIM_P;
+            return (offset*LC.STATION_OFFSETS + (rtid > 4.5 ? -rblue3D[0]*mToIn + LC.STATION_VERTICAL 
+                : -rred3D[0]*mToIn + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         }
     }
-    public double getStationX(){
+    public double getStationX(double offset){
         if (ltv > 0.0){
             if (ltid > 4.5){
-                return -LC.HORI_AUTOAIM_P * (lblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
-                    LC.STATION_HORIZONTAL*Math.signum(lblue3D[1]-LC.BLUE_STATION_X));
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (lblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+                    LC.STATION_HORIZONTAL*Math.signum(lblue3D[1]-LC.BLUE_STATION_X)));
             } else {
-                return -LC.HORI_AUTOAIM_P * (lred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
-                LC.STATION_HORIZONTAL*Math.signum(lred3D[1]-LC.RED_STATION_X));
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (lred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(lred3D[1]-LC.RED_STATION_X)));
             }
         } else {
             if (rtid > 4.5){
-                return -LC.HORI_AUTOAIM_P * (rblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
-                LC.STATION_HORIZONTAL*Math.signum(rblue3D[1]-LC.BLUE_STATION_X));
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (rblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(rblue3D[1]-LC.BLUE_STATION_X)));
             } else {
-                return -LC.HORI_AUTOAIM_P * (rred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
-                LC.STATION_HORIZONTAL*Math.signum(rred3D[1]-LC.RED_STATION_X));
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (rred3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                LC.STATION_HORIZONTAL*Math.signum(rred3D[1]-LC.RED_STATION_X)));
             }
         }
     }
