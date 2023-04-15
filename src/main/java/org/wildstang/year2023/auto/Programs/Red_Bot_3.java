@@ -50,7 +50,7 @@ public class Red_Bot_3 extends AutoProgram{
         AutoSerialStepGroup group2A = new AutoSerialStepGroup();
         group2A.addStep(new AutoStepDelay(500));
         //group2A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
-        group2A.addStep(new AutoStepDelay(1200));
+        group2A.addStep(new AutoStepDelay(1300));
         group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
         //group2A.addStep(new PathHeadingStep(180.0, swerve));
         group2.addStep(group2A);
