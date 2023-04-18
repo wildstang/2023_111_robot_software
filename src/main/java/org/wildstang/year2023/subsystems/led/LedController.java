@@ -12,6 +12,7 @@ import org.wildstang.year2023.subsystems.intake.intake;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class LedController implements Subsystem {
 
@@ -21,7 +22,8 @@ public class LedController implements Subsystem {
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
     private intake intake;
-    private enum modes {CONE, CUBE, RAINBOW}
+    private enum modes {CONE, CUBE, RAINBOW, TEXAS}
+    private Color[] texasColors = new Color[]{new Color(0.15,0.3,1.0), Color.kDeepPink, Color.kWhite, Color.kDeepPink, new Color(0.15,0.3,1.0)};
     private modes currentMode;
     private boolean isOn;
     private boolean hasGrabbed;
@@ -50,6 +52,7 @@ public class LedController implements Subsystem {
             else if (currentMode == modes.RAINBOW) rainbow();
             else if (currentMode == modes.CONE) coneDisplay();
             else if (currentMode == modes.CUBE) cubeDisplay();
+            else if (currentMode == modes.TEXAS) texasDisplay();
             led.start();
         }
     }
@@ -58,7 +61,7 @@ public class LedController implements Subsystem {
     public void inputUpdate(Input source) {
         if (rightShoulder.getValue()) currentMode = modes.CUBE;
         if (leftShoulder.getValue()) currentMode = modes.CONE;
-        if (start.getValue() && select.getValue()) currentMode = modes.RAINBOW;
+        if (start.getValue() && select.getValue()) currentMode = modes.TEXAS;//.RAINBOW;
         if (Math.abs(driverLeftTrigger.getValue()) > 0.1 && source == driverLeftTrigger){
             isOn = false;
         } else {
@@ -138,5 +141,11 @@ public class LedController implements Subsystem {
     } 
     public void turnOff(){
         isOn = false;
+    }
+    public void texasDisplay(){
+        for (var i = 0; i < length; i++) {
+            ledBuffer.setRGB(i, (int) (255*texasColors[(i/3)%5].red), (int) (255*texasColors[(i/3)%5].green), (int) (255*texasColors[(i/3)%5].blue));
+        }
+        led.setData(ledBuffer);
     }
 }
