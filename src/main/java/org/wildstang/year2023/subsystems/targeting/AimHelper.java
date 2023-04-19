@@ -81,6 +81,7 @@ public class AimHelper implements Subsystem {
             return (getRightVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
         }
     }
+    //get ySpeed value for station auto drive
     public double getStationY(double offset){
         if (ltv > 0.0){
             return (offset*LC.STATION_OFFSETS + (ltid > 4.5 ? -lblue3D[0]*mToIn + LC.STATION_VERTICAL 
@@ -90,9 +91,13 @@ public class AimHelper implements Subsystem {
                 : -rred3D[0]*mToIn + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         }
     }
+    //get xSpeed value for station auto drive
     public double getStationX(double offset){
         if (ltv > 0.0){
             if (ltid > 4.5){
+                //basically this garbage line determines whether we're going to the left or right double substation
+                //  by which one's closer, adds on the driver offset, and then calculates the xSpeed for that
+                //  desired displacement.
                 return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (lblue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
                     LC.STATION_HORIZONTAL*Math.signum(lblue3D[1]-LC.BLUE_STATION_X)));
             } else {
@@ -109,6 +114,7 @@ public class AimHelper implements Subsystem {
             }
         }
     }
+    //gets the vertical distance to target for grid targets from the left limelight
     private double getLeftVertical(){
         if (ltid > 4.5){
             return -lblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0)); 
@@ -116,6 +122,7 @@ public class AimHelper implements Subsystem {
             return -lred3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0));
         }
     }
+    //gets the vertical distance to target for grid targets from the right limelight
     private double getRightVertical(){
         if (rtid > 4.5){
             return -rblue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE); 
@@ -134,7 +141,7 @@ public class AimHelper implements Subsystem {
             return (getRightHorizontal()+offset*LC.OFFSET_HORIZONTAL) * LC.HORI_AUTOAIM_P;
         }
     }
-
+    //get the horizontal distance to targets on the grid from the left limelight
     private double getLeftHorizontal(){
         if (ltid > 4.5){
             if (gamepiece) return getCone(lblue3D[1]*mToIn, true);
@@ -144,6 +151,7 @@ public class AimHelper implements Subsystem {
             else return getCube(lred3D[1]*mToIn, false);
         }
     }
+    //gets the horizontal distance to targets on the grid from the right limelight
     private double getRightHorizontal(){
         if (rtid > 4.5){
             if (gamepiece) return getCone(rblue3D[1]*mToIn, true);
@@ -153,6 +161,7 @@ public class AimHelper implements Subsystem {
             else return getCube(rred3D[1]*mToIn, false);
         }
     }
+    //determines which cone node is the closest to score on
     private double getCone(double target, boolean color){
         int i = color ? 6 : 0;
         double minimum = 1000;
@@ -164,6 +173,7 @@ public class AimHelper implements Subsystem {
         }
         return minimum;
     }
+    //determines which cube node is the closest to score on
     private double getCube(double target, boolean color){
         int i = color ? 3 : 0;
         double minimum = 1000;

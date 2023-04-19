@@ -42,17 +42,14 @@ public class Red_Bot_3 extends AutoProgram{
         
         //grab first game piece
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
-        //addStep(new AutoStepDelay(200));
         addStep(new IntakeOnStep());
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 A", new PathConstraints(2.1, 3.0)),
             swerve, color));
         AutoSerialStepGroup group2A = new AutoSerialStepGroup();
         group2A.addStep(new AutoStepDelay(500));
-        //group2A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group2A.addStep(new AutoStepDelay(1300));
         group2A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
-        //group2A.addStep(new PathHeadingStep(180.0, swerve));
         group2.addStep(group2A);
         addStep(group2);
 
@@ -63,9 +60,7 @@ public class Red_Bot_3 extends AutoProgram{
         group4.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 B", new PathConstraints(2.3, 3.0)),
             swerve, color));
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
-        //group4A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group4A.addStep(new AutoStepDelay(1000));
-        //group4A.addStep(new PathHeadingStep(180.0, swerve));
         group4A.addStep(new AutoStepDelay(1000));
         group4A.addStep(new OdometryOnStep(true, color));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_MID));
@@ -73,7 +68,6 @@ public class Red_Bot_3 extends AutoProgram{
         addStep(group4);
 
         addStep(new OuttakeStep(false));
-        //addStep(new AutoStepDelay(200));
         addStep(new OdometryOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 1.07, 180.0, color));
 
@@ -85,10 +79,8 @@ public class Red_Bot_3 extends AutoProgram{
         AutoSerialStepGroup group6A = new AutoSerialStepGroup();
         group6A.addStep(new AutoStepDelay(500));
         group6A.addStep(new IntakeOnStep());
-        //group6A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group6A.addStep(new AutoStepDelay(1200));
         group6A.addStep(new SuperstructureStep(SuperPos.INTAKE_BACK_LOW));
-        //group6A.addStep(new PathHeadingStep(180, swerve));
         group6.addStep(group6A);
         addStep(group6);
 
@@ -99,9 +91,7 @@ public class Red_Bot_3 extends AutoProgram{
         group7.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Bot 3 D", new PathConstraints(2.3, 3.0)),
             swerve, color));
         AutoSerialStepGroup group7A = new AutoSerialStepGroup();
-        //group7A.addStep(new PathHeadingStep(color ? 150 : 210, swerve));
         group7A.addStep(new AutoStepDelay(1500));
-        //group7A.addStep(new PathHeadingStep(180.0, swerve));
         group7A.addStep(new AutoStepDelay(700));
         group7A.addStep(new OdometryOnStep(true, color));
         group7A.addStep(new SuperstructureStep(SuperPos.AUTO_HIGH));

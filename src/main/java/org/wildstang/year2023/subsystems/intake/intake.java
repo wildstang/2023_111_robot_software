@@ -49,27 +49,6 @@ public class intake implements Subsystem {
 
     private boolean isHolding, gamepiece, isLow;
 
-    // private class HapticFeedback{
-    //     //just for testing, would likely fit better in roborio inputs
-    //     // private final XboxController m_hid1 = new XboxController(1 /* Manipulator */);
-    //     private final XboxController m_hid2 = new XboxController(0 /* Driver */);
-    
-    //     private void WhenAutoPickupFinished(){
-    //         //if manipulator trigger down and velocity is deadband
-    //         if (hasGrabbed()){
-    //             // m_hid1.setRumble(RumbleType.kRightRumble, .5);
-    //             // m_hid1.setRumble(RumbleType.kLeftRumble, .5);
-    //             m_hid2.setRumble(RumbleType.kRightRumble, .5);
-    //             m_hid2.setRumble(RumbleType.kLeftRumble, .5);
-    //         } else {
-    //             // m_hid1.setRumble(RumbleType.kRightRumble, 0);
-    //             // m_hid1.setRumble(RumbleType.kLeftRumble, 0);
-    //             m_hid2.setRumble(RumbleType.kRightRumble, 0);
-    //             m_hid2.setRumble(RumbleType.kLeftRumble, 0);
-    //         }
-    //     }
-    // }
-
     @Override
     public void init() {
         intakeMotor = (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.INTAKE_MOTOR);
@@ -97,8 +76,6 @@ public class intake implements Subsystem {
         low = (DigitalInput) WSInputs.MANIPULATOR_FACE_DOWN.get();
         low.addInputListener(this);
 
-        //new HapticFeedback().WhenAutoPickupFinished();
-
         resetState();
         timer.start();
     }
@@ -113,18 +90,28 @@ public class intake implements Subsystem {
 
     @Override
     public void update() {
+        //for scoring low - start slowly to get rid of cube, then get faster to get rid of cone
+        //this is because the "gamepiece" is not accurate for low, since we select the node based on game piece
+        //i.e. for scoring a hybrid node infront of a cube node, the robot will assume we have a cube, but we might
+        //  have a cone
         if (timer.hasElapsed(0.1) && speed == expelSpeedLow) speed = expelSpeedCone;
         intakeMotor.setValue(speed);
     }
 
     @Override
     public void inputUpdate(Input source) {
+        //get operator intake overrides
         in = Math.abs(ingest.getValue());
         out = Math.abs(expel.getValue());
+
+        //determine whether it's low or mid/high scoring
         if (source == low && low.getValue()) isLow = true;
         if ((source == mid && mid.getValue()) || (source == high && high.getValue())) isLow = false;
+
+        //get gamepiece
         if (operatorLB.getValue()) gamepiece = SuperConts.CONE;
         if (operatorRB.getValue()) gamepiece = SuperConts.CUBE;
+
         if (out > deadband && out > in){
             speed = expelSpeedCone;
             isHolding = false;
@@ -132,10 +119,12 @@ public class intake implements Subsystem {
             speed = ingestSpeed;
             isHolding = true;
         } else if (Math.abs(driverLT.getValue()) > deadband && Math.abs(driverRT.getValue()) > deadband) {
+            //three speeds - a cube mid/high, a cone mid/high, and a low expel speed
             speed = gamepiece ? (!isLow ? expelSpeedCone : expelSpeedLow) : (!isLow ? expelSpeedCube : expelSpeedLow);
             isHolding = false;
             timer.reset();
         } else {
+            //small holding speed if we have a gamepiece, to keep it in the claw
             speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
         }
     }
@@ -148,10 +137,12 @@ public class intake implements Subsystem {
     @Override
     public void selfTest() {
     }
+    //for auto control
     public void intakeOn(){
         speed = ingestSpeed;
         isHolding = true;
     }
+    //for auto control
     public void intakeExpel(boolean gamePieceType){
         if (gamePieceType == SuperConts.CONE){
             speed = expelSpeedCone;
@@ -160,9 +151,11 @@ public class intake implements Subsystem {
         }
         isHolding = false;
     }
+    //for auto control
     public void intakeOff(){
         speed = (isHolding? 1.0 : 0.0) * holdingSpeed;
     }
+    //for leds
     public boolean hasGrabbed(){
         if (speed < 0.5) return false;
         return intakeMotor.getController().getOutputCurrent() > 15.0;

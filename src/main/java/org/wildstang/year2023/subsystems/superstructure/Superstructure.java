@@ -44,14 +44,19 @@ public class Superstructure implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
+        //determine gamepiece
         if (source == leftBumper && leftBumper.getValue()){
             gamepiece = SuperConts.CONE;
         }
         if (source == rightBumper && rightBumper.getValue()){
             gamepiece = SuperConts.CUBE;
         }
+
+        //set to throw cube into our community
         if (Math.abs(leftStickY.getValue()) > 0.4) launching = Math.abs(swerve.getGyroAngle()-180.0)<90.0 ? -45.0 : 45.0;
         else launching = 0.0;
+
+        //lift and wrist offset modifiers
         if (source == dLeft && dLeft.getValue()){
             if (start.getValue()) wristMod -= 3;
             else if (select.getValue()) liftMod[currentPos.getLiftMod()]--;
@@ -61,10 +66,13 @@ public class Superstructure implements Subsystem{
             else if (select.getValue()) liftMod[currentPos.getLiftMod()]++;
         }
 
+        //stowing the arm for endgame balancing
         if (start.getValue() && select.getValue() && (source == start || source == select)) {
             if (currentPos != SuperPos.STOWED) currentPos = SuperPos.STOWED;
             else currentPos = SuperPos.NEUTRAL;
         }
+
+        //determine scoring, intaking, and substation pickup positions
         prescore = driverA.getValue();
         if (source == A && A.getValue()) scoring = score.LOW;
         if (source == B && B.getValue()) scoring = score.MID;
@@ -75,6 +83,7 @@ public class Superstructure implements Subsystem{
         if (source == dRight && dRight.getValue() && !start.getValue() && !select.getValue()) stationing = station.DOUBLE;
         //if (source == dLeft && dLeft.getValue() && !start.getValue() && !select.getValue()) stationing = station.SINGLE;
 
+        //set the robot to move to a new position
         if (timer.hasElapsed(0.25) && currentPos != SuperPos.STOWED){
             if (Math.abs(driverLT.getValue()) > 0.25){
                 if (scoring == score.HIGH) currentPos = SuperPos.SCORE_HIGH;
@@ -98,6 +107,7 @@ public class Superstructure implements Subsystem{
             }
         }
         
+        //determine if any avoidance is needed to not run the arm into the robot
         if (currentPos != lastPos){
             determineMotion();
         }
@@ -155,10 +165,13 @@ public class Superstructure implements Subsystem{
 
     @Override
     public void update() {
+        //don't extend until the robot is facing the right direction
         if (swerveWait && Math.abs(swerve.getGyroAngle() - swerve.getRotTarget()) < 15.0){
             swerveWait = false;
         }
+        //0.5 second lockout before we just extend anyways
         if (timer.hasElapsed(0.5)) swerveWait = false;
+        //setting variables based on type of motion
         if (motion == modes.ARMDELAY){
             armWait = true;
             wristWait = true;
@@ -173,6 +186,7 @@ public class Superstructure implements Subsystem{
             wristWait = true;
             motion = modes.SIMPLE;
         }
+        //controlling the 3 different motors
         if (motion == modes.SIMPLE){
             if (liftWait || swerveWait){
                 if (arm.notScooping() && !swerveWait){
@@ -246,11 +260,15 @@ public class Superstructure implements Subsystem{
     public String getName() {
         return "Superstructure";
     }   
+    //determines what sequences we have to do to avoid collisions
     private void determineMotion(){
+        //first sequence - stop the lift from driving the arm into the ground when going from intake to neutral
         if (lastPos.getA(gamepiece) < SuperConts.ANTISCOOP){
             this.motion = modes.LIFTDELAY;
+        //second sequence - delay the arm slightly to avoid hitting the mid scoring locations while going high
         } else if (!lastPos.getDirection() && currentPos == SuperPos.SCORE_HIGH){
             this.motion = modes.ARMDELAY;
+        //third sequence - wait on the wrist motion to prevent the wrist hitting the lift or arm by moving too early
         } else if (lastPos.getDirection() != currentPos.getDirection()){
             this.motion = modes.WRIST;
         } else {
@@ -271,14 +289,17 @@ public class Superstructure implements Subsystem{
         SmartDashboard.putNumber("Lift Modifier", liftMod[currentPos.getLiftMod()]);
         SmartDashboard.putNumber("Wrist Modifier", wristMod);
     }
+    //for autonomous control
     public void goToPosition(SuperPos position){
         currentPos = position;
         if (currentPos != lastPos) determineMotion();
         lastPos = currentPos;
     }
+    //for autonomous control
     public void setGamepiece(boolean newGamePiece){
         this.gamepiece = newGamePiece;
     }
+    //for autonomous control
     public void autoLaunch(boolean isTrue){
         if (isTrue) this.launching = -45.0;
         else this.launching = 0.0;

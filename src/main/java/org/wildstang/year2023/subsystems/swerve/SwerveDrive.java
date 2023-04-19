@@ -180,12 +180,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 driveState = driveType.TELEOP;
             }
         }
+        // turn on driver override for auto score
         if (source == rightStickButton && rightStickButton.getValue()){
             autoOverride = true;
         }
+        //used for determining the offsets in auto score/auto station
         aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
         vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
+        //auto drive to the station location
         if (leftBumper.getValue()){
             driveState = driveType.STATION;
         } else {
@@ -296,7 +299,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));
             //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
             if (autoOdo){
-                //pathX += 
                 xSpeed = limelight.getScoreX(aimOffset);
                 ySpeed = limelight.getScoreY(vertOffset);
                 if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
@@ -354,8 +356,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
         }
-        // SmartDashboard.putNumber("Align robotY", robotPose.getY());
-        // SmartDashboard.putNumber("Align robotX", robotPose.getX());
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
@@ -365,8 +365,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
-        // SmartDashboard.putNumber("Absolute X Position", limelight.getAbsolutePosition()[0]);
-        // SmartDashboard.putNumber("Absolute Y Distance", limelight.getAbsolutePosition()[1]);
         SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
         SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
     }

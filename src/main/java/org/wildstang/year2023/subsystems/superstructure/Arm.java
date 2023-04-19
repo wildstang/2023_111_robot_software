@@ -5,9 +5,6 @@ import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Arm {
 
     private WsSparkMax motor;

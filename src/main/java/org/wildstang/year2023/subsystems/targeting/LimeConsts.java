@@ -18,13 +18,13 @@ public class LimeConsts {
 
     public double OFFSET_VERTICAL = -5;
 
-    public double[] CUBES = {6.938,  5.268,  3.592,  4.425,  2.75,   1.072}; 
-    public double[] CONES = {7.503, 6.385, 5.827, 4.709, 4.150, 3.033, 4.989, 3.871, 3.307, 2.189, 1.631, 0.513};
+    public double[] CUBES = {6.938,  5.268,  3.592,  4.425,  2.75,   1.072}; //meters
+    public double[] CONES = {7.503, 6.385, 5.827, 4.709, 4.150, 3.033, 4.989, 3.871, 3.307, 2.189, 1.631, 0.513};//meters
 
     public double STATION_VERTICAL = 10.0 + 42.19;//inches
 
-    public double RED_STATION_X = 1.266;
-    public double BLUE_STATION_X = 6.75;
+    public double RED_STATION_X = 1.266;//meters
+    public double BLUE_STATION_X = 6.75;//meters
     public double STATION_HORIZONTAL = 24.0;//inches
     public double STATION_OFFSETS = 20;
     
