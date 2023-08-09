@@ -35,7 +35,7 @@ public class Red_Bot_3 extends AutoProgram{
         addStep(new SetGyroStep(180.0, swerve));
         addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
         addStep(new PathHeadingStep(180.0, swerve));
-        addStep(new StartOdometryStep(1.83, .51, 180.0, color));
+        addStep(new StartOdometryStep(1.83, .70, 180.0, color));
         addStep(new AutoStepDelay(1000));
         addStep(new OuttakeStep(true));
         addStep(new AutoStepDelay(200));

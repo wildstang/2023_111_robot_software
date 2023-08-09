@@ -350,9 +350,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             }
             xSpeed = limelight.getStationX(aimOffset);
-            ySpeed = limelight.getStationY(vertOffset);
-            if (Math.abs(xSpeed) > 0.6) xSpeed = Math.signum(xSpeed) * 0.6;
-            if (Math.abs(ySpeed) > 0.6) ySpeed = Math.signum(ySpeed) * 0.6; 
+            ySpeed = 0.65*limelight.getStationY(vertOffset);
+            if (Math.abs(xSpeed) > 0.5) xSpeed = Math.signum(xSpeed) * 0.5;
+            if (Math.abs(ySpeed) > 0.5) ySpeed = Math.signum(ySpeed) * 0.5; 
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
             drive();
         }
