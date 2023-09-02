@@ -93,7 +93,7 @@ public class intake implements Subsystem {
         //for scoring low - start slowly to get rid of cube, then get faster to get rid of cone
         //this is because the "gamepiece" is not accurate for low, since we select the node based on game piece
         //i.e. for scoring a hybrid node infront of a cube node, the robot will assume we have a cube, but we might
-        //  have a cone
+        //have a cone
         if (timer.hasElapsed(0.1) && speed == expelSpeedLow) speed = expelSpeedCone;
         intakeMotor.setValue(speed);
     }

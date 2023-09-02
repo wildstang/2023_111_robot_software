@@ -11,7 +11,7 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.AutoBalanceStep;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
-import org.wildstang.year2023.auto.Steps.OdometryOnStep;
+import org.wildstang.year2023.auto.Steps.TagOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperstructureStep;
@@ -60,13 +60,13 @@ public class Red_Middle extends AutoProgram{
         // group2A.addStep(new IntakeOffStep());
         // group2A.addStep(new AutoStepDelay(3000));
         // group2A.addStep(new SuperstructureStep(SuperPos.SCORE_HIGH));
-        // group2A.addStep(new OdometryOnStep(true, color));
+        // group2A.addStep(new TagOnStep(true, color));
         // group2.addStep(group2A);
         // addStep(group2);
         
         // addStep(new OuttakeStep());
         // addStep(new AutoStepDelay(200));
-        // addStep(new OdometryOnStep(false, color));
+        // addStep(new TagOnStep(false, color));
         // addStep(new StartOdometryStep(1.83, 2.75, 180.0, color));
         
 

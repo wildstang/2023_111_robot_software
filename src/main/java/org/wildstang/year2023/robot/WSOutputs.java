@@ -46,7 +46,6 @@ public enum WSOutputs implements Outputs {
     LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.LIFT, true)),
     LIFT_Follower("Lift Follower", new WsSparkMaxFollowerConfig("Lift Driver", CANConstants.LIFT_FOLLOWER, true, true)),
     WRIST("Wrist", new WsSparkMaxConfig(CANConstants.WRIST, true)),
-    //lets use WsSparkMaxFollowerConfig for the lift follower. Also, all caps LIFT_FOLLOWER
     INTAKE_MOTOR("Intake Motor", new WsSparkMaxConfig(CANConstants.INTAKE, true)),
     // ---------------------------------
     // Servos

@@ -10,7 +10,7 @@ import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.IntakeOffStep;
 import org.wildstang.year2023.auto.Steps.IntakeOnStep;
-import org.wildstang.year2023.auto.Steps.OdometryOnStep;
+import org.wildstang.year2023.auto.Steps.TagOnStep;
 import org.wildstang.year2023.auto.Steps.OuttakeStep;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
 import org.wildstang.year2023.auto.Steps.SuperGamePieceStep;
@@ -62,13 +62,13 @@ public class Red_Bot_3 extends AutoProgram{
         AutoSerialStepGroup group4A = new AutoSerialStepGroup();
         group4A.addStep(new AutoStepDelay(1000));
         group4A.addStep(new AutoStepDelay(1000));
-        group4A.addStep(new OdometryOnStep(true, color));
+        group4A.addStep(new TagOnStep(true, color));
         group4A.addStep(new SuperstructureStep(SuperPos.SCORE_MID));
         group4.addStep(group4A);
         addStep(group4);
 
         addStep(new OuttakeStep(false));
-        addStep(new OdometryOnStep(false, color));
+        addStep(new TagOnStep(false, color));
         addStep(new StartOdometryStep(1.83, 1.07, 180.0, color));
 
         //grab second game piece
@@ -93,14 +93,14 @@ public class Red_Bot_3 extends AutoProgram{
         AutoSerialStepGroup group7A = new AutoSerialStepGroup();
         group7A.addStep(new AutoStepDelay(1500));
         group7A.addStep(new AutoStepDelay(700));
-        group7A.addStep(new OdometryOnStep(true, color));
+        group7A.addStep(new TagOnStep(true, color));
         group7A.addStep(new SuperstructureStep(SuperPos.AUTO_HIGH));
         group7.addStep(group7A);
         addStep(group7);
 
         addStep(new OuttakeStep(false));
         addStep(new AutoStepDelay(300));
-        addStep(new OdometryOnStep(false, color));
+        addStep(new TagOnStep(false, color));
         addStep(new SuperstructureStep(SuperPos.NEUTRAL));
     }
 
