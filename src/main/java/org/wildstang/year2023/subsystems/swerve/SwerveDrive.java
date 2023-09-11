@@ -66,7 +66,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private boolean autoOverride;
     private boolean isBlue;
     private boolean autoTag = false;
-    private boolean isEndGame = false;
     
     private final double mToIn = 39.37;
 
@@ -81,18 +80,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AimHelper limelight;
     private LimeConsts LC;
 
-    public enum driveType {TELEOP, AUTO, CROSS, LL, BALANCE, STATION};
+    public enum driveType {TELEOP, AUTO, CROSS};
     public driveType driveState;
 
     @Override
     public void inputUpdate(Input source) {
 
-        if (ostart.getValue() && oselect.getValue() && (source == ostart || source == oselect)){
-            for (int i = 0; i < modules.length; i++) {
-                modules[i].setDriveBrake(true);
-            }
-            isEndGame = !isEndGame;
-        }
         //determine if we are in cross or teleop
         if (driveState != driveType.AUTO && dpadLeft.getValue()) {
             driveState = driveType.CROSS;
@@ -102,11 +95,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
         }
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
-            for (int i = 0; i < modules.length; i++) {
-                //modules[i].setDriveBrake(false);
-            }
             driveState = driveType.TELEOP;
         }
+
         //get x and y speeds
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
         ySpeed = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);
@@ -159,36 +150,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
-        if (isEndGame) thrustValue = (1 - DriveConstants.DRIVE_THRUST) - Math.abs(rightTrigger.getValue()) * DriveConstants.DRIVE_BRAKE;
         xSpeed *= thrustValue;
         ySpeed *= thrustValue;
         rotSpeed *= thrustValue;
-        
-        //use the limelight for tracking
-        if (Math.abs(leftTrigger.getValue())>0.15 && driveState != driveType.CROSS) {
-            if (driveState == driveType.TELEOP){
-                driveState = driveType.LL;
-                autoOverride = false;
-            }
-        } else {
-            if (driveState == driveType.LL) {
-                driveState = driveType.TELEOP;
-            }
-        }
-        // turn on driver override for auto score
-        if (source == rightStickButton && rightStickButton.getValue()){
-            autoOverride = true;
-        }
-        //used for determining the offsets in auto score/auto station
-        aimOffset = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
-        vertOffset = swerveHelper.scaleDeadband(-leftStickY.getValue(), 3*DriveConstants.DEADBAND);
 
-        //auto drive to the station location
-        if (leftBumper.getValue()){
-            driveState = driveType.STATION;
-        } else {
-            if (driveState == driveType.STATION) driveState = driveType.TELEOP;
-        }
     }
  
     @Override
@@ -232,10 +197,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         dpadLeft.addInputListener(this);
         rightStickButton = (DigitalInput) WSInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
         rightStickButton.addInputListener(this);
-        ostart = (DigitalInput) WSInputs.MANIPULATOR_START.get();
-        ostart.addInputListener(this);
-        oselect = (DigitalInput) WSInputs.MANIPULATOR_SELECT.get();
-        oselect.addInputListener(this);
     }
 
     public void initOutputs() {
@@ -310,47 +271,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //update where the robot is, to determine error in path
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset+xSpeed, pathYOffset+ySpeed);
             drive();        
-        }
-        if (driveState == driveType.LL) {
-            if (rotLocked){
-                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
-            }
-            if (autoOverride || !limelight.TargetInView()){
-                xSpeed*=0.4;
-                ySpeed*=0.4;
-            } else {
-                xSpeed = limelight.getScoreX(aimOffset);
-                ySpeed = limelight.getScoreY(vertOffset);
-                if (Math.abs(xSpeed) > 0.3) xSpeed = Math.signum(xSpeed) * 0.3;
-                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3; 
-            }
-            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
-            drive();
-        }   
-        if (driveState == driveType.BALANCE){
-            if (Math.abs(gyro.getPitch()) > 7.0){
-                ySpeed = -0.0075 * gyro.getPitch();
-                if (Math.abs(ySpeed) > 0.3) ySpeed = Math.signum(ySpeed) * 0.3;
-            } else {
-                ySpeed = 0.0;
-            }
-            xSpeed = 0.0;
-            rotSpeed = swerveHelper.getRotControl(180.0, getGyroAngle());
-            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-            drive();
-
-        }
-        if (driveState == driveType.STATION){
-            if (rotLocked){
-                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
-            }
-            xSpeed = limelight.getStationX(aimOffset);
-            ySpeed = 0.65*limelight.getStationY(vertOffset);
-            if (Math.abs(xSpeed) > 0.5) xSpeed = Math.signum(xSpeed) * 0.5;
-            if (Math.abs(ySpeed) > 0.5) ySpeed = Math.signum(ySpeed) * 0.5; 
-            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());            
-            drive();
-        }
+        } 
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
@@ -360,8 +281,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
-        SmartDashboard.putNumber("Gyro Roll", gyro.getRoll());
-        SmartDashboard.putNumber("Gyro Pitch", gyro.getPitch());
     }
     
     @Override
@@ -378,7 +297,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         aimOffset = 0.0;
         vertOffset = 0.0;
         autoOverride = false;
-        isEndGame = false;
         autoTag = false;
 
         isFieldCentric = true;
@@ -448,10 +366,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathTarget = headingTarget;
     }
 
-    public void setAiming() {
-        driveState = driveType.LL;
-    }
-
     /**
      * Resets the gyro, and sets it the input number of degrees
      * Used for starting the match at a non-0 angle
@@ -479,14 +393,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         autoTimer.start();
     }
     public Pose2d returnPose(double returnVelocity){
-        // if (autoTag && limelight.TargetInView() && autoTimer.hasElapsed(0.1)){
-        //     if (limelight.dataValid(isBlue) && swerveHelper.getAutoPower(returnVelocity)<0.33){
-        //         odometry.resetPosition(odoAngle(), odoPosition(), new Pose2d(new Translation2d(limelight.getAbsolutePosition(isBlue)[0], 
-        //             limelight.getAbsolutePosition(isBlue)[1]), odoAngle()));
-        //         autoTimer.reset();
-        //     }
-            
-        // }
         return odometry.getPoseMeters();
     }
     public double getRotTarget(){

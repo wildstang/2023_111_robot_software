@@ -11,8 +11,8 @@ public final class CANConstants {
 
     // Replace these examples.
     // While not independently dangerous if implemented these could have unintended effects.
-    public static final int[] EXAMPLE_PAIRED_CONTROLLERS    = {1,2};
-    public static final int   EXAMPLE_MOTOR_CONTROLLER      = 3;
+    //public static final int[] EXAMPLE_PAIRED_CONTROLLERS    = {1,2};
+    //public static final int   EXAMPLE_MOTOR_CONTROLLER      = 3;
 
     //Gyro and CAN sensor values
     public static final int GYRO = 31;
@@ -26,11 +26,5 @@ public final class CANConstants {
     public static final int ANGLE3 = 16;
     public static final int DRIVE4 = 17;
     public static final int ANGLE4 = 18;
-    
-    public static final int LIFT = 21;
-    public static final int LIFT_FOLLOWER = 22;
-    public static final int ARM = 23;
-    public static final int WRIST = 24;
-    public static final int INTAKE = 25;
     
 }

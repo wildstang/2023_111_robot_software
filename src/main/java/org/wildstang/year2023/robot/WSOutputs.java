@@ -31,7 +31,6 @@ public enum WSOutputs implements Outputs {
     // ---------------------------------
     // Motors
     // ---------------------------------
-    ARM_ONE("Arm", new WsSparkMaxConfig(CANConstants.ARM, true)),
     //rename this String, and it shouldn't be a follower, but a normal motor
 
     DRIVE1("Module 1 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE1, true)),
@@ -43,10 +42,6 @@ public enum WSOutputs implements Outputs {
     DRIVE4("Module 4 Drive Motor", new WsSparkMaxConfig(CANConstants.DRIVE4, true)),
     ANGLE4("Module 4 Angle Motor", new WsSparkMaxConfig(CANConstants.ANGLE4, true)),
     
-    LIFT_DRIVER("Lift Driver", new WsSparkMaxConfig(CANConstants.LIFT, true)),
-    LIFT_Follower("Lift Follower", new WsSparkMaxFollowerConfig("Lift Driver", CANConstants.LIFT_FOLLOWER, true, true)),
-    WRIST("Wrist", new WsSparkMaxConfig(CANConstants.WRIST, true)),
-    INTAKE_MOTOR("Intake Motor", new WsSparkMaxConfig(CANConstants.INTAKE, true)),
     // ---------------------------------
     // Servos
     // ---------------------------------
@@ -75,7 +70,6 @@ public enum WSOutputs implements Outputs {
     // ********************************
     // Others ...
     // ********************************
-    LED("LEDs", new WsI2COutputConfig(I2C.Port.kMXP, 0x10));
 
     ; // end of enum
 
