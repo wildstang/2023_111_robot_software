@@ -1,4 +1,4 @@
-package org.wildstang.year2023.robot;
+package org.wildstang.sample.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 

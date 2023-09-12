@@ -1,9 +1,9 @@
-package org.wildstang.year2023.auto.Programs;
+package org.wildstang.sample.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.PathFollowerStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.year2023.robot.WsSubsystems;
+import org.wildstang.sample.robot.WsSubsystems;
 import frc.paths.*;
 
 /**

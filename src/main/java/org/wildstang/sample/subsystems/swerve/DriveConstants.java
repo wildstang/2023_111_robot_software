@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.swerve;
+package org.wildstang.sample.subsystems.swerve;
 
 public final class DriveConstants {
 

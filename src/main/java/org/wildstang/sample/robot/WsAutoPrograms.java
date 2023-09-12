@@ -1,8 +1,8 @@
-package org.wildstang.year2023.robot;
+package org.wildstang.sample.robot;
 
 import org.wildstang.framework.core.AutoPrograms;
-import org.wildstang.year2023.auto.Programs.SampleAutoProgram;
-import org.wildstang.year2023.auto.Programs.Testprogram;
+import org.wildstang.sample.auto.Programs.SampleAutoProgram;
+import org.wildstang.sample.auto.Programs.Testprogram;
 
 /**
  * All active AutoPrograms are enumerated here.

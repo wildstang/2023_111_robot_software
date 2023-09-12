@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.targeting;
+package org.wildstang.sample.subsystems.targeting;
 
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
@@ -6,7 +6,7 @@ import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.year2023.robot.WsInputs;
+import org.wildstang.sample.robot.WsInputs;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;

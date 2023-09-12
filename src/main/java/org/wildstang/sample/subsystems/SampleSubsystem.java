@@ -1,11 +1,11 @@
-package org.wildstang.year2023.subsystems;
+package org.wildstang.sample.subsystems;
 
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
 //import org.wildstang.hardware.roborio.outputs.WsPhoenix;
-import org.wildstang.year2023.robot.WsInputs;
-import org.wildstang.year2023.robot.WsOutputs;
+import org.wildstang.sample.robot.WsInputs;
+import org.wildstang.sample.robot.WsOutputs;
 
 /**
  * Sample Subsystem that controls a motor with a joystick.

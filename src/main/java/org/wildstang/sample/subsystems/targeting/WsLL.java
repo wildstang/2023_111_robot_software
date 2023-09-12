@@ -1,4 +1,4 @@
-package org.wildstang.year2023.subsystems.targeting;
+package org.wildstang.sample.subsystems.targeting;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
