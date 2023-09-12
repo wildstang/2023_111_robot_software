@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WsVision implements Subsystem {
-    
-    private static final double mToIn = 39.3701;
 
     public WsLL left = new WsLL("limelight-left");
     public WsLL right = new WsLL("limelight-right");
@@ -33,7 +31,7 @@ public class WsVision implements Subsystem {
 
     //get ySpeed value for auto drive
     public double getScoreY(double offset){
-        if (right.tv > 0.0 && left.tv > 0.0){
+        if (right.TargetInView() && left.TargetInView()){
             return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (getLeftVertical() + getRightVertical())/2.0);
         } else if (left.tv > 0.0){
             return (getLeftVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
@@ -43,51 +41,51 @@ public class WsVision implements Subsystem {
     }
     //get ySpeed value for station auto drive
     public double getStationY(double offset){
-        if (left.tv > 0.0){
-            return (offset*LC.STATION_OFFSETS + (left.tid > 4.5 ? -left.blue3D[0]*mToIn + LC.STATION_VERTICAL 
-                : -left.red3D[0]*mToIn + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
+        if (left.TargetInView()){
+            return (offset*LC.STATION_OFFSETS + (left.tid > 4.5 ? -left.blue3D[0] + LC.STATION_VERTICAL 
+                : -left.red3D[0] + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         } else {
-            return (offset*LC.STATION_OFFSETS + (right.tid > 4.5 ? -right.blue3D[0]*mToIn + LC.STATION_VERTICAL 
-                : -right.red3D[0]*mToIn + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
+            return (offset*LC.STATION_OFFSETS + (right.tid > 4.5 ? -right.blue3D[0] + LC.STATION_VERTICAL 
+                : -right.red3D[0] + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         }
     }
     //get xSpeed value for station auto drive
     public double getStationX(double offset){
         if (left.TargetInView()){
-            if (left.tid > 4.5){
+            if (left.isSeeingBlue()){
                 //basically this garbage line determines whether we're going to the left or right double substation
                 //  by which one's closer, adds on the driver offset, and then calculates the xSpeed for that
                 //  desired displacement.
-                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (left.blue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (left.blue3D[1] - LC.BLUE_STATION_X - 
                     LC.STATION_HORIZONTAL*Math.signum(left.blue3D[1]-LC.BLUE_STATION_X)));
             } else {
-                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (left.red3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (left.red3D[1] - LC.RED_STATION_X - 
                 LC.STATION_HORIZONTAL*Math.signum(left.red3D[1]-LC.RED_STATION_X)));
             }
         } else {
-            if (right.tid > 4.5){
-                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (right.blue3D[1]*mToIn - LC.BLUE_STATION_X*mToIn - 
+            if (right.isSeeingBlue()){
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (right.blue3D[1] - LC.BLUE_STATION_X - 
                 LC.STATION_HORIZONTAL*Math.signum(right.blue3D[1]-LC.BLUE_STATION_X)));
             } else {
-                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (right.red3D[1]*mToIn - LC.RED_STATION_X*mToIn - 
+                return -LC.HORI_AUTOAIM_P * (-offset*LC.STATION_OFFSETS + (right.red3D[1] - LC.RED_STATION_X - 
                 LC.STATION_HORIZONTAL*Math.signum(right.red3D[1]-LC.RED_STATION_X)));
             }
         }
     }
     //gets the vertical distance to target for grid targets from the left limelight
     private double getLeftVertical(){
-        if (left.tid > 4.5){
-            return -left.blue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0)); 
+        if (left.isSeeingBlue()){
+            return -left.blue3D[0] + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0)); 
         } else {
-            return -left.red3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0));
+            return -left.red3D[0] + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0));
         }
     }
     //gets the vertical distance to target for grid targets from the right limelight
     private double getRightVertical(){
-        if (right.tid > 4.5){
-            return -right.blue3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE); 
+        if (right.isSeeingBlue()){
+            return -right.blue3D[0] + (LC.VERTICAL_APRILTAG_DISTANCE); 
         } else {
-            return -right.red3D[0]*mToIn + (LC.VERTICAL_APRILTAG_DISTANCE);
+            return -right.red3D[0] + (LC.VERTICAL_APRILTAG_DISTANCE);
         }
     }
 
@@ -103,22 +101,22 @@ public class WsVision implements Subsystem {
     }
     //get the horizontal distance to targets on the grid from the left limelight
     private double getLeftHorizontal(){
-        if (left.tid > 4.5){
-            if (gamepiece) return getCone(left.blue3D[1]*mToIn, true);
-            else return getCube(left.blue3D[1]*mToIn, true);
+        if (left.isSeeingBlue()){
+            if (gamepiece) return getCone(left.blue3D[1], true);
+            else return getCube(left.blue3D[1], true);
         } else {
-            if (gamepiece) return getCone(left.red3D[1]*mToIn, false);
-            else return getCube(left.red3D[1]*mToIn, false);
+            if (gamepiece) return getCone(left.red3D[1], false);
+            else return getCube(left.red3D[1], false);
         }
     }
     //gets the horizontal distance to targets on the grid from the right limelight
     private double getRightHorizontal(){
-        if (right.tid > 4.5){
-            if (gamepiece) return getCone(right.blue3D[1]*mToIn, true);
-            else return getCube(right.blue3D[1]*mToIn, true);
+        if (right.isSeeingBlue()){
+            if (gamepiece) return getCone(right.blue3D[1], true);
+            else return getCube(right.blue3D[1], true);
         } else {
-            if (gamepiece) return getCone(right.red3D[1]*mToIn, false);
-            else return getCube(right.red3D[1]*mToIn, false);
+            if (gamepiece) return getCone(right.red3D[1], false);
+            else return getCube(right.red3D[1], false);
         }
     }
     //determines which cone node is the closest to score on
@@ -126,8 +124,8 @@ public class WsVision implements Subsystem {
         int i = color ? 6 : 0;
         double minimum = 1000;
         while (i < (color ? 12 : 6)){
-            if (Math.abs(minimum) > Math.abs(target - LC.CONES[i]*mToIn)){
-                minimum = target - LC.CONES[i]*mToIn;
+            if (Math.abs(minimum) > Math.abs(target - LC.CONES[i]*39.3701)){
+                minimum = target - LC.CONES[i]*39.3701;
             }
             i++;
         }
@@ -138,8 +136,8 @@ public class WsVision implements Subsystem {
         int i = color ? 3 : 0;
         double minimum = 1000;
         while (i < (color ? 6 : 3)){
-            if (Math.abs(minimum) > Math.abs(target - LC.CUBES[i]*mToIn)){
-                minimum = target - LC.CUBES[i]*mToIn;
+            if (Math.abs(minimum) > Math.abs(target - LC.CUBES[i]*39.3701)){
+                minimum = target - LC.CUBES[i]*39.3701;
             }
             i++;
         }

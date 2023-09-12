@@ -5,12 +5,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WsLL {
+
+    private final double mToIn = 39.3701;
     
     public NetworkTable limelight;
 
     public LimelightHelpers.Results result;
 
-    public double[] target3D;
     public double[] blue3D;
     public double[] red3D;
     public double tid;
@@ -28,9 +29,9 @@ public class WsLL {
      */
     public WsLL(String CameraID){
         limelight = NetworkTableInstance.getDefault().getTable(CameraID);
-        target3D = limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
         red3D = limelight.getEntry("botpose_wpired").getDoubleArray(new double[7]);
         blue3D = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
+        setToIn();
         tid = limelight.getEntry("tid").getDouble(0);
         tv = limelight.getEntry("tv").getDouble(0);
         tx = limelight.getEntry("tx").getDouble(0);
@@ -50,9 +51,9 @@ public class WsLL {
         result = LimelightHelpers.getLatestResults(CameraID).targetingResults;
         tv = limelight.getEntry("tv").getDouble(0);
         if (tv > 0){
-            target3D = limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
             blue3D = limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
             red3D = limelight.getEntry("botpose_wpired").getDoubleArray(new double[7]);
+            setToIn();
             tid = limelight.getEntry("tid").getDouble(0);
             numTargets = result.targets_Fiducials.length;
         }
@@ -63,6 +64,13 @@ public class WsLL {
      */
     public boolean TargetInView(){
         return tv>0;
+    }
+
+    /*
+     * returns true if seeing a blue apriltag, false if a red one
+     */
+    public boolean isSeeingBlue(){
+        return tid > 4.5;
     }
 
     public void updateDashboard(){
@@ -98,4 +106,10 @@ public class WsLL {
         limelight.getEntry("camMode").setNumber(cameraMode);
     }
 
+    private void setToIn(){
+        for (int i = 0; i < 7; i++){
+            this.red3D[i] *= mToIn;
+            this.blue3D[i] *= mToIn;
+        }
+    }
 }
