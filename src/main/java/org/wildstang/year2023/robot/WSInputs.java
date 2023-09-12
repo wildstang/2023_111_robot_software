@@ -17,7 +17,7 @@ import org.wildstang.hardware.roborio.inputs.config.WsRemoteAnalogInputConfig;
  * Unclaimed inputs should have a name representing the input.
  * Claim inputs by changing the name to represent the output.
  */
-public enum WSInputs implements Inputs {
+public enum WsInputs implements Inputs {
     
     //***************************************************************
     //      Driver and Manipulator Controller Button Locations
@@ -159,7 +159,7 @@ public enum WSInputs implements Inputs {
      * @param p_name Name, must match that in class to prevent errors.
      * @param p_config Corresponding configuration for InputType.
      */
-    WSInputs(String p_name, InputConfig p_config) {
+    WsInputs(String p_name, InputConfig p_config) {
         m_name = p_name;
         m_config = p_config;
     }

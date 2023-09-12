@@ -3,16 +3,16 @@ package org.wildstang.year2023.robot;
 import org.wildstang.framework.core.Subsystems;
 import org.wildstang.year2023.subsystems.SampleSubsystem;
 import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
-import org.wildstang.year2023.subsystems.targeting.AimHelper;
+import org.wildstang.year2023.subsystems.targeting.WsVision;
 
 /**
  * All subsystems are enumerated here.
  * It is used in Robot.java to initialize all subsystems.
  */
-public enum WSSubsystems implements Subsystems {
+public enum WsSubsystems implements Subsystems {
 
     // enumerate subsystems
-    AIM_HELPER("Aim Helper", AimHelper.class),
+    WS_VISION("Ws Vision", WsVision.class),
     SWERVE_DRIVE("Swerve Drive", SwerveDrive.class),
     //SAMPLE("Sample", SampleSubsystem.class)
     ;
@@ -31,7 +31,7 @@ public enum WSSubsystems implements Subsystems {
      * @param name Name, must match that in class to prevent errors.
      * @param subsystemClass Class containing Subsystem
      */
-    WSSubsystems(String name, Class<?> subsystemClass) {
+    WsSubsystems(String name, Class<?> subsystemClass) {
         this.name = name;
         this.subsystemClass = subsystemClass;
     }

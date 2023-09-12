@@ -8,10 +8,10 @@ import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 import org.wildstang.year2023.robot.CANConstants;
-import org.wildstang.year2023.robot.WSInputs;
-import org.wildstang.year2023.robot.WSOutputs;
-import org.wildstang.year2023.robot.WSSubsystems;
-import org.wildstang.year2023.subsystems.targeting.AimHelper;
+import org.wildstang.year2023.robot.WsInputs;
+import org.wildstang.year2023.robot.WsOutputs;
+import org.wildstang.year2023.robot.WsSubsystems;
+import org.wildstang.year2023.subsystems.targeting.WsVision;
 import org.wildstang.year2023.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSparkMax;
 
@@ -46,7 +46,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private DigitalInput faceDown;//rotation lock 180 degrees
     private DigitalInput dpadLeft;//defense mode
     private DigitalInput rightStickButton;//auto drive override
-    private DigitalInput ostart, oselect;//both to activate brake mode
 
     private double xSpeed;
     private double ySpeed;
@@ -77,7 +76,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private SwerveDriveOdometry odometry;
     private Timer autoTimer = new Timer();
 
-    private AimHelper limelight;
+    private WsVision limelight;
     private LimeConsts LC;
 
     public enum driveType {TELEOP, AUTO, CROSS};
@@ -167,53 +166,53 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void initInputs() {
         LC = new LimeConsts();
 
-        leftStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_X);
+        leftStickX = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
-        leftStickY = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_JOYSTICK_Y);
+        leftStickY = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_JOYSTICK_Y);
         leftStickY.addInputListener(this);
-        rightStickX = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_JOYSTICK_X);
+        rightStickX = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_JOYSTICK_X);
         rightStickX.addInputListener(this);
-        rightTrigger = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_TRIGGER);
+        rightTrigger = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_TRIGGER);
         rightTrigger.addInputListener(this);
-        leftTrigger = (AnalogInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_TRIGGER);
+        leftTrigger = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
         // rightBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_RIGHT_SHOULDER);
         // rightBumper.addInputListener(this);
-        leftBumper = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
-        select = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_SELECT);
+        select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
-        start = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_START);
+        start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
         start.addInputListener(this);
-        faceUp = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_FACE_UP);
+        faceUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_UP);
         faceUp.addInputListener(this);
-        faceLeft = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_FACE_LEFT);
+        faceLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_LEFT);
         faceLeft.addInputListener(this);
-        faceRight = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_FACE_RIGHT);
+        faceRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_RIGHT);
         faceRight.addInputListener(this);
-        faceDown = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_FACE_DOWN);
+        faceDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_DOWN);
         faceDown.addInputListener(this);
-        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WSInputs.DRIVER_DPAD_LEFT);
+        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
         dpadLeft.addInputListener(this);
-        rightStickButton = (DigitalInput) WSInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
+        rightStickButton = (DigitalInput) WsInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
         rightStickButton.addInputListener(this);
     }
 
     public void initOutputs() {
         //create four swerve modules
         modules = new SwerveModule[]{
-            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.DRIVE1), 
-                (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ANGLE1), DriveConstants.FRONT_LEFT_OFFSET),
-            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.DRIVE2), 
-                (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ANGLE2), DriveConstants.FRONT_RIGHT_OFFSET),
-            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.DRIVE3), 
-                (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ANGLE3), DriveConstants.REAR_LEFT_OFFSET),
-            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.DRIVE4), 
-                (WsSparkMax) Core.getOutputManager().getOutput(WSOutputs.ANGLE4), DriveConstants.REAR_RIGHT_OFFSET)
+            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.DRIVE1), 
+                (WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.ANGLE1), DriveConstants.FRONT_LEFT_OFFSET),
+            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.DRIVE2), 
+                (WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.ANGLE2), DriveConstants.FRONT_RIGHT_OFFSET),
+            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.DRIVE3), 
+                (WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.ANGLE3), DriveConstants.REAR_LEFT_OFFSET),
+            new SwerveModule((WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.DRIVE4), 
+                (WsSparkMax) Core.getOutputManager().getOutput(WsOutputs.ANGLE4), DriveConstants.REAR_RIGHT_OFFSET)
         };
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
-        limelight = (AimHelper) Core.getSubsystemManager().getSubsystem(WSSubsystems.AIM_HELPER);
+        limelight = (WsVision) Core.getSubsystemManager().getSubsystem(WsSubsystems.WS_VISION);
         odometry = new SwerveDriveOdometry(new SwerveDriveKinematics(new Translation2d(0.2794, 0.2794), new Translation2d(0.2794, -0.2794),
             new Translation2d(-0.2794, 0.2794), new Translation2d(-0.2794, -0.2794)), odoAngle(), odoPosition(), new Pose2d());
     }

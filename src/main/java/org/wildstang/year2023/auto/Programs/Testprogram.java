@@ -7,7 +7,7 @@ import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2023.auto.Steps.StartOdometryStep;
-import org.wildstang.year2023.robot.WSSubsystems;
+import org.wildstang.year2023.robot.WsSubsystems;
 import org.wildstang.year2023.subsystems.swerve.SwerveDrive;
 
 import com.pathplanner.lib.PathConstraints;
@@ -16,7 +16,7 @@ import com.pathplanner.lib.PathPlanner;
 public class Testprogram extends AutoProgram{
     
     protected void defineSteps(){
-        SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WSSubsystems.SWERVE_DRIVE);
+        SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         addStep(new SetGyroStep(180.0, swerve));
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new PathHeadingStep(180.0, swerve));

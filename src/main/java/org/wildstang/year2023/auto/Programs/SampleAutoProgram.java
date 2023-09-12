@@ -3,7 +3,7 @@ package org.wildstang.year2023.auto.Programs;
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.PathFollowerStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.year2023.robot.WSSubsystems;
+import org.wildstang.year2023.robot.WsSubsystems;
 import frc.paths.*;
 
 /**

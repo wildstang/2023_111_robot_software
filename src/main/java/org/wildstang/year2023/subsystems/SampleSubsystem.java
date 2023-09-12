@@ -4,8 +4,8 @@ import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
 //import org.wildstang.hardware.roborio.outputs.WsPhoenix;
-import org.wildstang.year2023.robot.WSInputs;
-import org.wildstang.year2023.robot.WSOutputs;
+import org.wildstang.year2023.robot.WsInputs;
+import org.wildstang.year2023.robot.WsOutputs;
 
 /**
  * Sample Subsystem that controls a motor with a joystick.
@@ -24,7 +24,7 @@ public class SampleSubsystem implements Subsystem {
 
     @Override
     public void init() {
-        joystick = (WsJoystickAxis) WSInputs.DRIVER_LEFT_JOYSTICK_Y.get();
+        joystick = (WsJoystickAxis) WsInputs.DRIVER_LEFT_JOYSTICK_Y.get();
 
         //motor = (WsPhoenix) WSOutputs.TEST_MOTOR.get();
 

@@ -8,7 +8,7 @@ import org.wildstang.year2023.auto.Programs.Testprogram;
  * All active AutoPrograms are enumerated here.
  * It is used in Robot.java to initialize all programs.
  */
-public enum WSAutoPrograms implements AutoPrograms {
+public enum WsAutoPrograms implements AutoPrograms {
 
     // enumerate programs
     //SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
@@ -31,7 +31,7 @@ public enum WSAutoPrograms implements AutoPrograms {
      * @param name Name, must match that in class to prevent errors.
      * @param programClass Class containing AutoProgram
      */
-    WSAutoPrograms(String name, Class<?> programClass) {
+    WsAutoPrograms(String name, Class<?> programClass) {
         this.name = name;
         this.programClass = programClass;
     }

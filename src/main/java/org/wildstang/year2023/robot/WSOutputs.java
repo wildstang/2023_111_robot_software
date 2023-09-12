@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * Below each Motor, PWM, Digital Output, Solenoid, and Relay is enumerated with their appropriated IDs.
  * The enumeration includes a name, output type, and output config object.
  */
-public enum WSOutputs implements Outputs {
+public enum WsOutputs implements Outputs {
 
     // ********************************
     // PWM Outputs
@@ -87,7 +87,7 @@ public enum WSOutputs implements Outputs {
      * @param p_name Name, must match that in class to prevent errors.
      * @param p_config Corresponding configuration for OutputType.
      */
-    WSOutputs(String p_name, OutputConfig p_config) {
+    WsOutputs(String p_name, OutputConfig p_config) {
         m_name = p_name;
         m_config = p_config;
     }
